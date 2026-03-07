@@ -1,0 +1,66 @@
+﻿@model CreateMemberViewModel
+
+@{
+    ViewData["Title"] = "Create Member";
+}
+
+<div>
+    <h1>➕ Create New Member</h1>
+
+    <div style="max-width: 500px;">
+        <div>
+            <h5>Member Information</h5>
+        </div>
+        <div>
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+                <div>
+                    <label asp-for="Username"></label>
+                    <input asp-for="Username" />
+                    <span asp-validation-for="Username"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" type="email" />
+                    <span asp-validation-for="Email"></span>
+                </div>
+
+                <div>
+                    <div>
+                        <label asp-for="FirstName"></label>
+                        <input asp-for="FirstName" />
+                        <span asp-validation-for="FirstName"></span>
+                    </div>
+                    <div>
+                        <label asp-for="LastName"></label>
+                        <input asp-for="LastName" />
+                        <span asp-validation-for="LastName"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <label asp-for="Password"></label>
+                    <input asp-for="Password" type="password" />
+                    <span asp-validation-for="Password"></span>
+                </div>
+
+                <div>
+                    <label asp-for="ConfirmPassword"></label>
+                    <input asp-for="ConfirmPassword" type="password" />
+                    <span asp-validation-for="ConfirmPassword"></span>
+                </div>
+
+                <div>
+                    <button type="submit">Create Member</button>
+                    <a asp-action="Index">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

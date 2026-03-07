@@ -1,0 +1,95 @@
+﻿@model List<StaffResponse>
+
+@{
+    ViewData["Title"] = "Manage Staff";
+}
+
+<div>
+    <div>
+        <h1>👔 Staff</h1>
+        <div>
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-action="Create">➕ Add Staff</a>
+            }
+            <span>@Model.Count total</span>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div role="alert">
+            @TempData["Success"]
+            <button type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div role="alert">
+            @TempData["Error"]
+            <button type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div>
+        <div>
+            <h5>Staff & Administrators</h5>
+        </div>
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Employee ID</th>
+                        <th>Hire Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var staff in Model)
+                    {
+                        <tr>
+                            <td>@staff.FirstName @staff.LastName</td>
+                            <td>@staff.Email</td>
+                            <td>@(staff.EmployeeId ?? "—")</td>
+                            <td>@(staff.HireDate?.ToString("MMM dd, yyyy") ?? "—")</td>
+                            <td>
+                                @if (staff.Active)
+                                {
+                                    <span>Active</span>
+                                }
+                                else
+                                {
+                                    <span>Inactive</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@staff.Id">
+                                    Details
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@staff.Id">
+                                    Edit
+                                </a>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <form asp-action="Delete" asp-route-id="@staff.Id" method="post"
+                                          onsubmit="return confirm('Are you sure you want to delete this staff member?');">
+                                        <button type="submit">Delete</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @if (!Model.Any())
+        {
+            <div>
+                <p>No staff members found.</p>
+            </div>
+        }
+    </div>
+</div>

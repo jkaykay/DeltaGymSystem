@@ -1,0 +1,42 @@
+## Build Results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+bin/
+obj/
+
+## Visual Studio Tooling
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+
+## Roslyn / Analyzers
+*.sonarlint/
+.sonarlint/
+
+## NuGet Packages
+*.nupkg
+**/packages/*
+!**/packages/build/
+
+## ASP.NET Core Secrets & Local Settings
+# User secrets are stored outside the repo by dotnet user-secrets.
+# These entries are a safety net only.
+secrets.json
+usersecrets.json
+
+## Certificates & Publish Profiles
+*.pfx
+*.publishsettings
+
+## Node.js (if using SPA templates)
+node_modules/
+npm-debug.log*
+
+## Operating System Files
+.DS_Store
+Thumbs.db

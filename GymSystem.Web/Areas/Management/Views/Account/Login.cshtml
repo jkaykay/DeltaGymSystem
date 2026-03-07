@@ -1,0 +1,51 @@
+﻿@model ManagementLoginViewModel
+
+@{
+    ViewData["Title"] = "Management Login";
+    Layout = "~/Areas/Management/Views/Shared/_ManagementLoginLayout.cshtml";
+}
+
+<div>
+    <div>
+        <div>
+            <div>
+                <div>
+                    <h3>⚙️ Management Portal</h3>
+                </div>
+                <div>
+                    <h5>Sign in to continue</h5>
+
+                    <form method="post" asp-action="Login" asp-area="Management">
+                        <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+                        <div>
+                            <label asp-for="Email">Email Address</label>
+                            <input asp-for="Email" type="email" required />
+                            <span asp-validation-for="Email"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="Password">Password</label>
+                            <input asp-for="Password" type="password" required />
+                            <span asp-validation-for="Password"></span>
+                        </div>
+
+                        <div>
+                            <input asp-for="RememberMe" />
+                            <label asp-for="RememberMe">Remember me</label>
+                        </div>
+
+                        <button type="submit">Login</button>
+                    </form>
+                </div>
+                <div>
+                    <small>Authorized personnel only</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

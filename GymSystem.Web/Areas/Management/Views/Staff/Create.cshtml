@@ -1,0 +1,69 @@
+﻿@model CreateStaffViewModel
+
+@{
+    ViewData["Title"] = "Create Staff";
+}
+
+<div>
+    <h1>➕ Create New Staff</h1>
+
+    <div style="max-width: 500px;">
+        <div>
+            <h5>Staff Information</h5>
+        </div>
+        <div>
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+                <div>
+                    <label asp-for="Email">Email</label>
+                    <input asp-for="Email" type="email" />
+                    <span asp-validation-for="Email"></span>
+                </div>
+
+                <div>
+                    <div>
+                        <label asp-for="FirstName">First Name</label>
+                        <input asp-for="FirstName" />
+                        <span asp-validation-for="FirstName"></span>
+                    </div>
+                    <div>
+                        <label asp-for="LastName">Last Name</label>
+                        <input asp-for="LastName" />
+                        <span asp-validation-for="LastName"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <label asp-for="EmployeeId"></label>
+                    <input asp-for="EmployeeId" placeholder="e.g., GYM-2026-001" />
+                    <span asp-validation-for="EmployeeId"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Role">Role</label>
+                    <select asp-for="Role">
+                        <option value="Staff">Staff</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                    <span asp-validation-for="Role"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Password">Password</label>
+                    <input asp-for="Password" type="password" />
+                    <span asp-validation-for="Password"></span>
+                </div>
+
+                <div>
+                    <button type="submit">Create Staff</button>
+                    <a asp-action="Index">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

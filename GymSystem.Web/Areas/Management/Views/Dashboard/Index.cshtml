@@ -1,0 +1,16 @@
+﻿@model DashboardViewModel
+
+@{
+    ViewData["Title"] = "Management Dashboard";
+}
+
+<h1>Management Dashboard</h1>
+<p>Total Members: @Model.TotalMembers</p>
+<p>Total Staff: @Model.TotalStaff</p>
+<p>Recent Signups:</p>
+<ul>
+    @foreach (var member in Model.RecentSignups)
+    {
+        <li>@member.FirstName @member.LastName</li>
+    }
+</ul>

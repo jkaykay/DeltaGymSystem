@@ -1,0 +1,47 @@
+﻿@model StaffResponse
+
+@{
+    ViewData["Title"] = "Staff Details";
+}
+
+<div>
+    <h1>Staff Details</h1>
+
+    <div style="max-width: 600px;">
+        <div>
+            <h5>@Model.FirstName @Model.LastName</h5>
+            @foreach (var role in Model.Roles)
+            {
+                <span>@role</span>
+            }
+        </div>
+        <div>
+            <dl>
+                <dt>Email</dt>
+                <dd>@Model.Email</dd>
+
+                <dt>Employee ID</dt>
+                <dd>@(Model.EmployeeId ?? "—")</dd>
+
+                <dt>Hire Date</dt>
+                <dd>@(Model.HireDate?.ToString("MMMM dd, yyyy") ?? "—")</dd>
+
+                <dt>Status</dt>
+                <dd>
+                    @if (Model.Active)
+                    {
+                        <span>Active</span>
+                    }
+                    else
+                    {
+                        <span>Inactive</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+            <a asp-action="Index">Back to List</a>
+        </div>
+    </div>
+</div>

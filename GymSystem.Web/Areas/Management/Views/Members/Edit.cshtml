@@ -1,0 +1,54 @@
+﻿@model EditMemberViewModel
+
+@{
+    ViewData["Title"] = "Edit Member";
+}
+
+<div>
+    <h1>Edit Member</h1>
+
+    <div style="max-width: 500px;">
+        <div>
+            <h5>Member Information</h5>
+        </div>
+        <div>
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="Id" />
+
+                <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+                <div>
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" readonly />
+                    <span asp-validation-for="Email"></span>
+                </div>
+
+                <div>
+                    <label asp-for="FirstName"></label>
+                    <input asp-for="FirstName" />
+                    <span asp-validation-for="FirstName"></span>
+                </div>
+
+                <div>
+                    <label asp-for="LastName"></label>
+                    <input asp-for="LastName" />
+                    <span asp-validation-for="LastName"></span>
+                </div>
+
+                <div>
+                    <input asp-for="Active" />
+                    <label asp-for="Active"></label>
+                </div>
+
+                <div>
+                    <button type="submit">Save Changes</button>
+                    <a asp-action="Index">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

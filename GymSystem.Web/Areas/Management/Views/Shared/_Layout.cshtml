@@ -1,0 +1,19 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Management</title>
+    <link rel="stylesheet" href="~/styles/management.css" />
+</head>
+<body>
+    <nav>
+        <!-- Management sidebar / nav -->
+        <a asp-area="Management" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+    </nav>
+    <main>
+        @RenderBody()
+    </main>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

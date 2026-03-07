@@ -1,0 +1,50 @@
+﻿@model EditStaffViewModel
+
+@{
+    ViewData["Title"] = "Edit Staff";
+}
+
+<div>
+    <h1>✏️ Edit Staff</h1>
+
+    <div style="max-width: 500px;">
+        <div>
+            <h5>Staff Information</h5>
+        </div>
+        <div>
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="Id" />
+
+                <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+                <div>
+                    <label asp-for="Email">Email</label>
+                    <input asp-for="Email" readonly />
+                    <span asp-validation-for="Email"></span>
+                </div>
+
+                <div>
+                    <div>
+                        <label asp-for="FirstName">First Name</label>
+                        <input asp-for="FirstName" />
+                        <span asp-validation-for="FirstName"></span>
+                    </div>
+                    <div>
+                        <label asp-for="LastName">Last Name</label>
+                        <input asp-for="LastName" />
+                        <span asp-validation-for="LastName"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit">Save Changes</button>
+                    <a asp-action="Index">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

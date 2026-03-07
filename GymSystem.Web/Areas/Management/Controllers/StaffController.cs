@@ -1,0 +1,115 @@
+﻿using GymSystem.Web.Areas.Management.ViewModels;
+using GymSystem.Web.DTOs.Management;
+using GymSystem.Web.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace GymSystem.Web.Areas.Management.Controllers;
+
+[Area("Management")]
+[Authorize(Roles = "Admin,Staff")]
+public class StaffController : Controller
+{
+    private readonly IManagementApiService _api;
+
+    public StaffController(IManagementApiService api)
+    {
+        _api = api;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        var staff = await _api.GetStaffAsync();
+        return View(staff);
+    }
+
+    public async Task<IActionResult> Details(string id)
+    {
+        var staff = await _api.GetStaffMemberAsync(id);
+        if (staff is null)
+            return NotFound();
+
+        return View(staff);
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    public IActionResult Create()
+    {
+        return View(new CreateStaffViewModel());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Create(CreateStaffViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var success = await _api.CreateStaffAsync(model);
+
+        if (!success)
+        {
+            ModelState.AddModelError(string.Empty, "Failed to create staff member. Check password requirements.");
+            return View(model);
+        }
+
+        TempData["Success"] = "Staff member created successfully.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Edit(string id)
+    {
+        var staff = await _api.GetStaffMemberAsync(id);
+        if (staff is null)
+            return NotFound();
+
+        var vm = new EditStaffViewModel
+        {
+            Id = staff.Id,
+            Email = staff.Email,
+            FirstName = staff.FirstName,
+            LastName = staff.LastName
+        };
+
+        return View(vm);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Edit(EditStaffViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var success = await _api.UpdateStaffAsync(model.Id, model);
+
+        if (!success)
+        {
+            ModelState.AddModelError(string.Empty, "Failed to update staff member.");
+            return View(model);
+        }
+
+        TempData["Success"] = "Staff member updated successfully.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Delete(string id)
+    {
+        var success = await _api.DeleteStaffAsync(id);
+
+        if (success)
+            TempData["Success"] = "Staff member deleted.";
+        else
+            TempData["Error"] = "Failed to delete staff member.";
+
+        return RedirectToAction(nameof(Index));
+    }
+}
