@@ -34,8 +34,7 @@ namespace GymSystem.Api.Controllers
 
             var result = await _userManager.CreateAsync(user, request.Password);
 
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
+            if (!result.Succeeded) return BadRequest(result.Errors);
 
             await _userManager.AddToRoleAsync(user, "Member");
 
@@ -45,10 +44,12 @@ namespace GymSystem.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
+            // Try email first, then fall back to username
+            var user = await _userManager.FindByEmailAsync(request.EmailOrUserName)
+                       ?? await _userManager.FindByNameAsync(request.EmailOrUserName);
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, request.Password))
-                return Unauthorized(new { message = "Invalid email or password." });
+                return Unauthorized(new { message = "Invalid email/username or password." });
 
             var token = await _tokenService.GenerateTokenAsync(user);
             var roles = await _userManager.GetRolesAsync(user);

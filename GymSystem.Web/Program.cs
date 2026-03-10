@@ -11,6 +11,7 @@ builder.Services.AddTransient<TokenDelegatingHandler>();
 
 // --- API service ---
 builder.Services.AddScoped<IManagementApiService, ManagementApiService>();
+builder.Services.AddScoped<IMemberApiService, MemberApiService>();
 
 // --- Typed HttpClient for API consumption ---
 builder.Services.AddHttpClient("GymApi", client =>
@@ -19,8 +20,7 @@ builder.Services.AddHttpClient("GymApi", client =>
         builder.Configuration["GymApi:BaseUrl"]
         ?? throw new InvalidOperationException("GymApi:BaseUrl is not configured."));
     client.DefaultRequestHeaders.Add("Accept", "application/json");
-})
-    .AddHttpMessageHandler<TokenDelegatingHandler>();
+}).AddHttpMessageHandler<TokenDelegatingHandler>();
 
 // --- Authentication (cookie-based, tokens stored in session/cookie) ---
 builder.Services.AddAuthentication("Cookies")

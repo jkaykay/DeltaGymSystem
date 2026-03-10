@@ -9,11 +9,11 @@ namespace GymSystem.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize(Roles = "Admin,Staff")]
-public class MembersController : ControllerBase
+public class MemberController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public MembersController(UserManager<ApplicationUser> userManager)
+    public MemberController(UserManager<ApplicationUser> userManager)
     {
         _userManager = userManager;
     }
@@ -40,7 +40,7 @@ public class MembersController : ControllerBase
     public async Task<IActionResult> GetTotal()
     {
         var members = await _userManager.GetUsersInRoleAsync("Member");
-        return Ok(new { TotalMembers = members.Count });
+        return Ok(new { Count = members.Count });
     }
 
     [HttpGet("recents")]
@@ -60,6 +60,29 @@ public class MembersController : ControllerBase
         }).ToList();
 
         return Ok(result);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateMemberRequest request)
+    {
+        var user = new ApplicationUser
+        {
+            UserName = request.Username,
+            Email = request.Email,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            JoinDate = DateTime.UtcNow,
+            Active = true
+        };
+
+        var result = await _userManager.CreateAsync(user, request.Password);
+        if (!result.Succeeded)
+            return BadRequest(result.Errors);
+
+        var role = "Member";
+        await _userManager.AddToRoleAsync(user, role);
+
+        return CreatedAtAction(nameof(Get), new { id = user.Id }, new { user.Id });
     }
 
     [HttpGet("{id}")]
