@@ -41,13 +41,10 @@
                         <span>Manage Members</span>
                         <span>View All</span>
                     </a>
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <a href="@Url.Action("Index", "Staff")">
-                            <span>Manage Staff</span>
-                            <span>Admin Only</span>
-                        </a>
-                    }
+                    <a href="@Url.Action("Index", "Staff")">
+                        <span>Manage Staff</span>
+                        <span>Admin Only</span>
+                    </a>
                     <a href="@Url.Action("Index", "Memberships")">
                         Membership Plans
                     </a>

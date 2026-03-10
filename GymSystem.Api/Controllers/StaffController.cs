@@ -8,7 +8,7 @@ namespace GymSystem.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin,Staff")]
 public class StaffController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
