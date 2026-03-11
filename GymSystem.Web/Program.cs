@@ -38,6 +38,11 @@ builder.Services.AddAuthentication("Cookies")
                 var redirect = $"/Management/Account/Login?returnUrl={Uri.EscapeDataString(returnUrl)}";
                 ctx.Response.Redirect(redirect);
             }
+            else if (ctx.Request.Path.StartsWithSegments("/Member", StringComparison.OrdinalIgnoreCase))
+            {
+                var redirect = $"/Member/Account/Login?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                ctx.Response.Redirect(redirect);
+            }
             else
             {
                 var redirect = $"/Account/Login?returnUrl={Uri.EscapeDataString(returnUrl)}";
@@ -52,6 +57,11 @@ builder.Services.AddAuthentication("Cookies")
             if (ctx.Request.Path.StartsWithSegments("/Management", StringComparison.OrdinalIgnoreCase))
             {
                 var redirect = $"/Management/Account/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                ctx.Response.Redirect(redirect);
+            }
+            else if (ctx.Request.Path.StartsWithSegments("/Member", StringComparison.OrdinalIgnoreCase))
+            {
+                var redirect = $"/Member/Account/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
                 ctx.Response.Redirect(redirect);
             }
             else
