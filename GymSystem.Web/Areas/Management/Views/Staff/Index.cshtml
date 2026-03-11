@@ -69,9 +69,12 @@
                                 <a asp-action="Details" asp-route-id="@staff.Id">
                                     Details
                                 </a>
-                                <a asp-action="Edit" asp-route-id="@staff.Id">
-                                    Edit
-                                </a>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@staff.Id">
+                                        Edit
+                                    </a>
+                                }
                                 @if (User.IsInRole("Admin"))
                                 {
                                     <form asp-action="Delete" asp-route-id="@staff.Id" method="post"

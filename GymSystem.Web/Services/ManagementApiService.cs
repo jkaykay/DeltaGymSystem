@@ -16,7 +16,7 @@ namespace GymSystem.Web.Services
 
         public async Task<ManagementLoginResponse?> LoginAsync(string email, string password)
         {
-            var response = await _http.PostAsJsonAsync("api/auth/login", new { email, password });
+            var response = await _http.PostAsJsonAsync("api/auth/login", new { EmailOrUserName = email, password });
 
             if (!response.IsSuccessStatusCode)
                 return null;
@@ -28,22 +28,34 @@ namespace GymSystem.Web.Services
 
         public async Task<List<MemberResponse>> GetMembersAsync()
         {
-            var result = await _http.GetFromJsonAsync<List<MemberResponse>>("api/members");
+            var result = await _http.GetFromJsonAsync<List<MemberResponse>>("api/member");
             return result ?? [];
         }
 
         public async Task<MemberResponse?> GetMemberAsync(string id)
         {
-            var response = await _http.GetAsync($"api/members/{id}");
+            var response = await _http.GetAsync($"api/member/{id}");
             if (!response.IsSuccessStatusCode)
                 return null;
 
             return await response.Content.ReadFromJsonAsync<MemberResponse>();
         }
 
+        public async Task<bool> CreateMemberAsync(CreateMemberViewModel model) {
+            var response = await _http.PostAsJsonAsync("api/member", new
+            {
+                model.Email,
+                model.Username,
+                model.FirstName,
+                model.LastName,
+                model.Password
+            });
+            return response.IsSuccessStatusCode;
+        }
+
         public async Task<bool> UpdateMemberAsync(string id, EditMemberViewModel model)
         {
-            var response = await _http.PutAsJsonAsync($"api/members/{id}", new
+            var response = await _http.PutAsJsonAsync($"api/member/{id}", new
             {
                 model.FirstName,
                 model.LastName,
@@ -54,13 +66,13 @@ namespace GymSystem.Web.Services
 
         public async Task<bool> ToggleMemberActiveAsync(string id)
         {
-            var response = await _http.PostAsync($"api/members/{id}/toggle-active", null);
+            var response = await _http.PostAsync($"api/member/{id}/toggle-active", null);
             return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> DeleteMemberAsync(string id)
         {
-            var response = await _http.DeleteAsync($"api/members/{id}");
+            var response = await _http.DeleteAsync($"api/member/{id}");
             return response.IsSuccessStatusCode;
         }
 
@@ -113,7 +125,7 @@ namespace GymSystem.Web.Services
 
         public async Task<CountResponse> GetTotalMembersAsync()
         {
-            var response = await _http.GetAsync("api/members/total");
+            var response = await _http.GetAsync("api/member/total");
             if (!response.IsSuccessStatusCode)
                 return new CountResponse();
             return await response.Content.ReadFromJsonAsync<CountResponse>() ?? new CountResponse();
@@ -129,7 +141,7 @@ namespace GymSystem.Web.Services
 
         public async Task<List<MemberResponse>> GetRecentSignupsAsync()
         {
-            var result = await _http.GetFromJsonAsync<List<MemberResponse>>("api/members/recents");
+            var result = await _http.GetFromJsonAsync<List<MemberResponse>>("api/member/recents");
             return result ?? new List<MemberResponse>();
         }
     }

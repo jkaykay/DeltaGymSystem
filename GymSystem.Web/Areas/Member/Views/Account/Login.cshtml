@@ -1,5 +1,50 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model MemberLoginViewModel
+
 @{
+    ViewData["Title"] = "Member Login";
+}
+
+<div>
+    <div>
+        <div>
+            <div>
+                <div>
+                    <h3>Member Login</h3>
+                </div>
+                <div>
+                    <h5>Sign in to continue</h5>
+
+                    <form method="post" asp-action="Login" asp-area="Member">
+                        <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+                        <div>
+                            <label asp-for="EmailOrUserName">Username or Email</label>
+                            <input asp-for="EmailOrUserName" type="text" required />
+                            <span asp-validation-for="EmailOrUserName"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="Password">Password</label>
+                            <input asp-for="Password" type="password" required />
+                            <span asp-validation-for="Password"></span>
+                        </div>
+
+                        <div>
+                            <input asp-for="RememberMe" />
+                            <label asp-for="RememberMe">Remember me</label>
+                        </div>
+
+                        <button type="submit">Login</button>
+                    </form>
+                </div>
+                <div>
+                    <small>Don't have a thingy? Thingy here.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
 }

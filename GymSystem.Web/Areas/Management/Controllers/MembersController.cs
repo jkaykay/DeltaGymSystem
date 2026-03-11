@@ -88,4 +88,31 @@ public class MembersController : Controller
         TempData["Success"] = "Member deleted.";
         return RedirectToAction(nameof(Index));
     }
+
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    public IActionResult Create()
+    {
+        return View(new CreateMemberViewModel());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Create(CreateMemberViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var success = await _api.CreateMemberAsync(model);
+
+        if (!success)
+        {
+            ModelState.AddModelError(string.Empty, "Failed to create member. Check password requirements.");
+            return View(model);
+        }
+
+        TempData["Success"] = "Member created successfully.";
+        return RedirectToAction(nameof(Index));
+    }
 }

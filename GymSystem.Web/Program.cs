@@ -11,6 +11,7 @@ builder.Services.AddTransient<TokenDelegatingHandler>();
 
 // --- API service ---
 builder.Services.AddScoped<IManagementApiService, ManagementApiService>();
+builder.Services.AddScoped<IMemberApiService, MemberApiService>();
 
 // --- Typed HttpClient for API consumption ---
 builder.Services.AddHttpClient("GymApi", client =>
@@ -19,8 +20,7 @@ builder.Services.AddHttpClient("GymApi", client =>
         builder.Configuration["GymApi:BaseUrl"]
         ?? throw new InvalidOperationException("GymApi:BaseUrl is not configured."));
     client.DefaultRequestHeaders.Add("Accept", "application/json");
-})
-    .AddHttpMessageHandler<TokenDelegatingHandler>();
+}).AddHttpMessageHandler<TokenDelegatingHandler>();
 
 // --- Authentication (cookie-based, tokens stored in session/cookie) ---
 builder.Services.AddAuthentication("Cookies")
@@ -38,6 +38,11 @@ builder.Services.AddAuthentication("Cookies")
                 var redirect = $"/Management/Account/Login?returnUrl={Uri.EscapeDataString(returnUrl)}";
                 ctx.Response.Redirect(redirect);
             }
+            else if (ctx.Request.Path.StartsWithSegments("/Member", StringComparison.OrdinalIgnoreCase))
+            {
+                var redirect = $"/Member/Account/Login?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                ctx.Response.Redirect(redirect);
+            }
             else
             {
                 var redirect = $"/Account/Login?returnUrl={Uri.EscapeDataString(returnUrl)}";
@@ -52,6 +57,11 @@ builder.Services.AddAuthentication("Cookies")
             if (ctx.Request.Path.StartsWithSegments("/Management", StringComparison.OrdinalIgnoreCase))
             {
                 var redirect = $"/Management/Account/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                ctx.Response.Redirect(redirect);
+            }
+            else if (ctx.Request.Path.StartsWithSegments("/Member", StringComparison.OrdinalIgnoreCase))
+            {
+                var redirect = $"/Member/Account/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
                 ctx.Response.Redirect(redirect);
             }
             else

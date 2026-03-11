@@ -8,7 +8,7 @@ namespace GymSystem.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin,Staff")]
 public class StaffController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -54,8 +54,10 @@ public class StaffController : ControllerBase
     [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> GetTotal()
     {
-        var members = await _userManager.GetUsersInRoleAsync("Member");
-        return Ok(new { TotalMembers = members.Count });
+        var staff = await _userManager.GetUsersInRoleAsync("Staff");
+        var admin = await _userManager.GetUsersInRoleAsync("Admin");
+        var total = staff.Count + admin.Count;
+        return Ok(new { Count = total });
     }
 
     [HttpGet("{id}")]
