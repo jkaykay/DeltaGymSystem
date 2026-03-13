@@ -1,4 +1,4 @@
-﻿@model MemberResponse
+﻿@model UserDto
 
 @{
     ViewData["Title"] = "Member Details";
@@ -20,7 +20,7 @@
                 <dd>@Model.UserName</dd>
 
                 <dt>Join Date</dt>
-                <dd>@Model.JoinDate.ToString("MMMM dd, yyyy")</dd>
+                <dd>@Model.JoinDate?.ToString("MMMM dd, yyyy")</dd>
 
                 <dt>Status</dt>
                 <dd>

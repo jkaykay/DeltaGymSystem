@@ -1,4 +1,4 @@
-﻿@model List<MemberResponse>
+﻿@model List<UserDto>
 
 @{
     ViewData["Title"] = "Manage Members";
@@ -42,7 +42,7 @@
                         <tr>
                             <td>@member.FirstName @member.LastName</td>
                             <td>@member.Email</td>
-                            <td>@member.JoinDate.ToString("MMM dd, yyyy")</td>
+                            <td>@member.JoinDate?.ToString("MMM dd, yyyy")</td>
                             <td>
                                 @if (member.Active)
                                 {

@@ -1,5 +1,5 @@
 ﻿using GymSystem.Web.Areas.Management.ViewModels;
-using GymSystem.Web.DTOs.Management;
+using GymSystem.Shared.DTOs;
 
 namespace GymSystem.Web.Services
 {
@@ -14,31 +14,31 @@ namespace GymSystem.Web.Services
 
         // --- Auth ---
 
-        public async Task<ManagementLoginResponse?> LoginAsync(string email, string password)
+        public async Task<LoginResponse?> LoginAsync(string email, string password)
         {
             var response = await _http.PostAsJsonAsync("api/auth/login", new { EmailOrUserName = email, password });
 
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            return await response.Content.ReadFromJsonAsync<ManagementLoginResponse>();
+            return await response.Content.ReadFromJsonAsync<LoginResponse>();
         }
 
         // --- Members ---
 
-        public async Task<List<MemberResponse>> GetMembersAsync()
+        public async Task<List<UserDto>> GetMembersAsync()
         {
-            var result = await _http.GetFromJsonAsync<List<MemberResponse>>("api/member");
+            var result = await _http.GetFromJsonAsync<List<UserDto>>("api/member");
             return result ?? [];
         }
 
-        public async Task<MemberResponse?> GetMemberAsync(string id)
+        public async Task<UserDto?> GetMemberAsync(string id)
         {
             var response = await _http.GetAsync($"api/member/{id}");
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            return await response.Content.ReadFromJsonAsync<MemberResponse>();
+            return await response.Content.ReadFromJsonAsync<UserDto>();
         }
 
         public async Task<bool> CreateMemberAsync(CreateMemberViewModel model) {
@@ -78,19 +78,19 @@ namespace GymSystem.Web.Services
 
         // --- Staff ---
 
-        public async Task<List<StaffResponse>> GetStaffAsync()
+        public async Task<List<UserDto>> GetStaffAsync()
         {
-            var result = await _http.GetFromJsonAsync<List<StaffResponse>>("api/staff");
+            var result = await _http.GetFromJsonAsync<List<UserDto>>("api/staff");
             return result ?? [];
         }
 
-        public async Task<StaffResponse?> GetStaffMemberAsync(string id)
+        public async Task<UserDto?> GetStaffMemberAsync(string id)
         {
             var response = await _http.GetAsync($"api/staff/{id}");
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            return await response.Content.ReadFromJsonAsync<StaffResponse>();
+            return await response.Content.ReadFromJsonAsync<UserDto>();
         }
 
         public async Task<bool> CreateStaffAsync(CreateStaffViewModel model)
@@ -139,10 +139,10 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<CountResponse>() ?? new CountResponse();
         }
 
-        public async Task<List<MemberResponse>> GetRecentSignupsAsync()
+        public async Task<List<UserDto>> GetRecentSignupsAsync()
         {
-            var result = await _http.GetFromJsonAsync<List<MemberResponse>>("api/member/recents");
-            return result ?? new List<MemberResponse>();
+            var result = await _http.GetFromJsonAsync<List<UserDto>>("api/member/recents");
+            return result ?? new List<UserDto>();
         }
     }
 }

@@ -1,30 +1,29 @@
 ﻿using GymSystem.Web.Areas.Management.ViewModels;
-using GymSystem.Web.DTOs.Management;
-using System.Net.Http.Json;
+using GymSystem.Shared.DTOs;
 
 namespace GymSystem.Web.Services;
 
 public interface IManagementApiService
 {
     // Auth
-    Task<ManagementLoginResponse?> LoginAsync(string email, string password);
+    Task<LoginResponse?> LoginAsync(string email, string password);
 
     // Members
     Task<bool> CreateMemberAsync(CreateMemberViewModel model);
-    Task<List<MemberResponse>> GetMembersAsync();
-    Task<MemberResponse?> GetMemberAsync(string id);
+    Task<List<UserDto>> GetMembersAsync();
+    Task<UserDto?> GetMemberAsync(string id);
     Task<bool> UpdateMemberAsync(string id, EditMemberViewModel model);
     Task<bool> ToggleMemberActiveAsync(string id);
     Task<bool> DeleteMemberAsync(string id);
     Task<CountResponse> GetTotalMembersAsync();
-    Task<List<MemberResponse>> GetRecentSignupsAsync();
+    Task<List<UserDto>> GetRecentSignupsAsync();
 
     // Staff
-    Task<List<StaffResponse>> GetStaffAsync();
-    Task<StaffResponse?> GetStaffMemberAsync(string id);
+    Task<List<UserDto>> GetStaffAsync();
+    Task<UserDto?> GetStaffMemberAsync(string id);
     Task<bool> CreateStaffAsync(CreateStaffViewModel model);
     Task<bool> UpdateStaffAsync(string id, EditStaffViewModel model);
     Task<bool> DeleteStaffAsync(string id);
     Task<CountResponse> GetTotalStaffAsync();
-    
+
 }

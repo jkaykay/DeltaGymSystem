@@ -1,5 +1,5 @@
 ﻿using GymSystem.Web.Areas.Management.ViewModels;
-using GymSystem.Web.DTOs.Management;
+using GymSystem.Shared.DTOs;
 using GymSystem.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

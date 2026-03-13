@@ -1,4 +1,4 @@
-﻿using GymSystem.Api.DTOs;
+﻿using GymSystem.Shared.DTOs;
 using GymSystem.Api.Models;
 using GymSystem.Api.Services;
 using Microsoft.AspNetCore.Identity;
