@@ -1,4 +1,4 @@
-﻿namespace GymSystem.Api.DTOs;
+﻿namespace GymSystem.Shared.DTOs;
 
 public record CreateStaffRequest(
     string Email,

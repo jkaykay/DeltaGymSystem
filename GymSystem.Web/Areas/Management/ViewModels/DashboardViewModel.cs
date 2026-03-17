@@ -1,4 +1,4 @@
-﻿using GymSystem.Web.DTOs.Management;
+﻿using GymSystem.Shared.DTOs;
 
 namespace GymSystem.Web.Areas.Management.ViewModels
 {
@@ -6,6 +6,6 @@ namespace GymSystem.Web.Areas.Management.ViewModels
     {
         public int TotalMembers { get; set; } = 0;
         public int TotalStaff { get; set; } = 0;
-        public List<MemberResponse> RecentSignups { get; set; } = new();
+        public List<UserDto> RecentSignups { get; set; } = new();
     }
 }

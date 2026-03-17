@@ -1,4 +1,4 @@
-﻿namespace GymSystem.Web.DTOs.Management
+﻿namespace GymSystem.Shared.DTOs
 {
     public class CountResponse
     {

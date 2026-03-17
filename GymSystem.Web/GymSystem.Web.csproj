@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -6,6 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>3d84270e-29b5-4697-824e-73a2702f64d9</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GymSystem.Shared\GymSystem.Shared.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Areas\Trainer\ViewModels\" />

@@ -1,6 +1,5 @@
 ﻿using GymSystem.Web.Areas.Member.ViewModels;
-using GymSystem.Web.DTOs.Management;
-using GymSystem.Web.DTOs.Member;
+using GymSystem.Shared.DTOs;
 
 namespace GymSystem.Web.Services
 {
@@ -13,14 +12,14 @@ namespace GymSystem.Web.Services
             _http = factory.CreateClient("GymApi");
         }
 
-        public async Task<MemberLoginResponse?> MemberLoginAsync(string emailOrUserName, string password)
+        public async Task<LoginResponse?> MemberLoginAsync(string emailOrUserName, string password)
         {
             var response = await _http.PostAsJsonAsync("api/auth/login", new { emailOrUserName, password });
 
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            return await response.Content.ReadFromJsonAsync<MemberLoginResponse>();
+            return await response.Content.ReadFromJsonAsync<LoginResponse>();
         }
     }
 }
