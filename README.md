@@ -1,11 +1,12 @@
 # Delta Gym System
 
-A gym management system built with ASP.NET Core (.NET 10). The solution consists of two projects:
+A gym management system built with ASP.NET Core (.NET 10). The solution consists of three projects:
 
 | Project | Description | Default URL |
 |---|---|---|
 | **GymSystem.Api** | REST API — Identity, JWT authentication, EF Core + SQL Server | `https://localhost:7183` |
 | **GymSystem.Web** | MVC front-end — cookie authentication, consumes the API | `https://localhost:7202` |
+| **GymSystem.Shared** | Class library — shared DTOs and request/response models | N/A |
 
 ---
 
@@ -68,7 +69,7 @@ dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=(localdb)\
 dotnet user-secrets set "Jwt:Key" "YourSuperSecretKeyThatIsAtLeast32Characters!"
 dotnet user-secrets set "Jwt:Issuer" "GymSystem.Api"
 dotnet user-secrets set "Jwt:Audience" "GymSystem.Web"
-dotnet user-secrets set "Jwt:ExpiryInMinutes" "60"
+dotnet user-secrets set "Jwt:ExpiryDays" "15"
 
 # Seed admin password
 dotnet user-secrets set "SeedAdmin:Password" "Admin@123456"
@@ -103,7 +104,7 @@ or....
     "Key": "YourSuperSecretKeyThatIsAtLeast32Characters!",
     "Issuer": "GymSystem.Api",
     "Audience": "GymSystem.Web",
-    "ExpiryInMinutes": "60"
+    "ExpiryDays": "15"
   },
   "SeedAdmin": {
     "Password": "Admin@123456"
@@ -179,19 +180,28 @@ Then open your browser and navigate to `https://localhost:7202`.
 ```
 DeltaGymSystem/
 +-- GymSystem.Api/              # REST API
-|   +-- Controllers/            # API endpoints (Auth, Members, Staff)
+|   +-- Controllers/            # API endpoints
 |   +-- Data/                   # DbContext and seed data
-|   +-- DTOs/                   # Request/response models
 |   +-- Migrations/             # EF Core migrations
-|   +-- Models/                 # Domain models (ApplicationUser)
+|   +-- Models/                 # Domain models
 |   +-- Services/               # Token generation service
++-- GymSystem.Shared/
+|   +--DTOs/                    # Shared request/response models (Translates Data between front and back)
 +-- GymSystem.Web/              # MVC front-end
 |   +-- Areas/
 |   |   +-- Management/         # Admin/staff management area
+|   |   |   +-- Controllers/
+|   |   |   +-- Views/
+|   |   |   +-- ViewModels/
 |   |   +-- Member/             # Member-facing area
+|   |   |   +-- Controllers/
+|   |   |   +-- Views/
+|   |   |   +-- ViewModels/
 |   |   +-- Trainer/            # Trainer-facing area
-|   +-- Controllers/            # Public controllers (Home, About)
-|   +-- DTOs/                   # API response DTOs
+|   |   |   +-- Controllers/
+|   |   |   +-- Views/
+|   |   |   +-- ViewModels/
+|   +-- Controllers/            # Public controllers
 |   +-- Services/               # API consumption services
 |   +-- ViewModels/             # Shared view models
 +-- README.md
