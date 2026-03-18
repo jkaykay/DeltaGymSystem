@@ -11,6 +11,18 @@ namespace GymSystem.Api.Data
         {
         }
 
+        public DbSet<Tier> Tiers { get; set; }
+        public DbSet<Attendance> Attendances { get; set; }
+        public DbSet<Booking> Bookings { get; set; }
+        public DbSet<Branch> Branches { get; set; }
+        public DbSet<Class> Classes { get; set; }
+        public DbSet<Equipment> Equipments { get; set; }
+        public DbSet<Payment> Payments { get; set; }
+        public DbSet<Room> Rooms { get; set; }
+        public DbSet<Schedule> Schedules { get; set; }
+        public DbSet<Session> Sessions { get; set; }
+        public DbSet<Subscription> Subscriptions { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
