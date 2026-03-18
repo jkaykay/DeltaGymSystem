@@ -33,7 +33,7 @@ namespace GymSystem.Api.Controllers
                 Province = b.Province,
                 PostCode = b.PostCode,
                 OpenDate = b.OpenDate
-            }).ToList;
+            }).ToList();
 
             return Ok(result);
         }
@@ -56,10 +56,74 @@ namespace GymSystem.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] AddBranchRequest request) 
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create([FromBody] AddBranchRequest request)
         {
-            return Ok();
+            var branch = new Branch
+            {
+                Address = request.Address,
+                City = request.City,
+                Province = request.Province,
+                PostCode = request.PostCode
+            };
+
+            _context.Branches.Add(branch);
+            var rowsAffected = await _context.SaveChangesAsync();
+
+            if (rowsAffected == 0)
+                return BadRequest("Failed to create branch.");
+
+            //return CreatedAtAction(nameof(Get), new { id = branch.BranchId }, null);
+            return CreatedAtAction(nameof(Get), new { id = branch.BranchId }, new BranchDTO
+            {
+                BranchId = branch.BranchId,
+                Address = branch.Address,
+                City = branch.City,
+                Province = branch.Province,
+                PostCode = branch.PostCode,
+                OpenDate = branch.OpenDate
+            });
         }
 
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int id) {
+            var branch = await _context.Branches.FindAsync(id);
+            if (branch is null) return NotFound();
+
+            _context.Branches.Remove(branch);
+            var rowsAffected = await _context.SaveChangesAsync();
+            if (rowsAffected == 0)
+                return BadRequest("Failed to delete branch.");
+
+            return NoContent();
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateBranchRequest request)
+        {
+            var branch = await _context.Branches.FindAsync(id);
+            if (branch is null) return NotFound();
+
+            branch.Address = request.Address;
+            branch.City = request.City;
+            branch.Province = request.Province;
+            branch.PostCode = request.PostCode;
+
+            var rowsAffected = await _context.SaveChangesAsync();
+            if (rowsAffected == 0)
+                return BadRequest("Failed to update branch.");
+
+            return Ok(new BranchDTO
+            {
+                BranchId = branch.BranchId,
+                Address = branch.Address,
+                City = branch.City,
+                Province = branch.Province,
+                PostCode = branch.PostCode,
+                OpenDate = branch.OpenDate
+            });
+        }
     }
 }
