@@ -10,5 +10,6 @@ namespace GymSystem.Shared.DTOs
         public int BranchId { get; set; }
         public int MaxCapacity { get; set; }
         public int SessionCount { get; set; }
+        public int EquipmentCount { get; set; }
     }
 }

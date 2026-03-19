@@ -31,13 +31,14 @@ namespace GymSystem.Api.Controllers
                 RoomId = r.RoomId,
                 BranchId = r.BranchId,
                 MaxCapacity = r.MaxCapacity,
-                SessionCount = r.Sessions.Count
+                SessionCount = r.Sessions.Count,
+                EquipmentCount = r.Equipments.Count
             }).ToList();
             return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> Get(int id)
         {
             var room = await _context.Rooms.FindAsync(id);
             if (room == null) return NotFound();
@@ -47,11 +48,13 @@ namespace GymSystem.Api.Controllers
                 RoomId = room.RoomId,
                 BranchId = room.BranchId,
                 MaxCapacity = room.MaxCapacity,
-                SessionCount = room.Sessions.Count
+                SessionCount = room.Sessions.Count,
+                EquipmentCount = room.Equipments.Count
             });
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] AddRoomRequest roomRequest)
         {
             var branch = await _context.Branches.FindAsync(roomRequest.BranchId);
@@ -68,13 +71,54 @@ namespace GymSystem.Api.Controllers
                 MaxCapacity = roomRequest.MaxCapacity,
             };
             _context.Rooms.Add(room);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetById), new { id = room.RoomId }, new RoomDTO 
+            var rowsAffected = await _context.SaveChangesAsync();
+            if (rowsAffected == 0) return BadRequest("Failed to create room.");
+
+            return CreatedAtAction(nameof(Get), new { id = room.RoomId }, new RoomDTO 
             { 
                 RoomId = room.RoomId,
                 BranchId = room.BranchId,
                 MaxCapacity = room.MaxCapacity,
-                SessionCount = room.Sessions.Count
+                SessionCount = room.Sessions.Count,
+                EquipmentCount = room.Equipments.Count
+            });
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateRoomRequest roomRequest)
+        {
+            var room = await _context.Rooms.FindAsync(id);
+            if (room == null) return NotFound();
+
+            if (roomRequest.BranchId.HasValue)
+            {
+                var branch = await _context.Branches.FindAsync(roomRequest.BranchId.Value);
+                if (branch == null)
+                {
+                    return BadRequest("Branch not found");
+                }
+
+                room.BranchId = roomRequest.BranchId.Value;
+                room.Branch = branch;
+            }
+
+            if (roomRequest.RoomNumber.HasValue)
+                room.RoomNumber = roomRequest.RoomNumber.Value;
+
+            if (roomRequest.MaxCapacity.HasValue)
+                room.MaxCapacity = roomRequest.MaxCapacity.Value;
+
+            var rowsAffected = await _context.SaveChangesAsync();
+            if (rowsAffected == 0) return BadRequest("Failed to update room.");
+
+            return Ok(new RoomDTO
+            {
+                RoomId = room.RoomId,
+                BranchId = room.BranchId,
+                MaxCapacity = room.MaxCapacity,
+                SessionCount = room.Sessions.Count,
+                EquipmentCount = room.Equipments.Count
             });
         }
     }
