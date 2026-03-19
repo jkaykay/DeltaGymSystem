@@ -121,5 +121,19 @@ namespace GymSystem.Api.Controllers
                 EquipmentCount = room.Equipments.Count
             });
         }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var room = await _context.Rooms.FindAsync(id);
+            if (room == null) return NotFound();
+
+            _context.Rooms.Remove(room);
+            var rowsAffected = await _context.SaveChangesAsync();
+            if (rowsAffected == 0) return BadRequest("Failed to delete room.");
+
+            return NoContent();
+        }
     }
 }
