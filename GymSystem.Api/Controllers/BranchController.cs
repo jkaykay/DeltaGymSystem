@@ -106,10 +106,10 @@ namespace GymSystem.Api.Controllers
             var branch = await _context.Branches.FindAsync(id);
             if (branch is null) return NotFound();
 
-            branch.Address = request.Address;
-            branch.City = request.City;
-            branch.Province = request.Province;
-            branch.PostCode = request.PostCode;
+            if (request.Address is not null) branch.Address = request.Address;
+            if (request.City is not null) branch.City = request.City;
+            if (request.Province is not null) branch.Province = request.Province;
+            if (request.PostCode is not null) branch.PostCode = request.PostCode;
 
             var rowsAffected = await _context.SaveChangesAsync();
             if (rowsAffected == 0)
