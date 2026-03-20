@@ -87,7 +87,8 @@ namespace GymSystem.Api.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(int id) {
+        public async Task<IActionResult> Delete(int id)
+        {
             var branch = await _context.Branches.FindAsync(id);
             if (branch is null) return NotFound();
 
@@ -124,6 +125,13 @@ namespace GymSystem.Api.Controllers
                 PostCode = branch.PostCode,
                 OpenDate = branch.OpenDate
             });
+        }
+
+        [HttpGet("total")]
+        public async Task<IActionResult> GetTotalBranches()
+        {
+            var totalBranches = await _context.Branches.CountAsync();
+            return Ok(new CountResponse{ Count = totalBranches });
         }
     }
 }
