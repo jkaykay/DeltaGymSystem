@@ -65,6 +65,14 @@ public class MemberController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateMemberRequest request)
     {
+        var existingByEmail = await _userManager.FindByEmailAsync(request.Email);
+        if (existingByEmail is not null)
+            return Conflict("A user with this email already exists.");
+
+        var existingByUsername = await _userManager.FindByNameAsync(request.Username);
+        if (existingByUsername is not null)
+            return Conflict("A user with this username already exists.");
+
         var user = new ApplicationUser
         {
             UserName = request.Username,
@@ -114,6 +122,10 @@ public class MemberController : ControllerBase
         var user = await _userManager.FindByIdAsync(id);
         if (user is null)
             return NotFound();
+
+        var roles = await _userManager.GetRolesAsync(user);
+        if (!roles.Contains("Member"))
+            return NotFound("User is not a member.");
 
         user.FirstName = request.FirstName;
         user.LastName = request.LastName;

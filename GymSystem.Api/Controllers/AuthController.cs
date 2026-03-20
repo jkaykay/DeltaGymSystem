@@ -22,6 +22,14 @@ namespace GymSystem.Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
+            var existingByEmail = await _userManager.FindByEmailAsync(request.Email);
+            if (existingByEmail is not null)
+                return Conflict("A user with this email already exists.");
+
+            var existingByUsername = await _userManager.FindByNameAsync(request.UserName);
+            if (existingByUsername is not null)
+                return Conflict("A user with this username already exists.");
+
             var user = new ApplicationUser
             {
                 UserName = request.UserName,
