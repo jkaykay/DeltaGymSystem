@@ -40,7 +40,7 @@ public class MemberController : ControllerBase
     public async Task<IActionResult> GetTotal()
     {
         var members = await _userManager.GetUsersInRoleAsync("Member");
-        return Ok(new { Count = members.Count });
+        return Ok(new CountResponse { Count = members.Count });
     }
 
     [HttpGet("recents")]

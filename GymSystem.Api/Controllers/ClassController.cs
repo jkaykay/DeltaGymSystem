@@ -145,5 +145,12 @@ namespace GymSystem.Api.Controllers
             if (rowsAffected == 0) return BadRequest("Class deletion failed.");
             return NoContent();
         }
+
+        [HttpGet("total")]
+        public async Task<IActionResult> GetTotal()
+        {
+            var total = await _context.Classes.CountAsync();
+            return Ok(new CountResponse { Count = total });
+        }
     }
 }

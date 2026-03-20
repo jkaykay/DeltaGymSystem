@@ -149,5 +149,12 @@ namespace GymSystem.Api.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("total")]
+        public async Task<IActionResult> GetTotal()
+        {
+            var total = await _context.Rooms.CountAsync();
+            return Ok(new CountResponse { Count = total });
+        }
     }
 }

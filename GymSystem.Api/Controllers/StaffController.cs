@@ -57,7 +57,7 @@ public class StaffController : ControllerBase
         var staff = await _userManager.GetUsersInRoleAsync("Staff");
         var admin = await _userManager.GetUsersInRoleAsync("Admin");
         var total = staff.Count + admin.Count;
-        return Ok(new { Count = total });
+        return Ok(new CountResponse { Count = total });
     }
 
     [HttpGet("{id}")]
