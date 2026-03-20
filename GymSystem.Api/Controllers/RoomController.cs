@@ -63,6 +63,13 @@ namespace GymSystem.Api.Controllers
                 return BadRequest("Branch not found");
             }
 
+            var exists = await _context.Rooms.AnyAsync(r =>
+                r.RoomNumber == roomRequest.RoomNumber && r.BranchId == roomRequest.BranchId);
+            if (exists)
+            {
+                return Conflict($"Room number {roomRequest.RoomNumber} already exists in branch {roomRequest.BranchId}.");
+            }
+
             var room = new Room
             {
                 RoomNumber = roomRequest.RoomNumber,
@@ -74,8 +81,8 @@ namespace GymSystem.Api.Controllers
             var rowsAffected = await _context.SaveChangesAsync();
             if (rowsAffected == 0) return BadRequest("Failed to create room.");
 
-            return CreatedAtAction(nameof(Get), new { id = room.RoomId }, new RoomDTO 
-            { 
+            return CreatedAtAction(nameof(Get), new { id = room.RoomId }, new RoomDTO
+            {
                 RoomId = room.RoomId,
                 BranchId = room.BranchId,
                 MaxCapacity = room.MaxCapacity,
@@ -109,6 +116,13 @@ namespace GymSystem.Api.Controllers
             if (roomRequest.MaxCapacity.HasValue)
                 room.MaxCapacity = roomRequest.MaxCapacity.Value;
 
+            var duplicateExists = await _context.Rooms.AnyAsync(r =>
+                r.RoomId != id && r.RoomNumber == room.RoomNumber && r.BranchId == room.BranchId);
+            if (duplicateExists)
+            {
+                return Conflict($"Room number {room.RoomNumber} already exists in branch {room.BranchId}.");
+            }
+
             var rowsAffected = await _context.SaveChangesAsync();
             if (rowsAffected == 0) return BadRequest("Failed to update room.");
 
@@ -134,6 +148,13 @@ namespace GymSystem.Api.Controllers
             if (rowsAffected == 0) return BadRequest("Failed to delete room.");
 
             return NoContent();
+        }
+
+        [HttpGet("total")]
+        public async Task<IActionResult> GetTotal()
+        {
+            var total = await _context.Rooms.CountAsync();
+            return Ok(new CountResponse { Count = total });
         }
     }
 }

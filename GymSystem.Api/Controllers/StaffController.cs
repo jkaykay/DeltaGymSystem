@@ -57,7 +57,7 @@ public class StaffController : ControllerBase
         var staff = await _userManager.GetUsersInRoleAsync("Staff");
         var admin = await _userManager.GetUsersInRoleAsync("Admin");
         var total = staff.Count + admin.Count;
-        return Ok(new { Count = total });
+        return Ok(new CountResponse { Count = total });
     }
 
     [HttpGet("{id}")]
@@ -90,9 +90,28 @@ public class StaffController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] CreateStaffRequest request)
     {
+        var existingByEmail = await _userManager.FindByEmailAsync(request.Email);
+        if (existingByEmail is not null)
+            return Conflict("A user with this email already exists.");
+
+        if (!string.IsNullOrWhiteSpace(request.EmployeeId))
+        {
+            var allStaff = await _userManager.GetUsersInRoleAsync("Staff");
+            var allAdmin = await _userManager.GetUsersInRoleAsync("Admin");
+            var duplicateEmployeeId = allStaff.Concat(allAdmin)
+                .Any(u => u.EmployeeId == request.EmployeeId);
+
+            if (duplicateEmployeeId)
+                return Conflict("A staff member with this Employee ID already exists.");
+        }
+
         var username = !string.IsNullOrWhiteSpace(request.EmployeeId)
                 ? request.EmployeeId.Replace("-", "").ToLowerInvariant()
                 : request.Email.Split('@')[0];
+
+        var existingByUsername = await _userManager.FindByNameAsync(username);
+        if (existingByUsername is not null)
+            return Conflict("A user with the derived username already exists.");
 
         var user = new ApplicationUser
         {
@@ -122,6 +141,10 @@ public class StaffController : ControllerBase
         var user = await _userManager.FindByIdAsync(id);
         if (user is null)
             return NotFound();
+
+        var roles = await _userManager.GetRolesAsync(user);
+        if (!roles.Contains("Staff") && !roles.Contains("Admin"))
+            return NotFound("User is not a staff member.");
 
         user.FirstName = request.FirstName;
         user.LastName = request.LastName;
