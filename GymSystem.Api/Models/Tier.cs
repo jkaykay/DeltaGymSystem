@@ -8,6 +8,6 @@ namespace GymSystem.Api.Models
         [MaxLength(25)]
         public required string TierName { get; set; }
         public decimal Price { get; set; }
-        public ICollection<Subscription>? Subscriptions { get; set; } = new List<Subscription>();
+        public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
     }
 }
