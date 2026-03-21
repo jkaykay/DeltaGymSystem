@@ -22,9 +22,29 @@ namespace GymSystem.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Pay()
+        public async Task<IActionResult> Pay([FromBody] AddPaymentRequest request)
         {
+            var user = await _userManager.FindByIdAsync(request.UserId);
+            if (user == null) return NotFound("User does not exist.");
 
+            var sub = await _context.Subscriptions.FirstOrDefaultAsync(p => p.SubId == request.SubId && p.UserId == request.UserId);
+            if (sub == null) return BadRequest("Subscription does not exist.");
+            else if(sub.Status == true)
+            {
+                sub = new Subscription
+                { 
+                    Status = true,
+                    UserId = sub.UserId,
+                    User = user,
+                    TierName = sub.TierName,
+
+                };
+            }
+
+            var payment = new Payment
+            {
+
+            };
             return NoContent();
         }
 
