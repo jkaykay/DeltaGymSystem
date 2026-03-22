@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static System.Collections.Specialized.BitVector32;
 
 namespace GymSystem.Api.Controllers
 {
@@ -36,10 +37,13 @@ namespace GymSystem.Api.Controllers
                 SessionId = s.SessionId,
                 Start = s.Start,
                 End = s.End,
+                ClassId = s.Class.ClassId,
                 Subject = s.Class.Subject,
+                RoomId = s.Room.RoomId,
                 RoomNumber = s.Room.RoomNumber,
                 MaxCapacity = s.MaxCapacity,
                 BookingCount = s.Bookings.Count,
+                InstructorId = s.Class.User.Id,
                 InstructorName = $"{s.Class.User.FirstName} {s.Class.User.LastName}"
             }).ToList();
 
@@ -66,10 +70,13 @@ namespace GymSystem.Api.Controllers
                 SessionId = session.SessionId,
                 Start = session.Start,
                 End = session.End,
+                ClassId = session.Class.ClassId,
                 Subject = session.Class.Subject,
+                RoomId = session.Room.RoomId,
                 RoomNumber = session.Room.RoomNumber,
                 MaxCapacity = session.MaxCapacity,
                 BookingCount = session.Bookings.Count,
+                InstructorId = session.Class.User.Id,
                 InstructorName = $"{session.Class.User.FirstName} {session.Class.User.LastName}"
             };
 
@@ -77,42 +84,53 @@ namespace GymSystem.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] SessionDTO sessionDto)
+        public async Task<IActionResult> Create([FromBody] AddSessionRequest request)
         {
+            if (request.Start >= request.End)
+            {
+                return BadRequest("Session start time must be before the end time.");
+            }
+
             var classEntity = await _context.Classes
                 .Include(c => c.User)
-                .FirstOrDefaultAsync(c => c.Subject == sessionDto.Subject);
-            var roomEntity = await _context.Rooms.FirstOrDefaultAsync(r => r.RoomNumber == sessionDto.RoomNumber);
-            if (classEntity == null || roomEntity == null)
+                .FirstOrDefaultAsync(c => c.ClassId == request.ClassId);
+
+            if (classEntity == null)
             {
-                return BadRequest("Invalid class or room information.");
+                return BadRequest("Class not found.");
+            }
+
+            var roomEntity = await _context.Rooms.FindAsync(request.RoomId);
+            if (roomEntity == null)
+            {
+                return BadRequest("Room not found.");
             }
 
             var hasRoomConflict = await _context.Sessions.AnyAsync(s =>
                 s.RoomId == roomEntity.RoomId &&
-                s.Start < sessionDto.End &&
-                s.End > sessionDto.Start);
+                s.Start < request.End &&
+                s.End > request.Start);
 
             if (hasRoomConflict)
             {
-                return Conflict($"Room {sessionDto.RoomNumber} is already booked during this time slot.");
+                return Conflict($"Room {roomEntity.RoomNumber} is already booked during this time slot.");
             }
 
             var hasClassConflict = await _context.Sessions.AnyAsync(s =>
                 s.ClassId == classEntity.ClassId &&
-                s.Start < sessionDto.End &&
-                s.End > sessionDto.Start);
+                s.Start < request.End &&
+                s.End > request.Start);
 
             if (hasClassConflict)
             {
-                return Conflict($"A session for '{sessionDto.Subject}' already exists during this time slot.");
+                return Conflict($"A session for '{classEntity.Subject}' already exists during this time slot.");
             }
 
             var session = new Session
             {
-                Start = sessionDto.Start,
-                End = sessionDto.End,
-                MaxCapacity = sessionDto.MaxCapacity,
+                Start = request.Start,
+                End = request.End,
+                MaxCapacity = request.MaxCapacity,
                 ClassId = classEntity.ClassId,
                 Class = classEntity,
                 RoomId = roomEntity.RoomId,
@@ -127,10 +145,13 @@ namespace GymSystem.Api.Controllers
                 SessionId = session.SessionId,
                 Start = session.Start,
                 End = session.End,
+                ClassId = session.Class.ClassId,
                 Subject = session.Class.Subject,
+                RoomId = session.Room.RoomId,
                 RoomNumber = session.Room.RoomNumber,
                 MaxCapacity = session.MaxCapacity,
-                BookingCount = session.Bookings.Count,
+                BookingCount = 0,
+                InstructorId = session.Class.User.Id,
                 InstructorName = $"{session.Class.User.FirstName} {session.Class.User.LastName}"
             });
         }
@@ -170,6 +191,11 @@ namespace GymSystem.Api.Controllers
             var newEnd = request.End ?? session.End;
             var newRoomId = request.RoomId ?? session.RoomId;
             var newMaxCapacity = request.MaxCapacity ?? session.MaxCapacity;
+
+            if (newStart >= newEnd)
+            {
+                return BadRequest("Session start time must be before the end time.");
+            }
 
             // Only check room conflict if the room or time window changed
             if (newRoomId != session.RoomId || newStart != session.Start || newEnd != session.End)
@@ -220,18 +246,20 @@ namespace GymSystem.Api.Controllers
             session.End = newEnd;
             session.MaxCapacity = newMaxCapacity;
 
-            var rowsAffected = await _context.SaveChangesAsync();
-            if (rowsAffected == 0) return BadRequest("Failed to update session.");
+            await _context.SaveChangesAsync();
 
             return Ok(new SessionDTO
             {
                 SessionId = session.SessionId,
                 Start = session.Start,
                 End = session.End,
+                ClassId = session.Class.ClassId,
                 Subject = session.Class.Subject,
+                RoomId = session.Room.RoomId,
                 RoomNumber = session.Room.RoomNumber,
                 MaxCapacity = session.MaxCapacity,
                 BookingCount = session.Bookings.Count,
+                InstructorId = session.Class.User.Id,
                 InstructorName = $"{session.Class.User.FirstName} {session.Class.User.LastName}"
             });
         }
@@ -239,8 +267,8 @@ namespace GymSystem.Api.Controllers
         [HttpGet("total")]
         public async Task<IActionResult> GetTotalSessions()
         {
-            var totalSessions = await _context.Sessions.ToListAsync();
-            return Ok(new CountResponse { Count = totalSessions.Count });
+            var totalSessions = await _context.Sessions.CountAsync();
+            return Ok(new CountResponse { Count = totalSessions });
         }
     }
 }
