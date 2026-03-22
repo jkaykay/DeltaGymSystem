@@ -1,8 +1,10 @@
-﻿namespace GymSystem.Shared.DTOs;
+﻿using GymSystem.Shared.Enums;
+
+namespace GymSystem.Shared.DTOs;
 
 public record UpdateSubscriptionRequest(
     string? TierName,
-    bool? Status,
+    SubscriptionState? State,
     DateTime? StartDate,
     DateTime? EndDate
     );

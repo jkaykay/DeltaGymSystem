@@ -85,7 +85,7 @@ public class MemberController : ControllerBase
             FirstName = request.FirstName,
             LastName = request.LastName,
             JoinDate = DateTime.UtcNow,
-            Active = true
+            Active = false
         };
 
         var result = await _userManager.CreateAsync(user, request.Password);
