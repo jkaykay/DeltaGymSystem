@@ -2,7 +2,6 @@
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,21 +13,24 @@ namespace GymSystem.Api.Controllers
     public class RoomController : ControllerBase
     {
         private readonly GymDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public RoomController(GymDbContext context, UserManager<ApplicationUser> userManager)
+        public RoomController(GymDbContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var rooms = await _context.Rooms.ToListAsync();
+            var rooms = await _context.Rooms
+                .Include(r => r.Sessions)
+                .Include(r => r.Equipments)
+                .ToListAsync();
+
             var result = rooms.Select(r => new RoomDTO
             {
                 RoomId = r.RoomId,
+                RoomNumber = r.RoomNumber,
                 BranchId = r.BranchId,
                 MaxCapacity = r.MaxCapacity,
                 SessionCount = r.Sessions.Count,
@@ -40,12 +42,17 @@ namespace GymSystem.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var room = await _context.Rooms.FindAsync(id);
+            var room = await _context.Rooms
+                .Include(r => r.Sessions)
+                .Include(r => r.Equipments)
+                .FirstOrDefaultAsync(r => r.RoomId == id);
+
             if (room == null) return NotFound();
 
             return Ok(new RoomDTO
             {
                 RoomId = room.RoomId,
+                RoomNumber = room.RoomNumber,
                 BranchId = room.BranchId,
                 MaxCapacity = room.MaxCapacity,
                 SessionCount = room.Sessions.Count,
@@ -84,10 +91,11 @@ namespace GymSystem.Api.Controllers
             return CreatedAtAction(nameof(Get), new { id = room.RoomId }, new RoomDTO
             {
                 RoomId = room.RoomId,
+                RoomNumber = room.RoomNumber,
                 BranchId = room.BranchId,
                 MaxCapacity = room.MaxCapacity,
-                SessionCount = room.Sessions.Count,
-                EquipmentCount = room.Equipments.Count
+                SessionCount = 0,
+                EquipmentCount = 0
             });
         }
 
@@ -95,7 +103,11 @@ namespace GymSystem.Api.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateRoomRequest roomRequest)
         {
-            var room = await _context.Rooms.FindAsync(id);
+            var room = await _context.Rooms
+                .Include(r => r.Sessions)
+                .Include(r => r.Equipments)
+                .FirstOrDefaultAsync(r => r.RoomId == id);
+
             if (room == null) return NotFound();
 
             if (roomRequest.BranchId.HasValue)
@@ -123,12 +135,12 @@ namespace GymSystem.Api.Controllers
                 return Conflict($"Room number {room.RoomNumber} already exists in branch {room.BranchId}.");
             }
 
-            var rowsAffected = await _context.SaveChangesAsync();
-            if (rowsAffected == 0) return BadRequest("Failed to update room.");
+            await _context.SaveChangesAsync();
 
             return Ok(new RoomDTO
             {
                 RoomId = room.RoomId,
+                RoomNumber = room.RoomNumber,
                 BranchId = room.BranchId,
                 MaxCapacity = room.MaxCapacity,
                 SessionCount = room.Sessions.Count,

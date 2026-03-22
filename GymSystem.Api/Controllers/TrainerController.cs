@@ -22,7 +22,7 @@ namespace GymSystem.Api.Controllers
         public async Task<IActionResult> GetAll()
         {
             var members = await _userManager.GetUsersInRoleAsync("Trainer");
-            var result = members.Select(m => new UserDto
+            var result = members.Select(m => new UserDTO
             {
                 Id = m.Id,
                 Email = m.Email!,
@@ -54,7 +54,7 @@ namespace GymSystem.Api.Controllers
             if (!roles.Contains("Trainer"))
                 return NotFound();
 
-            return Ok(new UserDto
+            return Ok(new UserDTO
             {
                 Id = user.Id,
                 Email = user.Email!,
@@ -74,9 +74,23 @@ namespace GymSystem.Api.Controllers
             if (existingByEmail is not null)
                 return Conflict("A user with this email already exists.");
 
+            if (!string.IsNullOrWhiteSpace(request.EmployeeId))
+            {
+                var allTrainers = await _userManager.GetUsersInRoleAsync("Trainer");
+                var duplicateEmployeeId = allTrainers
+                    .Any(u => u.EmployeeId == request.EmployeeId);
+
+                if (duplicateEmployeeId)
+                    return Conflict("A trainer with this Employee ID already exists.");
+            }
+
             var username = !string.IsNullOrWhiteSpace(request.EmployeeId)
                     ? request.EmployeeId.Replace("-", "").ToLowerInvariant()
                     : request.Email.Split('@')[0];
+
+            var existingByUsername = await _userManager.FindByNameAsync(username);
+            if (existingByUsername is not null)
+                return Conflict("A user with the derived username already exists.");
 
             var user = new ApplicationUser
             {
@@ -93,10 +107,10 @@ namespace GymSystem.Api.Controllers
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
-            var role = "Trainer"; 
+            var role = "Trainer";
             await _userManager.AddToRoleAsync(user, role);
 
-            return CreatedAtAction(nameof(Get), new { id = user.Id }, new UserDto 
+            return CreatedAtAction(nameof(Get), new { id = user.Id }, new UserDTO
             {
                 Id = user.Id,
                 Email = user.Email!,
@@ -127,14 +141,25 @@ namespace GymSystem.Api.Controllers
                 var existing = await _userManager.FindByEmailAsync(request.Email);
                 if (existing is not null && existing.Id != user.Id)
                     return Conflict("A user with this email already exists.");
+
+                user.Email = request.Email;
+
+                // Only derive username from email if the user doesn't have an EmployeeId-based username
+                if (string.IsNullOrWhiteSpace(user.EmployeeId))
+                {
+                    user.UserName = request.Email.Split('@')[0];
+                }
             }
 
-            user.Email = request.Email ?? user.Email;
-
-            if(request.Email != null)
+            // Check for duplicate EmployeeId (excluding current user)
+            if (!string.IsNullOrWhiteSpace(request.EmployeeId))
             {
-                var username = !string.IsNullOrWhiteSpace(request.Email) ? request.Email.Split('@')[0] : null;
-                user.UserName = username; // Update username if email changes
+                var allTrainers = await _userManager.GetUsersInRoleAsync("Trainer");
+                var duplicateEmployeeId = allTrainers
+                    .Any(u => u.Id != user.Id && u.EmployeeId == request.EmployeeId);
+
+                if (duplicateEmployeeId)
+                    return Conflict("A trainer with this Employee ID already exists.");
             }
 
             user.FirstName = request.FirstName ?? user.FirstName;
@@ -155,7 +180,11 @@ namespace GymSystem.Api.Controllers
             var user = await _userManager.FindByIdAsync(id);
             if (user is null)
                 return NotFound();
-            
+
+            var roles = await _userManager.GetRolesAsync(user);
+            if (!roles.Contains("Trainer"))
+                return NotFound();
+
             var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded)
                 return BadRequest(result.Errors);

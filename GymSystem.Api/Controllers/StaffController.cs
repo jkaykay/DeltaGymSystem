@@ -29,11 +29,11 @@ public class StaffController : ControllerBase
             .Union(adminUsers, new UserIdComparer())
             .ToList();
 
-        var result = new List<UserDto>();
+        var result = new List<UserDTO>();
         foreach (var s in allStaff)
         {
             var roles = await _userManager.GetRolesAsync(s);
-            result.Add(new UserDto
+            result.Add(new UserDTO
             {
                 Id = s.Id,
                 Email = s.Email!,
@@ -56,7 +56,9 @@ public class StaffController : ControllerBase
     {
         var staff = await _userManager.GetUsersInRoleAsync("Staff");
         var admin = await _userManager.GetUsersInRoleAsync("Admin");
-        var total = staff.Count + admin.Count;
+        var total = staff
+            .Union(admin, new UserIdComparer())
+            .Count();
         return Ok(new CountResponse { Count = total });
     }
 
@@ -72,7 +74,7 @@ public class StaffController : ControllerBase
         if (!roles.Contains("Staff") && !roles.Contains("Admin"))
             return NotFound();
 
-        return Ok(new UserDto
+        return Ok(new UserDTO
         {
             Id = user.Id,
             Email = user.Email!,
@@ -90,6 +92,9 @@ public class StaffController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] CreateStaffRequest request)
     {
+        if (request.Role is not "Admin" and not "Staff")
+            return BadRequest($"Invalid role '{request.Role}'. Must be 'Admin' or 'Staff'.");
+
         var existingByEmail = await _userManager.FindByEmailAsync(request.Email);
         if (existingByEmail is not null)
             return Conflict("A user with this email already exists.");
@@ -128,10 +133,20 @@ public class StaffController : ControllerBase
         if (!result.Succeeded)
             return BadRequest(result.Errors);
 
-        var role = request.Role is "Admin" or "Staff" ? request.Role : "Staff";
-        await _userManager.AddToRoleAsync(user, role);
+        await _userManager.AddToRoleAsync(user, request.Role);
 
-        return CreatedAtAction(nameof(Get), new { id = user.Id }, new { user.Id });
+        return CreatedAtAction(nameof(Get), new { id = user.Id }, new UserDTO
+        {
+            Id = user.Id,
+            Email = user.Email!,
+            UserName = user.UserName!,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            HireDate = user.HireDate,
+            EmployeeId = user.EmployeeId,
+            Active = user.Active,
+            Roles = [request.Role]
+        });
     }
 
     [HttpPut("{id}")]
@@ -146,8 +161,24 @@ public class StaffController : ControllerBase
         if (!roles.Contains("Staff") && !roles.Contains("Admin"))
             return NotFound("User is not a staff member.");
 
-        user.FirstName = request.FirstName;
-        user.LastName = request.LastName;
+        if (request.FirstName is not null) user.FirstName = request.FirstName;
+        if (request.LastName is not null) user.LastName = request.LastName;
+
+        if (!string.IsNullOrWhiteSpace(request.EmployeeId))
+        {
+            var allStaff = await _userManager.GetUsersInRoleAsync("Staff");
+            var allAdmin = await _userManager.GetUsersInRoleAsync("Admin");
+            var duplicateEmployeeId = allStaff.Concat(allAdmin)
+                .Any(u => u.Id != user.Id && u.EmployeeId == request.EmployeeId);
+
+            if (duplicateEmployeeId)
+                return Conflict("A staff member with this Employee ID already exists.");
+
+            user.EmployeeId = request.EmployeeId;
+        }
+
+        if (request.Active.HasValue)
+            user.Active = request.Active.Value;
 
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
@@ -162,6 +193,10 @@ public class StaffController : ControllerBase
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user is null)
+            return NotFound();
+
+        var roles = await _userManager.GetRolesAsync(user);
+        if (!roles.Contains("Staff") && !roles.Contains("Admin"))
             return NotFound();
 
         var result = await _userManager.DeleteAsync(user);

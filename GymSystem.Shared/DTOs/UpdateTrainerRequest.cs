@@ -1,9 +1,9 @@
 ﻿namespace GymSystem.Shared.DTOs;
 
-public record UpdateTrainerRequest 
+public record UpdateTrainerRequest
 (
-    string? Email,
-    string? FirstName,
-    string? LastName,
-    string? EmployeeId
+    string? Email = null,
+    string? FirstName = null,
+    string? LastName = null,
+    string? EmployeeId = null
 );

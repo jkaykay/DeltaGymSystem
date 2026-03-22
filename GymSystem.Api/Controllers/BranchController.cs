@@ -2,7 +2,6 @@
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,11 +13,9 @@ namespace GymSystem.Api.Controllers
     public class BranchController : ControllerBase
     {
         private readonly GymDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
-        public BranchController(GymDbContext context, UserManager<ApplicationUser> userManager)
+        public BranchController(GymDbContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
 
         [HttpGet]
@@ -73,7 +70,6 @@ namespace GymSystem.Api.Controllers
             if (rowsAffected == 0)
                 return BadRequest("Failed to create branch.");
 
-            //return CreatedAtAction(nameof(Get), new { id = branch.BranchId }, null);
             return CreatedAtAction(nameof(Get), new { id = branch.BranchId }, new BranchDTO
             {
                 BranchId = branch.BranchId,
@@ -112,9 +108,7 @@ namespace GymSystem.Api.Controllers
             if (request.Province is not null) branch.Province = request.Province;
             if (request.PostCode is not null) branch.PostCode = request.PostCode;
 
-            var rowsAffected = await _context.SaveChangesAsync();
-            if (rowsAffected == 0)
-                return BadRequest("Failed to update branch.");
+            await _context.SaveChangesAsync();
 
             return Ok(new BranchDTO
             {
@@ -131,7 +125,7 @@ namespace GymSystem.Api.Controllers
         public async Task<IActionResult> GetTotalBranches()
         {
             var totalBranches = await _context.Branches.CountAsync();
-            return Ok(new CountResponse{ Count = totalBranches });
+            return Ok(new CountResponse { Count = totalBranches });
         }
     }
 }
