@@ -3,11 +3,13 @@ using GymSystem.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace GymSystem.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class MemberController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -18,10 +20,11 @@ public class MemberController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> GetAll()
     {
         var members = await _userManager.GetUsersInRoleAsync("Member");
-        var result = members.Select(m => new UserDto
+        var result = members.Select(m => new UserDTO
         {
             Id = m.Id,
             Email = m.Email!,
@@ -36,6 +39,7 @@ public class MemberController : ControllerBase
     }
 
     [HttpGet("total")]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> GetTotal()
     {
         var members = await _userManager.GetUsersInRoleAsync("Member");
@@ -43,11 +47,12 @@ public class MemberController : ControllerBase
     }
 
     [HttpGet("recents")]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> GetRecentSignups()
     {
         var members = await _userManager.GetUsersInRoleAsync("Member");
         var recentMembers = members.OrderByDescending(m => m.JoinDate).Take(5).ToList();
-        var result = recentMembers.Select(m => new UserDto
+        var result = recentMembers.Select(m => new UserDTO
         {
             Id = m.Id,
             Email = m.Email!,
@@ -62,6 +67,7 @@ public class MemberController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Create([FromBody] CreateMemberRequest request)
     {
         var existingByEmail = await _userManager.FindByEmailAsync(request.Email);
@@ -89,12 +95,25 @@ public class MemberController : ControllerBase
         var role = "Member";
         await _userManager.AddToRoleAsync(user, role);
 
-        return CreatedAtAction(nameof(Get), new { id = user.Id }, new { user.Id });
+        return CreatedAtAction(nameof(Get), new { id = user.Id }, new UserDTO
+        {
+            Id = user.Id,
+            Email = user.Email!,
+            UserName = user.UserName!,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            JoinDate = user.JoinDate,
+            Active = user.Active,
+            Roles = [role]
+        });
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(string id)
     {
+        if (!IsAdminOrStaff() && !IsSelf(id))
+            return Forbid();
+
         var user = await _userManager.FindByIdAsync(id);
         if (user is null)
             return NotFound();
@@ -103,7 +122,7 @@ public class MemberController : ControllerBase
         if (!roles.Contains("Member"))
             return NotFound();
 
-        return Ok(new UserDto
+        return Ok(new UserDTO
         {
             Id = user.Id,
             Email = user.Email!,
@@ -118,6 +137,9 @@ public class MemberController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, [FromBody] UpdateMemberRequest request)
     {
+        if (!IsAdminOrStaff() && !IsSelf(id))
+            return Forbid();
+
         var user = await _userManager.FindByIdAsync(id);
         if (user is null)
             return NotFound();
@@ -126,9 +148,12 @@ public class MemberController : ControllerBase
         if (!roles.Contains("Member"))
             return NotFound("User is not a member.");
 
-        user.FirstName = request.FirstName;
-        user.LastName = request.LastName;
-        user.Active = request.Active;
+        if (request.FirstName is not null) user.FirstName = request.FirstName;
+        if (request.LastName is not null) user.LastName = request.LastName;
+
+        // Only Admin/Staff can change active status
+        if (request.Active.HasValue && IsAdminOrStaff())
+            user.Active = request.Active.Value;
 
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
@@ -138,11 +163,16 @@ public class MemberController : ControllerBase
     }
 
     [HttpPost("{id}/toggle-active")]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> ToggleActive(string id)
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user is null)
             return NotFound();
+
+        var roles = await _userManager.GetRolesAsync(user);
+        if (!roles.Contains("Member"))
+            return NotFound("User is not a member.");
 
         user.Active = !user.Active;
         var result = await _userManager.UpdateAsync(user);
@@ -160,10 +190,20 @@ public class MemberController : ControllerBase
         if (user is null)
             return NotFound();
 
+        var roles = await _userManager.GetRolesAsync(user);
+        if (!roles.Contains("Member"))
+            return NotFound();
+
         var result = await _userManager.DeleteAsync(user);
         if (!result.Succeeded)
             return BadRequest(result.Errors);
 
         return NoContent();
     }
+
+    private bool IsSelf(string id) =>
+        User.FindFirstValue(ClaimTypes.NameIdentifier) == id;
+
+    private bool IsAdminOrStaff() =>
+        User.IsInRole("Admin") || User.IsInRole("Staff");
 }

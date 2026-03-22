@@ -24,20 +24,29 @@ namespace GymSystem.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var classes = await _context.Classes.ToListAsync();
-            var result = await _context.Classes.Select(c => new ClassDTO
+            var classes = await _context.Classes
+                .Include(c => c.User)
+                .Include(c => c.Sessions)
+                .ToListAsync();
+
+            var result = classes.Select(c => new ClassDTO
             {
                 ClassId = c.ClassId,
                 Subject = c.Subject,
+                UserId = c.UserId,
+                TrainerName = $"{c.User.FirstName} {c.User.LastName}",
                 SessionCount = c.Sessions.Count
-            }).ToListAsync();
+            }).ToList();
             return Ok(result);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var classEntity = await _context.Classes.FindAsync(id);
+            var classEntity = await _context.Classes
+            .Include(c => c.User)
+            .Include(c => c.Sessions)
+            .FirstOrDefaultAsync(c => c.ClassId == id);
             if (classEntity == null)
             {
                 return NotFound();
@@ -47,6 +56,8 @@ namespace GymSystem.Api.Controllers
             {
                 ClassId = classEntity.ClassId,
                 Subject = classEntity.Subject,
+                UserId = classEntity.UserId,
+                TrainerName = $"{classEntity.User.FirstName} {classEntity.User.LastName}",
                 SessionCount = classEntity.Sessions.Count
             });
         }
@@ -83,6 +94,8 @@ namespace GymSystem.Api.Controllers
             {
                 ClassId = newClass.ClassId,
                 Subject = newClass.Subject,
+                UserId = newClass.UserId,
+                TrainerName = $"{newClass.User.FirstName} {newClass.User.LastName}",
                 SessionCount = 0
             });
         }
@@ -90,7 +103,11 @@ namespace GymSystem.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateClassRequest request)
         {
-            var classEntity = await _context.Classes.FindAsync(id);
+            var classEntity = await _context.Classes
+                .Include(c => c.User)
+                .Include(c => c.Sessions)
+                .FirstOrDefaultAsync(c => c.ClassId == id);
+
             if (classEntity == null)
             {
                 return NotFound();
@@ -122,12 +139,14 @@ namespace GymSystem.Api.Controllers
                 classEntity.Subject = request.Subject;
             }
 
-            var rowsAffected = await _context.SaveChangesAsync();
-            if (rowsAffected == 0) return BadRequest("Class update failed.");
+            await _context.SaveChangesAsync();
+
             return Ok(new ClassDTO
             {
                 ClassId = classEntity.ClassId,
                 Subject = classEntity.Subject,
+                UserId = classEntity.UserId,
+                TrainerName = $"{classEntity.User.FirstName} {classEntity.User.LastName}",
                 SessionCount = classEntity.Sessions.Count
             });
         }

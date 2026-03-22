@@ -65,7 +65,7 @@ namespace GymSystem.Api.Controllers
             return Ok(new LoginResponse(
                 token,
                 user.Id,
-                user.UserName,
+                user.UserName ?? string.Empty,
                 user.Email!,
                 user.FirstName,
                 user.LastName,

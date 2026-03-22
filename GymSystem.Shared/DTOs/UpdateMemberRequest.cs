@@ -1,3 +1,7 @@
 ﻿namespace GymSystem.Shared.DTOs;
 
-public record UpdateMemberRequest(string FirstName, string LastName, bool Active);
+public record UpdateMemberRequest(
+    string? FirstName = null,
+    string? LastName = null,
+    bool? Active = null
+);

@@ -1,6 +1,6 @@
 ﻿namespace GymSystem.Shared.DTOs;
 
 public record UpdateClassRequest(
-    string? Subject,
-    string? UserId
+    string? Subject = null,
+    string? UserId = null
 );
