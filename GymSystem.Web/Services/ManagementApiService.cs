@@ -26,19 +26,19 @@ namespace GymSystem.Web.Services
 
         // --- Members ---
 
-        public async Task<List<UserDto>> GetMembersAsync()
+        public async Task<List<UserDTO>> GetMembersAsync()
         {
-            var result = await _http.GetFromJsonAsync<List<UserDto>>("api/member");
+            var result = await _http.GetFromJsonAsync<List<UserDTO>>("api/member");
             return result ?? [];
         }
 
-        public async Task<UserDto?> GetMemberAsync(string id)
+        public async Task<UserDTO?> GetMemberAsync(string id)
         {
             var response = await _http.GetAsync($"api/member/{id}");
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            return await response.Content.ReadFromJsonAsync<UserDto>();
+            return await response.Content.ReadFromJsonAsync<UserDTO>();
         }
 
         public async Task<bool> CreateMemberAsync(CreateMemberViewModel model) {
@@ -78,19 +78,19 @@ namespace GymSystem.Web.Services
 
         // --- Staff ---
 
-        public async Task<List<UserDto>> GetStaffAsync()
+        public async Task<List<UserDTO>> GetStaffAsync()
         {
-            var result = await _http.GetFromJsonAsync<List<UserDto>>("api/staff");
+            var result = await _http.GetFromJsonAsync<List<UserDTO>>("api/staff");
             return result ?? [];
         }
 
-        public async Task<UserDto?> GetStaffMemberAsync(string id)
+        public async Task<UserDTO?> GetStaffMemberAsync(string id)
         {
             var response = await _http.GetAsync($"api/staff/{id}");
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            return await response.Content.ReadFromJsonAsync<UserDto>();
+            return await response.Content.ReadFromJsonAsync<UserDTO>();
         }
 
         public async Task<bool> CreateStaffAsync(CreateStaffViewModel model)
@@ -139,10 +139,10 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<CountResponse>() ?? new CountResponse();
         }
 
-        public async Task<List<UserDto>> GetRecentSignupsAsync()
+        public async Task<List<UserDTO>> GetRecentSignupsAsync()
         {
-            var result = await _http.GetFromJsonAsync<List<UserDto>>("api/member/recents");
-            return result ?? new List<UserDto>();
+            var result = await _http.GetFromJsonAsync<List<UserDTO>>("api/member/recents");
+            return result ?? new List<UserDTO>();
         }
     }
 }
