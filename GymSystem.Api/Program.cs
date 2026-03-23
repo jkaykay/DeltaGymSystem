@@ -34,6 +34,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddHostedService<SubscriptionExpiryService>();
 
 // JWT authentication
 var jwtKey = builder.Configuration["Jwt:Key"]

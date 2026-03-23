@@ -28,6 +28,11 @@ namespace GymSystem.Api.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Subscription>()
+                .Property(s => s.State)
+                .HasConversion<string>()
+                .HasMaxLength(20);
+
+            modelBuilder.Entity<Subscription>()
                 .HasOne(s => s.Tier)
                 .WithMany(t => t.Subscriptions)
                 .HasForeignKey(s => s.TierName)
