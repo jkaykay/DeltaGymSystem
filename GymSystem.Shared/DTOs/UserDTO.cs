@@ -11,5 +11,6 @@ public class UserDTO
     public bool Active { get; set; }
     public DateTime? HireDate { get; set; }
     public string? EmployeeId { get; set; }
+    public int? BranchId { get; set; }
     public List<string> Roles { get; set; } = [];
 }

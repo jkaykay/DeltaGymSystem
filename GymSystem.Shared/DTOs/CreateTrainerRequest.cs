@@ -5,5 +5,6 @@ public record CreateTrainerRequest(
     string FirstName,
     string LastName,
     string Password,
-    string? EmployeeId
-    );
+    string? EmployeeId,
+    int? BranchId
+);

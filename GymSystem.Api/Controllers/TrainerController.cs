@@ -1,4 +1,5 @@
-﻿using GymSystem.Shared.DTOs;
+﻿using GymSystem.Api.Data;
+using GymSystem.Shared.DTOs;
 using GymSystem.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,10 +13,12 @@ namespace GymSystem.Api.Controllers
     public class TrainerController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly GymDbContext _context;
 
-        public TrainerController(UserManager<ApplicationUser> userManager)
+        public TrainerController(UserManager<ApplicationUser> userManager, GymDbContext context)
         {
             _userManager = userManager;
+            _context = context;
         }
 
         [HttpGet]
@@ -30,7 +33,8 @@ namespace GymSystem.Api.Controllers
                 FirstName = m.FirstName,
                 LastName = m.LastName,
                 JoinDate = m.JoinDate,
-                Active = m.Active
+                Active = m.Active,
+                BranchId = m.BranchId
             }).ToList();
 
             return Ok(result);
@@ -62,7 +66,8 @@ namespace GymSystem.Api.Controllers
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 JoinDate = user.JoinDate,
-                Active = user.Active
+                Active = user.Active,
+                BranchId = user.BranchId
             });
         }
 
@@ -84,6 +89,13 @@ namespace GymSystem.Api.Controllers
                     return Conflict("A trainer with this Employee ID already exists.");
             }
 
+            if (request.BranchId.HasValue)
+            {
+                var branchExists = await _context.Branches.FindAsync(request.BranchId.Value) is not null;
+                if (!branchExists)
+                    return BadRequest($"Branch with ID {request.BranchId} does not exist.");
+            }
+
             var username = !string.IsNullOrWhiteSpace(request.EmployeeId)
                     ? request.EmployeeId.Replace("-", "").ToLowerInvariant()
                     : request.Email.Split('@')[0];
@@ -100,15 +112,15 @@ namespace GymSystem.Api.Controllers
                 LastName = request.LastName,
                 EmployeeId = request.EmployeeId,
                 HireDate = DateTime.UtcNow,
-                Active = true
+                Active = true,
+                BranchId = request.BranchId
             };
 
             var result = await _userManager.CreateAsync(user, request.Password);
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
-            var role = "Trainer";
-            await _userManager.AddToRoleAsync(user, role);
+            await _userManager.AddToRoleAsync(user, "Trainer");
 
             return CreatedAtAction(nameof(Get), new { id = user.Id }, new UserDTO
             {
@@ -119,7 +131,8 @@ namespace GymSystem.Api.Controllers
                 LastName = user.LastName,
                 EmployeeId = user.EmployeeId,
                 HireDate = user.HireDate,
-                Active = user.Active
+                Active = user.Active,
+                BranchId = user.BranchId
             });
         }
 
@@ -135,7 +148,6 @@ namespace GymSystem.Api.Controllers
             if (!roles.Contains("Trainer"))
                 return NotFound();
 
-            // Check for duplicate email (excluding current user)
             if (!string.IsNullOrWhiteSpace(request.Email))
             {
                 var existing = await _userManager.FindByEmailAsync(request.Email);
@@ -144,14 +156,12 @@ namespace GymSystem.Api.Controllers
 
                 user.Email = request.Email;
 
-                // Only derive username from email if the user doesn't have an EmployeeId-based username
                 if (string.IsNullOrWhiteSpace(user.EmployeeId))
                 {
                     user.UserName = request.Email.Split('@')[0];
                 }
             }
 
-            // Check for duplicate EmployeeId (excluding current user)
             if (!string.IsNullOrWhiteSpace(request.EmployeeId))
             {
                 var allTrainers = await _userManager.GetUsersInRoleAsync("Trainer");
@@ -160,6 +170,15 @@ namespace GymSystem.Api.Controllers
 
                 if (duplicateEmployeeId)
                     return Conflict("A trainer with this Employee ID already exists.");
+            }
+
+            if (request.BranchId.HasValue)
+            {
+                var branchExists = await _context.Branches.FindAsync(request.BranchId.Value) is not null;
+                if (!branchExists)
+                    return BadRequest($"Branch with ID {request.BranchId} does not exist.");
+
+                user.BranchId = request.BranchId;
             }
 
             user.FirstName = request.FirstName ?? user.FirstName;

@@ -1,4 +1,5 @@
-﻿using GymSystem.Shared.DTOs;
+﻿using GymSystem.Api.Data;
+using GymSystem.Shared.DTOs;
 using GymSystem.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,10 +13,12 @@ namespace GymSystem.Api.Controllers;
 public class StaffController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly GymDbContext _context;
 
-    public StaffController(UserManager<ApplicationUser> userManager)
+    public StaffController(UserManager<ApplicationUser> userManager, GymDbContext context)
     {
         _userManager = userManager;
+        _context = context;
     }
 
     [HttpGet]
@@ -43,6 +46,7 @@ public class StaffController : ControllerBase
                 HireDate = s.HireDate,
                 EmployeeId = s.EmployeeId,
                 Active = s.Active,
+                BranchId = s.BranchId,
                 Roles = [.. roles]
             });
         }
@@ -84,6 +88,7 @@ public class StaffController : ControllerBase
             HireDate = user.HireDate,
             EmployeeId = user.EmployeeId,
             Active = user.Active,
+            BranchId = user.BranchId,
             Roles = [.. roles]
         });
     }
@@ -110,6 +115,13 @@ public class StaffController : ControllerBase
                 return Conflict("A staff member with this Employee ID already exists.");
         }
 
+        if (request.BranchId.HasValue)
+        {
+            var branchExists = await _context.Branches.FindAsync(request.BranchId.Value) is not null;
+            if (!branchExists)
+                return BadRequest($"Branch with ID {request.BranchId} does not exist.");
+        }
+
         var username = !string.IsNullOrWhiteSpace(request.EmployeeId)
                 ? request.EmployeeId.Replace("-", "").ToLowerInvariant()
                 : request.Email.Split('@')[0];
@@ -126,7 +138,8 @@ public class StaffController : ControllerBase
             LastName = request.LastName,
             EmployeeId = request.EmployeeId,
             HireDate = DateTime.UtcNow,
-            Active = true
+            Active = true,
+            BranchId = request.BranchId
         };
 
         var result = await _userManager.CreateAsync(user, request.Password);
@@ -145,6 +158,7 @@ public class StaffController : ControllerBase
             HireDate = user.HireDate,
             EmployeeId = user.EmployeeId,
             Active = user.Active,
+            BranchId = user.BranchId,
             Roles = [request.Role]
         });
     }
@@ -175,6 +189,15 @@ public class StaffController : ControllerBase
                 return Conflict("A staff member with this Employee ID already exists.");
 
             user.EmployeeId = request.EmployeeId;
+        }
+
+        if (request.BranchId.HasValue)
+        {
+            var branchExists = await _context.Branches.FindAsync(request.BranchId.Value) is not null;
+            if (!branchExists)
+                return BadRequest($"Branch with ID {request.BranchId} does not exist.");
+
+            user.BranchId = request.BranchId;
         }
 
         if (request.Active.HasValue)

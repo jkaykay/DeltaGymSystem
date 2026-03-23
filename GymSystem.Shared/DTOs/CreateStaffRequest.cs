@@ -6,4 +6,5 @@ public record CreateStaffRequest(
     string LastName,
     string Password,
     string? EmployeeId,
-    string Role);
+    string Role,
+    int? BranchId);
