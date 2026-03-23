@@ -40,13 +40,13 @@ namespace GymSystem.Api.Services
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var expiryMinutes = int.Parse(_config["Jwt:ExpiryInMinutes"] ?? "60");
+            var expiryDays = int.Parse(_config["Jwt:ExpiryDays"] ?? "15");
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(expiryMinutes),
+                expires: DateTime.UtcNow.AddDays(expiryDays),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

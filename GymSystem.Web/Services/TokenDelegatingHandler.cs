@@ -24,7 +24,17 @@ namespace GymSystem.Web.Services
                 }
             }
 
-            return await base.SendAsync(request, cancellationToken);
+            var response = await base.SendAsync(request, cancellationToken);
+
+            // If the API rejects the token, sign the user out so the cookie
+            // middleware redirects them to the appropriate login page.
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized
+                && httpContext?.User.Identity?.IsAuthenticated == true)
+            {
+                await httpContext.SignOutAsync("Cookies");
+            }
+
+            return response;
         }
     }
 }

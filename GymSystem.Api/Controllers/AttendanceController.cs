@@ -23,10 +23,32 @@ namespace GymSystem.Api.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Staff,Admin")]
         public async Task<IActionResult> GetAll()
         {
             var attendances = await _context.Attendances.Include(a => a.User).ToListAsync();
             var result = attendances.Select(a => new AttendanceDTO
+            {
+                CheckIn = a.CheckIn,
+                CheckOut = a.CheckOut,
+                UserId = a.UserId,
+                MemberName = $"{a.User.FirstName} {a.User.LastName}",
+                InFlag = a.InFlag
+            });
+
+            return Ok(result);
+        }
+
+        [HttpGet("active")]
+        [Authorize(Roles = "Staff,Admin")]
+        public async Task<IActionResult> GetActive()
+        {
+            var active = await _context.Attendances
+                .Include(a => a.User)
+                .Where(a => a.InFlag)
+                .ToListAsync();
+
+            var result = active.Select(a => new AttendanceDTO
             {
                 CheckIn = a.CheckIn,
                 CheckOut = a.CheckOut,
@@ -56,7 +78,7 @@ namespace GymSystem.Api.Controllers
         }
 
         [HttpGet("member/{memberId}")]
-        public async Task<IActionResult> GetMyAttendances(string memberId)
+        public async Task<IActionResult> GetMemberAttendances(string memberId)
         {
             var user = await _userManager.FindByIdAsync(memberId);
             if (user is null) return NotFound($"No user with ID '{memberId}' was found.");
@@ -81,53 +103,25 @@ namespace GymSystem.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
-        [Authorize(Roles = "Staff,Admin")]
-        public async Task<IActionResult> Create([FromBody] AddAttendanceRequest request)
-        {
-            var user = await _userManager.FindByIdAsync(request.UserId);
-            if (user is null) return NotFound($"No user with ID '{request.UserId}' was found.");
-
-            var attendance = new Attendance
-            {
-                CheckIn = request.CheckIn,
-                CheckOut = default,
-                InFlag = true,
-                UserId = request.UserId,
-                User = user
-            };
-
-            _context.Attendances.Add(attendance);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetById), new { id = attendance.AttendanceId }, new AttendanceDTO
-            {
-                CheckIn = attendance.CheckIn,
-                CheckOut = attendance.CheckOut,
-                UserId = attendance.UserId,
-                MemberName = $"{user.FirstName} {user.LastName}",
-                InFlag = attendance.InFlag
-            });
-        }
-
         [HttpPost("checkin")]
-        public async Task<IActionResult> CheckIn([FromBody] AddAttendanceRequest request)
+        [Authorize(Roles = "Staff,Admin")]
+        public async Task<IActionResult> CheckIn(string memberId)
         {
-            var user = await _userManager.FindByIdAsync(request.UserId);
-            if (user is null) return NotFound($"No user with ID '{request.UserId}' was found.");
+            var user = await _userManager.FindByIdAsync(memberId);
+            if (user is null) return NotFound($"No user with ID '{memberId}' was found.");
 
             var openSession = await _context.Attendances
-                .FirstOrDefaultAsync(a => a.UserId == request.UserId && a.InFlag);
+                .FirstOrDefaultAsync(a => a.UserId == memberId && a.InFlag);
 
             if (openSession is not null)
                 return Conflict("This member already has an active check-in session.");
 
             var attendance = new Attendance
             {
-                CheckIn = request.CheckIn,
+                CheckIn = DateTime.UtcNow,
                 CheckOut = default,
                 InFlag = true,
-                UserId = request.UserId,
+                UserId = memberId,
                 User = user
             };
 
@@ -145,7 +139,8 @@ namespace GymSystem.Api.Controllers
         }
 
         [HttpPut("checkout/{memberId}")]
-        public async Task<IActionResult> CheckOut(string memberId, [FromBody] UpdateAttendanceRequest request)
+        [Authorize(Roles = "Staff,Admin")]
+        public async Task<IActionResult> CheckOut(string memberId)
         {
             var openSession = await _context.Attendances
                 .Include(a => a.User)
@@ -154,10 +149,8 @@ namespace GymSystem.Api.Controllers
             if (openSession is null)
                 return NotFound("No active check-in session found for this member.");
 
-            openSession.CheckOut = request.CheckOut ?? DateTime.UtcNow;
+            openSession.CheckOut = DateTime.UtcNow;
             openSession.InFlag = false;
-
-            if (request.CheckIn.HasValue) openSession.CheckIn = request.CheckIn.Value;
 
             await _context.SaveChangesAsync();
 
@@ -169,6 +162,21 @@ namespace GymSystem.Api.Controllers
                 MemberName = $"{openSession.User.FirstName} {openSession.User.LastName}",
                 InFlag = openSession.InFlag
             });
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Staff,Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var attendance = await _context.Attendances.FindAsync(id);
+
+            if (attendance is null)
+                return NotFound("Specified attendance record does not exist.");
+
+            _context.Attendances.Remove(attendance);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }

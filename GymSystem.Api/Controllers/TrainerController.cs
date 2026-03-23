@@ -4,6 +4,7 @@ using GymSystem.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace GymSystem.Api.Controllers
 {
@@ -21,21 +22,33 @@ namespace GymSystem.Api.Controllers
             _context = context;
         }
 
+        private IQueryable<ApplicationUser> TrainersQuery()
+        {
+            return _context.Users
+                .Where(u => _context.UserRoles
+                    .Join(_context.Roles,
+                        ur => ur.RoleId,
+                        r => r.Id,
+                        (ur, r) => new { ur.UserId, r.Name })
+                    .Any(x => x.UserId == u.Id && x.Name == "Trainer"));
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var members = await _userManager.GetUsersInRoleAsync("Trainer");
-            var result = members.Select(m => new UserDTO
-            {
-                Id = m.Id,
-                Email = m.Email!,
-                UserName = m.UserName!,
-                FirstName = m.FirstName,
-                LastName = m.LastName,
-                JoinDate = m.JoinDate,
-                Active = m.Active,
-                BranchId = m.BranchId
-            }).ToList();
+            var result = await TrainersQuery()
+                .Select(m => new UserDTO
+                {
+                    Id = m.Id,
+                    Email = m.Email!,
+                    UserName = m.UserName!,
+                    FirstName = m.FirstName,
+                    LastName = m.LastName,
+                    JoinDate = m.JoinDate,
+                    Active = m.Active,
+                    BranchId = m.BranchId
+                })
+                .ToListAsync();
 
             return Ok(result);
         }
@@ -43,8 +56,8 @@ namespace GymSystem.Api.Controllers
         [HttpGet("total")]
         public async Task<IActionResult> GetTotal()
         {
-            var members = await _userManager.GetUsersInRoleAsync("Trainer");
-            return Ok(new CountResponse { Count = members.Count });
+            var count = await TrainersQuery().CountAsync();
+            return Ok(new CountResponse { Count = count });
         }
 
         [HttpGet("{id}")]
@@ -81,9 +94,9 @@ namespace GymSystem.Api.Controllers
 
             if (!string.IsNullOrWhiteSpace(request.EmployeeId))
             {
-                var allTrainers = await _userManager.GetUsersInRoleAsync("Trainer");
-                var duplicateEmployeeId = allTrainers
-                    .Any(u => u.EmployeeId == request.EmployeeId);
+                // DB-level uniqueness check instead of loading all trainers
+                var duplicateEmployeeId = await TrainersQuery()
+                    .AnyAsync(u => u.EmployeeId == request.EmployeeId);
 
                 if (duplicateEmployeeId)
                     return Conflict("A trainer with this Employee ID already exists.");
@@ -164,9 +177,9 @@ namespace GymSystem.Api.Controllers
 
             if (!string.IsNullOrWhiteSpace(request.EmployeeId))
             {
-                var allTrainers = await _userManager.GetUsersInRoleAsync("Trainer");
-                var duplicateEmployeeId = allTrainers
-                    .Any(u => u.Id != user.Id && u.EmployeeId == request.EmployeeId);
+                // DB-level uniqueness check instead of loading all trainers
+                var duplicateEmployeeId = await TrainersQuery()
+                    .AnyAsync(u => u.Id != user.Id && u.EmployeeId == request.EmployeeId);
 
                 if (duplicateEmployeeId)
                     return Conflict("A trainer with this Employee ID already exists.");

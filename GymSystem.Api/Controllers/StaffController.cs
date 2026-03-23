@@ -4,6 +4,7 @@ using GymSystem.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace GymSystem.Api.Controllers;
 
@@ -21,35 +22,56 @@ public class StaffController : ControllerBase
         _context = context;
     }
 
+    private IQueryable<ApplicationUser> StaffQuery()
+    {
+        return _context.Users
+            .Where(u => _context.UserRoles
+                .Join(_context.Roles,
+                    ur => ur.RoleId,
+                    r => r.Id,
+                    (ur, r) => new { ur.UserId, r.Name })
+                .Any(x => x.UserId == u.Id && (x.Name == "Staff" || x.Name == "Admin")));
+    }
+
     [HttpGet]
     [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> GetAll()
     {
-        var staffUsers = await _userManager.GetUsersInRoleAsync("Staff");
-        var adminUsers = await _userManager.GetUsersInRoleAsync("Admin");
-
-        var allStaff = staffUsers
-            .Union(adminUsers, new UserIdComparer())
-            .ToList();
-
-        var result = new List<UserDTO>();
-        foreach (var s in allStaff)
-        {
-            var roles = await _userManager.GetRolesAsync(s);
-            result.Add(new UserDTO
+        var staffWithRoles = await StaffQuery()
+            .Select(u => new
             {
-                Id = s.Id,
-                Email = s.Email!,
-                UserName = s.UserName!,
-                FirstName = s.FirstName,
-                LastName = s.LastName,
-                HireDate = s.HireDate,
-                EmployeeId = s.EmployeeId,
-                Active = s.Active,
-                BranchId = s.BranchId,
-                Roles = [.. roles]
-            });
-        }
+                u.Id,
+                Email = u.Email!,
+                UserName = u.UserName!,
+                u.FirstName,
+                u.LastName,
+                u.HireDate,
+                u.EmployeeId,
+                u.Active,
+                u.BranchId,
+                Roles = _context.UserRoles
+                    .Where(ur => ur.UserId == u.Id)
+                    .Join(_context.Roles,
+                        ur => ur.RoleId,
+                        r => r.Id,
+                        (ur, r) => r.Name!)
+                    .ToList()
+            })
+            .ToListAsync();
+
+        var result = staffWithRoles.Select(s => new UserDTO
+        {
+            Id = s.Id,
+            Email = s.Email,
+            UserName = s.UserName,
+            FirstName = s.FirstName,
+            LastName = s.LastName,
+            HireDate = s.HireDate,
+            EmployeeId = s.EmployeeId,
+            Active = s.Active,
+            BranchId = s.BranchId,
+            Roles = s.Roles
+        }).ToList();
 
         return Ok(result);
     }
@@ -58,12 +80,8 @@ public class StaffController : ControllerBase
     [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> GetTotal()
     {
-        var staff = await _userManager.GetUsersInRoleAsync("Staff");
-        var admin = await _userManager.GetUsersInRoleAsync("Admin");
-        var total = staff
-            .Union(admin, new UserIdComparer())
-            .Count();
-        return Ok(new CountResponse { Count = total });
+        var count = await StaffQuery().CountAsync();
+        return Ok(new CountResponse { Count = count });
     }
 
     [HttpGet("{id}")]
@@ -106,10 +124,9 @@ public class StaffController : ControllerBase
 
         if (!string.IsNullOrWhiteSpace(request.EmployeeId))
         {
-            var allStaff = await _userManager.GetUsersInRoleAsync("Staff");
-            var allAdmin = await _userManager.GetUsersInRoleAsync("Admin");
-            var duplicateEmployeeId = allStaff.Concat(allAdmin)
-                .Any(u => u.EmployeeId == request.EmployeeId);
+            // DB-level uniqueness check instead of loading all staff/admin
+            var duplicateEmployeeId = await StaffQuery()
+                .AnyAsync(u => u.EmployeeId == request.EmployeeId);
 
             if (duplicateEmployeeId)
                 return Conflict("A staff member with this Employee ID already exists.");
@@ -180,10 +197,9 @@ public class StaffController : ControllerBase
 
         if (!string.IsNullOrWhiteSpace(request.EmployeeId))
         {
-            var allStaff = await _userManager.GetUsersInRoleAsync("Staff");
-            var allAdmin = await _userManager.GetUsersInRoleAsync("Admin");
-            var duplicateEmployeeId = allStaff.Concat(allAdmin)
-                .Any(u => u.Id != user.Id && u.EmployeeId == request.EmployeeId);
+            // DB-level uniqueness check instead of loading all staff/admin
+            var duplicateEmployeeId = await StaffQuery()
+                .AnyAsync(u => u.Id != user.Id && u.EmployeeId == request.EmployeeId);
 
             if (duplicateEmployeeId)
                 return Conflict("A staff member with this Employee ID already exists.");
@@ -227,11 +243,5 @@ public class StaffController : ControllerBase
             return BadRequest(result.Errors);
 
         return NoContent();
-    }
-
-    private sealed class UserIdComparer : IEqualityComparer<ApplicationUser>
-    {
-        public bool Equals(ApplicationUser? x, ApplicationUser? y) => x?.Id == y?.Id;
-        public int GetHashCode(ApplicationUser obj) => obj.Id.GetHashCode();
     }
 }
