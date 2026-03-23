@@ -1,3 +1,7 @@
-﻿namespace GymSystem.Shared.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record ScanRequest(string Token);
+namespace GymSystem.Shared.DTOs;
+
+public record ScanRequest(
+    [Required] string Token
+);

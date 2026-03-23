@@ -1,7 +1,9 @@
-﻿namespace GymSystem.Shared.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GymSystem.Shared.DTOs;
 
 public record AddRoomRequest(
-    int RoomNumber,
-    int BranchId,
-    int MaxCapacity
+    [Required, Range(1, int.MaxValue)] int RoomNumber,
+    [Required] int BranchId,
+    [Required, Range(1, 1000)] int MaxCapacity
 );

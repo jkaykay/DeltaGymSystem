@@ -1,6 +1,8 @@
-﻿namespace GymSystem.Shared.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GymSystem.Shared.DTOs;
 
 public record AddClassRequest(
-    string Subject,
-    string UserId
+    [Required, MaxLength(100)] string Subject,
+    [Required] string UserId
 );

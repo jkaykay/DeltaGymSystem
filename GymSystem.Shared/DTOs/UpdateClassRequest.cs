@@ -1,6 +1,8 @@
-﻿namespace GymSystem.Shared.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GymSystem.Shared.DTOs;
 
 public record UpdateClassRequest(
-    string? Subject = null,
+    [MaxLength(100)] string? Subject = null,
     string? UserId = null
 );
