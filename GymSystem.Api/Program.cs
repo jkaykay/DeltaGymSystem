@@ -13,7 +13,12 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContext<GymDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(
+        connectionString,
+        sqlOptions => sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null)));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
@@ -35,6 +40,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddHostedService<SubscriptionExpiryService>();
+builder.Services.AddHostedService<AutoCheckoutService>();
+builder.Services.AddScoped<IQRTokenService, QRTokenService>();
 
 // JWT authentication
 var jwtKey = builder.Configuration["Jwt:Key"]

@@ -149,43 +149,12 @@ namespace GymSystem.Api.Controllers
             });
         }
 
-        [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,Staff")]
-        public async Task<IActionResult> Edit(int id, [FromBody] UpdatePaymentRequest request)
-        {
-            var payment = await _context.Payments.FindAsync(id);
-            if (payment is null)
-                return NotFound();
-
-            // Apply only the fields the caller supplied (partial update)
-            if (request.Amount.HasValue)
-                payment.Amount = request.Amount.Value;
-
-            if (request.PaymentDate.HasValue)
-                payment.PaymentDate = request.PaymentDate.Value;
-
-            if (request.UserId is not null)
-            {
-                var user = await _userManager.FindByIdAsync(request.UserId);
-                if (user is null)
-                    return NotFound("User does not exist.");
-                payment.UserId = request.UserId;
-            }
-
-            if (request.SubId.HasValue)
-            {
-                var sub = await _context.Subscriptions.FindAsync(request.SubId.Value);
-                if (sub is null)
-                    return BadRequest("Subscription does not exist.");
-                payment.SubId = request.SubId.Value;
-            }
-
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
+        // PUT endpoint removed — payments are immutable financial records.
+        // To correct a mistake: DELETE the incorrect payment, then create
+        // a new one through the validated Pay endpoint.
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin,Staff")]
+        [Authorize(Roles = "Admin")]  // Tightened from Admin,Staff to Admin only
         public async Task<IActionResult> Delete(int id)
         {
             var payment = await _context.Payments.FindAsync(id);

@@ -74,6 +74,10 @@ dotnet user-secrets set "Jwt:ExpiryDays" "15"
 # Seed admin password
 dotnet user-secrets set "SeedAdmin:Password" "Admin@123456"
 
+# QR code signing secret
+dotnet user-secrets set "QrCode:Secret" "YourQrSigningSecretThatIsAtLeast32Characters!"
+dotnet user-secrets set "QrCode:ExpiryMinutes" "2"
+
 cd ..
 ```
 
@@ -98,13 +102,17 @@ or....
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=DeltaGymDb;Trusted_Connection=True;MultipleActiveResultSets=true"
+    "DefaultConnection": "ConnectionStringHere!"
   },
   "Jwt": {
     "Key": "YourSuperSecretKeyThatIsAtLeast32Characters!",
     "Issuer": "GymSystem.Api",
     "Audience": "GymSystem.Web",
     "ExpiryDays": "15"
+  },
+  "QrCode": {
+    "Secret": "YourQrSigningSecretThatIsAtLeast32Characters!",
+    "ExpiryMinutes": "2
   },
   "SeedAdmin": {
     "Password": "Admin@123456"

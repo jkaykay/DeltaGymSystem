@@ -1,8 +1,10 @@
-﻿using GymSystem.Shared.DTOs;
+﻿using GymSystem.Api.Data;
+using GymSystem.Shared.DTOs;
 using GymSystem.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace GymSystem.Api.Controllers;
@@ -13,27 +15,41 @@ namespace GymSystem.Api.Controllers;
 public class MemberController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly GymDbContext _context;
 
-    public MemberController(UserManager<ApplicationUser> userManager)
+    public MemberController(UserManager<ApplicationUser> userManager, GymDbContext context)
     {
         _userManager = userManager;
+        _context = context;
+    }
+
+    private IQueryable<ApplicationUser> MembersQuery()
+    {
+        return _context.Users
+            .Where(u => _context.UserRoles
+                .Join(_context.Roles,
+                    ur => ur.RoleId,
+                    r => r.Id,
+                    (ur, r) => new { ur.UserId, r.Name })
+                .Any(x => x.UserId == u.Id && x.Name == "Member"));
     }
 
     [HttpGet]
     [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> GetAll()
     {
-        var members = await _userManager.GetUsersInRoleAsync("Member");
-        var result = members.Select(m => new UserDTO
-        {
-            Id = m.Id,
-            Email = m.Email!,
-            UserName = m.UserName!,
-            FirstName = m.FirstName,
-            LastName = m.LastName,
-            JoinDate = m.JoinDate,
-            Active = m.Active
-        }).ToList();
+        var result = await MembersQuery()
+            .Select(m => new UserDTO
+            {
+                Id = m.Id,
+                Email = m.Email!,
+                UserName = m.UserName!,
+                FirstName = m.FirstName,
+                LastName = m.LastName,
+                JoinDate = m.JoinDate,
+                Active = m.Active
+            })
+            .ToListAsync();
 
         return Ok(result);
     }
@@ -42,26 +58,28 @@ public class MemberController : ControllerBase
     [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> GetTotal()
     {
-        var members = await _userManager.GetUsersInRoleAsync("Member");
-        return Ok(new CountResponse { Count = members.Count });
+        var count = await MembersQuery().CountAsync();
+        return Ok(new CountResponse { Count = count });
     }
 
     [HttpGet("recents")]
     [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> GetRecentSignups()
     {
-        var members = await _userManager.GetUsersInRoleAsync("Member");
-        var recentMembers = members.OrderByDescending(m => m.JoinDate).Take(5).ToList();
-        var result = recentMembers.Select(m => new UserDTO
-        {
-            Id = m.Id,
-            Email = m.Email!,
-            UserName = m.UserName!,
-            FirstName = m.FirstName,
-            LastName = m.LastName,
-            JoinDate = m.JoinDate,
-            Active = m.Active
-        }).ToList();
+        var result = await MembersQuery()
+            .OrderByDescending(m => m.JoinDate)
+            .Take(5)
+            .Select(m => new UserDTO
+            {
+                Id = m.Id,
+                Email = m.Email!,
+                UserName = m.UserName!,
+                FirstName = m.FirstName,
+                LastName = m.LastName,
+                JoinDate = m.JoinDate,
+                Active = m.Active
+            })
+            .ToListAsync();
 
         return Ok(result);
     }
