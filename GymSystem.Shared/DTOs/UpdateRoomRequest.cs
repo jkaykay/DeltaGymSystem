@@ -1,7 +1,9 @@
-﻿namespace GymSystem.Shared.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GymSystem.Shared.DTOs;
 
 public record UpdateRoomRequest(
-    int? RoomNumber = null,
+    [Range(1, int.MaxValue)] int? RoomNumber = null,
     int? BranchId = null,
-    int? MaxCapacity = null
+    [Range(1, 1000)] int? MaxCapacity = null
 );

@@ -1,9 +1,10 @@
-﻿namespace GymSystem.Shared.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GymSystem.Shared.DTOs;
 
 public record AddBranchRequest(
-    string Address,
-    string City,
-    string Province,
-    string PostCode
+    [Required, MaxLength(200)] string Address,
+    [Required, MaxLength(100)] string City,
+    [Required, MaxLength(100)] string Province,
+    [Required, MaxLength(20)] string PostCode
 );
-

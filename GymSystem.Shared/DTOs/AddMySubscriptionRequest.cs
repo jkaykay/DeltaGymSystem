@@ -1,5 +1,7 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace GymSystem.Shared.DTOs;
 
 public record AddMySubscriptionRequest(
-    string TierName
+    [Required, MaxLength(25)] string TierName
 );

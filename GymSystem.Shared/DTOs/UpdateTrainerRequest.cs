@@ -1,9 +1,11 @@
-﻿namespace GymSystem.Shared.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GymSystem.Shared.DTOs;
 
 public record UpdateTrainerRequest(
-    string? Email = null,
-    string? FirstName = null,
-    string? LastName = null,
-    string? EmployeeId = null,
+    [EmailAddress, MaxLength(256)] string? Email = null,
+    [MaxLength(100)] string? FirstName = null,
+    [MaxLength(100)] string? LastName = null,
+    [MaxLength(50)] string? EmployeeId = null,
     int? BranchId = null
 );

@@ -1,6 +1,8 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace GymSystem.Shared.DTOs;
 
 public record AddMyPaymentRequest(
-    decimal Amount,
-    int SubId
+    [Required, Range(0.01, 99999.99)] decimal Amount,
+    [Required] int SubId
 );

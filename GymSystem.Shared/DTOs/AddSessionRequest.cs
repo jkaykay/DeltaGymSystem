@@ -1,10 +1,11 @@
-﻿namespace GymSystem.Shared.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record AddSessionRequest
-(
-    DateTime Start,
-    DateTime End,
-    int RoomId,
-    int ClassId,
-    int MaxCapacity
+namespace GymSystem.Shared.DTOs;
+
+public record AddSessionRequest(
+    [Required] DateTime Start,
+    [Required] DateTime End,
+    [Required] int RoomId,
+    [Required] int ClassId,
+    [Required, Range(1, 1000)] int MaxCapacity
 );
