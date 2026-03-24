@@ -78,6 +78,9 @@ dotnet user-secrets set "SeedAdmin:Password" "Admin@123456"
 dotnet user-secrets set "QrCode:Secret" "YourQrSigningSecretThatIsAtLeast32Characters!"
 dotnet user-secrets set "QrCode:ExpiryMinutes" "2"
 
+#CORS configuration
+dotnet user-secrets set "Cors:AllowedOrigins:0" "https://localhost:7202"
+
 cd ..
 ```
 
@@ -116,6 +119,11 @@ or....
   },
   "SeedAdmin": {
     "Password": "Admin@123456"
+  },
+  "Cors": {
+    "AllowedOrigins": [
+      "https://localhost:7202"
+    ]
   }
 }
 ```
