@@ -101,18 +101,26 @@ namespace GymSystem.Api.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateRoomRequest roomRequest)
         {
-            var room = await _context.Rooms
-                .FirstOrDefaultAsync(r => r.RoomId == id);
+            // Load room with counts in a single query
+            var roomData = await _context.Rooms
+                .Where(r => r.RoomId == id)
+                .Select(r => new
+                {
+                    Room = r,
+                    SessionCount = r.Sessions.Count,
+                    EquipmentCount = r.Equipments.Count
+                })
+                .FirstOrDefaultAsync();
 
-            if (room == null) return NotFound();
+            if (roomData == null) return NotFound();
+
+            var room = roomData.Room;
 
             if (roomRequest.BranchId.HasValue)
             {
                 var branch = await _context.Branches.FindAsync(roomRequest.BranchId.Value);
                 if (branch == null)
-                {
                     return BadRequest("Branch not found");
-                }
 
                 room.BranchId = roomRequest.BranchId.Value;
                 room.Branch = branch;
@@ -127,14 +135,9 @@ namespace GymSystem.Api.Controllers
             var duplicateExists = await _context.Rooms.AnyAsync(r =>
                 r.RoomId != id && r.RoomNumber == room.RoomNumber && r.BranchId == room.BranchId);
             if (duplicateExists)
-            {
                 return Conflict($"Room number {room.RoomNumber} already exists in branch {room.BranchId}.");
-            }
 
             await _context.SaveChangesAsync();
-
-            var sessionCount = await _context.Sessions.CountAsync(s => s.RoomId == id);
-            var equipmentCount = await _context.Equipments.CountAsync(e => e.RoomId == id);
 
             return Ok(new RoomDTO
             {
@@ -142,8 +145,8 @@ namespace GymSystem.Api.Controllers
                 RoomNumber = room.RoomNumber,
                 BranchId = room.BranchId,
                 MaxCapacity = room.MaxCapacity,
-                SessionCount = sessionCount,
-                EquipmentCount = equipmentCount
+                SessionCount = roomData.SessionCount,
+                EquipmentCount = roomData.EquipmentCount
             });
         }
 

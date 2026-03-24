@@ -22,35 +22,25 @@ namespace GymSystem.Api.Controllers
             _userManager = userManager;
         }
 
-        private IQueryable<Booking> BookingsQuery()
-        {
-            return _context.Bookings
-                .Include(b => b.Session)
-                    .ThenInclude(s => s.Class)
-                .Include(b => b.Session)
-                    .ThenInclude(s => s.Room)
-                .Include(b => b.User);
-        }
-
-        private static BookingDTO ToDto(Booking b) => new()
-        {
-            BookingId = b.BookingId,
-            BookDate = b.BookDate,
-            SessionId = b.Session.SessionId,
-            SessionStart = b.Session.Start,
-            SessionEnd = b.Session.End,
-            Subject = b.Session.Class.Subject,
-            RoomNumber = b.Session.Room.RoomNumber,
-            UserId = b.User.Id,
-            UserName = $"{b.User.FirstName} {b.User.LastName}"
-        };
-
         [HttpGet]
         [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> GetAll()
         {
-            var bookings = await BookingsQuery().ToListAsync();
-            var result = bookings.Select(ToDto).ToList();
+            var result = await _context.Bookings
+                .Select(b => new BookingDTO
+                {
+                    BookingId = b.BookingId,
+                    BookDate = b.BookDate,
+                    SessionId = b.Session.SessionId,
+                    SessionStart = b.Session.Start,
+                    SessionEnd = b.Session.End,
+                    Subject = b.Session.Class.Subject,
+                    RoomNumber = b.Session.Room.RoomNumber,
+                    UserId = b.User.Id,
+                    UserName = $"{b.User.FirstName} {b.User.LastName}"
+                })
+                .ToListAsync();
+
             return Ok(result);
         }
 
@@ -58,31 +48,55 @@ namespace GymSystem.Api.Controllers
         [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Get(int id)
         {
-            var booking = await BookingsQuery()
-                .FirstOrDefaultAsync(b => b.BookingId == id);
+            var result = await _context.Bookings
+                .Where(b => b.BookingId == id)
+                .Select(b => new BookingDTO
+                {
+                    BookingId = b.BookingId,
+                    BookDate = b.BookDate,
+                    SessionId = b.Session.SessionId,
+                    SessionStart = b.Session.Start,
+                    SessionEnd = b.Session.End,
+                    Subject = b.Session.Class.Subject,
+                    RoomNumber = b.Session.Room.RoomNumber,
+                    UserId = b.User.Id,
+                    UserName = $"{b.User.FirstName} {b.User.LastName}"
+                })
+                .FirstOrDefaultAsync();
 
-            if (booking == null)
+            if (result is null)
             {
                 return NotFound();
             }
 
-            return Ok(ToDto(booking));
+            return Ok(result);
         }
 
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetByUser(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
+            if (user is null)
             {
                 return NotFound("User not found.");
             }
 
-            var bookings = await BookingsQuery()
+            var result = await _context.Bookings
                 .Where(b => b.UserId == userId)
+                .Select(b => new BookingDTO
+                {
+                    BookingId = b.BookingId,
+                    BookDate = b.BookDate,
+                    SessionId = b.Session.SessionId,
+                    SessionStart = b.Session.Start,
+                    SessionEnd = b.Session.End,
+                    Subject = b.Session.Class.Subject,
+                    RoomNumber = b.Session.Room.RoomNumber,
+                    UserId = b.User.Id,
+                    UserName = $"{b.User.FirstName} {b.User.LastName}"
+                })
                 .ToListAsync();
 
-            var result = bookings.Select(ToDto).ToList();
             return Ok(result);
         }
 
@@ -90,7 +104,7 @@ namespace GymSystem.Api.Controllers
         public async Task<IActionResult> Create([FromBody] AddBookingRequest request)
         {
             var user = await _userManager.FindByIdAsync(request.UserId);
-            if (user == null)
+            if (user is null)
             {
                 return BadRequest("User not found.");
             }
@@ -101,7 +115,7 @@ namespace GymSystem.Api.Controllers
                 .Include(s => s.Bookings)
                 .FirstOrDefaultAsync(s => s.SessionId == request.SessionId);
 
-            if (session == null)
+            if (session is null)
             {
                 return BadRequest("Session not found.");
             }
@@ -150,7 +164,7 @@ namespace GymSystem.Api.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var booking = await _context.Bookings.FindAsync(id);
-            if (booking == null)
+            if (booking is null)
             {
                 return NotFound();
             }

@@ -22,13 +22,14 @@ namespace GymSystem.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var tiers = await _context.Tiers.Include(t => t.Subscriptions).ToListAsync();
-            var result = tiers.Select(t => new TierDTO
-            {
-                TierName = t.TierName,
-                Price = t.Price,
-                SubCount = t.Subscriptions.Count
-            });
+            var result = await _context.Tiers
+                .Select(t => new TierDTO
+                {
+                    TierName = t.TierName,
+                    Price = t.Price,
+                    SubCount = t.Subscriptions.Count
+                })
+                .ToListAsync();
 
             return Ok(result);
         }
@@ -36,14 +37,18 @@ namespace GymSystem.Api.Controllers
         [HttpGet("{tierName}")]
         public async Task<IActionResult> Get(string tierName)
         {
-            var tier = await _context.Tiers.Include(t => t.Subscriptions).FirstOrDefaultAsync(t => t.TierName == tierName);
-            if (tier == null) return NotFound();
-            return Ok(new TierDTO
-            {
-                TierName = tier.TierName,
-                Price = tier.Price,
-                SubCount = tier.Subscriptions.Count
-            });
+            var result = await _context.Tiers
+                .Where(t => t.TierName == tierName)
+                .Select(t => new TierDTO
+                {
+                    TierName = t.TierName,
+                    Price = t.Price,
+                    SubCount = t.Subscriptions.Count
+                })
+                .FirstOrDefaultAsync();
+
+            if (result == null) return NotFound();
+            return Ok(result);
         }
 
         [HttpDelete("{tierName}")]
