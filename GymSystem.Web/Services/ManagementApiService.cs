@@ -111,6 +111,7 @@ namespace GymSystem.Web.Services
         {
             var response = await _http.PutAsJsonAsync($"api/staff/{id}", new
             {
+                model.Email,
                 model.FirstName,
                 model.LastName
             });

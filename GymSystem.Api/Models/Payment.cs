@@ -11,6 +11,7 @@ namespace GymSystem.Api.Models
         public DateTime PaymentDate { get; set; }
 
         //FK
+        [MaxLength(450)]
         public required string UserId { get; set; }
         public required ApplicationUser User { get; set; }
 

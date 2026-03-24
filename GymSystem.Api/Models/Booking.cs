@@ -1,4 +1,6 @@
-﻿namespace GymSystem.Api.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GymSystem.Api.Models
 {
     public class Booking
     {
@@ -9,6 +11,8 @@
         //FK
         public required int SessionId { get; set; }
         public required Session Session { get; set; }
+
+        [MaxLength(450)]
         public required string UserId { get; set; }
         public required ApplicationUser User { get; set; }
 

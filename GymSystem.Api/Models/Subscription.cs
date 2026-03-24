@@ -15,6 +15,7 @@ namespace GymSystem.Api.Models
         public required string TierName { get; set; }
         public required Tier Tier { get; set; }
 
+        [MaxLength(450)]
         public required string UserId { get; set; }
         public required ApplicationUser User { get; set; }
 

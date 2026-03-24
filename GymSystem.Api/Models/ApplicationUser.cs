@@ -24,9 +24,6 @@ namespace GymSystem.Api.Models
         [MaxLength(50)]
         public string? EmployeeId { get; set; } // Internal staff ID
 
-        [MaxLength(450)]
-        public string? CreatedByUserId { get; set; }
-
         //FK
         public int? BranchId { get; set; }
         public Branch? Branch { get; set; }
