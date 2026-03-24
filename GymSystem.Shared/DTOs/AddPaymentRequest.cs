@@ -4,6 +4,6 @@ namespace GymSystem.Shared.DTOs;
 
 public record AddPaymentRequest(
     [Required, Range(0.01, 99999.99)] decimal Amount,
-    [Required] string UserId,
+    [Required, MaxLength(450)] string UserId,
     [Required] int SubId
 );

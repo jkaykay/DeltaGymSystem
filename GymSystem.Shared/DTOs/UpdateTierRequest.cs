@@ -3,5 +3,5 @@
 namespace GymSystem.Shared.DTOs;
 
 public record UpdateTierRequest(
-    [Range(0.01, 99999.99)] decimal? Price
+    [Range(0.01, 99999.99)] decimal? Price = null
 );

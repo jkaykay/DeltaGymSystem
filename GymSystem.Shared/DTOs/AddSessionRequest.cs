@@ -7,5 +7,5 @@ public record AddSessionRequest(
     [Required] DateTime End,
     [Required] int RoomId,
     [Required] int ClassId,
-    [Required, Range(1, 1000)] int MaxCapacity
+    [Required, Range(1, 100)] int MaxCapacity
 );

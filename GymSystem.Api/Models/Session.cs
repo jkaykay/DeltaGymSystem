@@ -1,10 +1,14 @@
-﻿namespace GymSystem.Api.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GymSystem.Api.Models
 {
     public class Session
     {
         public int SessionId { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
+
+        [Range(1, 100)]
         public required int MaxCapacity { get; set; }
 
         //FKs

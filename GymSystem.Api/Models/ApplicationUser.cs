@@ -24,18 +24,19 @@ namespace GymSystem.Api.Models
         [MaxLength(50)]
         public string? EmployeeId { get; set; } // Internal staff ID
 
+        [MaxLength(450)]
         public string? CreatedByUserId { get; set; }
 
         //FK
         public int? BranchId { get; set; }
         public Branch? Branch { get; set; }
 
-        public ICollection<Subscription>? Subscriptions { get; set; } = new List<Subscription>();
-        public ICollection<Payment>? Payments { get; set; } = new List<Payment>();
-        public ICollection<Class>? Classes { get; set; } = new List<Class>();
-        public ICollection<Booking>? Bookings { get; set; } = new List<Booking>();
-        public ICollection<Attendance>? Attendances { get; set; } = new List<Attendance>();
+        public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+        public ICollection<Payment> Payments { get; set; } = new List<Payment>();
+        public ICollection<Class> Classes { get; set; } = new List<Class>();
+        public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+        public ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
 
-        public ICollection<Schedule>? Schedules { get; set; } = new List<Schedule>();
+        public ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
     }
 }

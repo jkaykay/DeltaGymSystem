@@ -1,8 +1,12 @@
-﻿namespace GymSystem.Api.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GymSystem.Api.Models
 {
     public class Class
     {
         public int ClassId { get; set; }
+
+        [MaxLength(100)]
         public string Subject { get; set; } = string.Empty;
         
         //FK
