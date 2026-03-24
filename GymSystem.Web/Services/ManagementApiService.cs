@@ -45,7 +45,7 @@ namespace GymSystem.Web.Services
             var response = await _http.PostAsJsonAsync("api/member", new
             {
                 model.Email,
-                model.Username,
+                UserName = model.Username,
                 model.FirstName,
                 model.LastName,
                 model.Password
@@ -111,6 +111,7 @@ namespace GymSystem.Web.Services
         {
             var response = await _http.PutAsJsonAsync($"api/staff/{id}", new
             {
+                model.Email,
                 model.FirstName,
                 model.LastName
             });

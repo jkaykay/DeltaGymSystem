@@ -3,7 +3,7 @@
 namespace GymSystem.Shared.DTOs;
 
 public record CreateMemberRequest(
-    [Required, MaxLength(100)] string Username,
+    [Required, MaxLength(100)] string UserName,
     [Required, EmailAddress, MaxLength(256)] string Email,
     [Required, MaxLength(100)] string FirstName,
     [Required, MaxLength(100)] string LastName,

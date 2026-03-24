@@ -92,13 +92,13 @@ public class MemberController : ControllerBase
         if (existingByEmail is not null)
             return Conflict("A user with this email already exists.");
 
-        var existingByUsername = await _userManager.FindByNameAsync(request.Username);
+        var existingByUsername = await _userManager.FindByNameAsync(request.UserName);
         if (existingByUsername is not null)
             return Conflict("A user with this username already exists.");
 
         var user = new ApplicationUser
         {
-            UserName = request.Username,
+            UserName = request.UserName,
             Email = request.Email,
             FirstName = request.FirstName,
             LastName = request.LastName,

@@ -6,5 +6,5 @@ public record UpdateSessionRequest(
     DateTime? Start = null,
     DateTime? End = null,
     int? RoomId = null,
-    [Range(1, 1000)] int? MaxCapacity = null
+    [Range(1, 100)] int? MaxCapacity = null
 );

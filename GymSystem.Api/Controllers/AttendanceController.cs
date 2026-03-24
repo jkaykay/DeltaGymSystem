@@ -29,6 +29,7 @@ namespace GymSystem.Api.Controllers
             var attendances = await _context.Attendances.Include(a => a.User).ToListAsync();
             var result = attendances.Select(a => new AttendanceDTO
             {
+                AttendanceId = a.AttendanceId,
                 CheckIn = a.CheckIn,
                 CheckOut = a.CheckOut,
                 UserId = a.UserId,
@@ -50,6 +51,7 @@ namespace GymSystem.Api.Controllers
 
             var result = active.Select(a => new AttendanceDTO
             {
+                AttendanceId = a.AttendanceId,
                 CheckIn = a.CheckIn,
                 CheckOut = a.CheckOut,
                 UserId = a.UserId,
@@ -69,6 +71,7 @@ namespace GymSystem.Api.Controllers
 
             return Ok(new AttendanceDTO
             {
+                AttendanceId = attendance.AttendanceId,
                 CheckIn = attendance.CheckIn,
                 CheckOut = attendance.CheckOut,
                 UserId = attendance.UserId,
@@ -93,6 +96,7 @@ namespace GymSystem.Api.Controllers
 
             var result = memberAttendances.Select(a => new AttendanceDTO
             {
+                AttendanceId = a.AttendanceId,
                 CheckIn = a.CheckIn,
                 CheckOut = a.CheckOut,
                 UserId = a.UserId,
@@ -130,6 +134,7 @@ namespace GymSystem.Api.Controllers
 
             return CreatedAtAction(nameof(GetById), new { id = attendance.AttendanceId }, new AttendanceDTO
             {
+                AttendanceId = attendance.AttendanceId,
                 CheckIn = attendance.CheckIn,
                 CheckOut = attendance.CheckOut,
                 UserId = attendance.UserId,
@@ -156,6 +161,7 @@ namespace GymSystem.Api.Controllers
 
             return Ok(new AttendanceDTO
             {
+                AttendanceId = openSession.AttendanceId,
                 CheckIn = openSession.CheckIn,
                 CheckOut = openSession.CheckOut,
                 UserId = openSession.UserId,

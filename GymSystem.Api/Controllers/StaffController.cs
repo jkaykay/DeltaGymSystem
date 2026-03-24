@@ -192,6 +192,16 @@ public class StaffController : ControllerBase
         if (!roles.Contains("Staff") && !roles.Contains("Admin"))
             return NotFound("User is not a staff member.");
 
+        if (request.Email is not null)
+        {
+            var existingByEmail = await _userManager.FindByEmailAsync(request.Email);
+            if (existingByEmail is not null && existingByEmail.Id != user.Id)
+                return Conflict("A user with this email already exists.");
+
+            user.Email = request.Email;
+            user.NormalizedEmail = request.Email.ToUpperInvariant();
+        }
+
         if (request.FirstName is not null) user.FirstName = request.FirstName;
         if (request.LastName is not null) user.LastName = request.LastName;
 
