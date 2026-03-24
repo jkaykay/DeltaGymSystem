@@ -24,27 +24,22 @@ namespace GymSystem.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var sessions = await _context.Sessions
-                .Include(s => s.Class)
-                    .ThenInclude(c => c.User)
-                .Include(s => s.Room)
-                .Include(s => s.Bookings)
+            var result = await _context.Sessions
+                .Select(s => new SessionDTO
+                {
+                    SessionId = s.SessionId,
+                    Start = s.Start,
+                    End = s.End,
+                    ClassId = s.Class.ClassId,
+                    Subject = s.Class.Subject,
+                    RoomId = s.Room.RoomId,
+                    RoomNumber = s.Room.RoomNumber,
+                    MaxCapacity = s.MaxCapacity,
+                    BookingCount = s.Bookings.Count,
+                    InstructorId = s.Class.User.Id,
+                    InstructorName = $"{s.Class.User.FirstName} {s.Class.User.LastName}"
+                })
                 .ToListAsync();
-
-            var result = sessions.Select(s => new SessionDTO
-            {
-                SessionId = s.SessionId,
-                Start = s.Start,
-                End = s.End,
-                ClassId = s.Class.ClassId,
-                Subject = s.Class.Subject,
-                RoomId = s.Room.RoomId,
-                RoomNumber = s.Room.RoomNumber,
-                MaxCapacity = s.MaxCapacity,
-                BookingCount = s.Bookings.Count,
-                InstructorId = s.Class.User.Id,
-                InstructorName = $"{s.Class.User.FirstName} {s.Class.User.LastName}"
-            }).ToList();
 
             return Ok(result);
         }
@@ -52,32 +47,28 @@ namespace GymSystem.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var session = await _context.Sessions
-                .Include(s => s.Class)
-                    .ThenInclude(c => c.User)
-                .Include(s => s.Room)
-                .Include(s => s.Bookings)
-                .FirstOrDefaultAsync(s => s.SessionId == id);
+            var result = await _context.Sessions
+                .Where(s => s.SessionId == id)
+                .Select(s => new SessionDTO
+                {
+                    SessionId = s.SessionId,
+                    Start = s.Start,
+                    End = s.End,
+                    ClassId = s.Class.ClassId,
+                    Subject = s.Class.Subject,
+                    RoomId = s.Room.RoomId,
+                    RoomNumber = s.Room.RoomNumber,
+                    MaxCapacity = s.MaxCapacity,
+                    BookingCount = s.Bookings.Count,
+                    InstructorId = s.Class.User.Id,
+                    InstructorName = $"{s.Class.User.FirstName} {s.Class.User.LastName}"
+                })
+                .FirstOrDefaultAsync();
 
-            if (session == null)
+            if (result == null)
             {
                 return NotFound();
             }
-
-            var result = new SessionDTO
-            {
-                SessionId = session.SessionId,
-                Start = session.Start,
-                End = session.End,
-                ClassId = session.Class.ClassId,
-                Subject = session.Class.Subject,
-                RoomId = session.Room.RoomId,
-                RoomNumber = session.Room.RoomNumber,
-                MaxCapacity = session.MaxCapacity,
-                BookingCount = session.Bookings.Count,
-                InstructorId = session.Class.User.Id,
-                InstructorName = $"{session.Class.User.FirstName} {session.Class.User.LastName}"
-            };
 
             return Ok(result);
         }
@@ -178,7 +169,6 @@ namespace GymSystem.Api.Controllers
                 .Include(s => s.Class)
                     .ThenInclude(c => c.User)
                 .Include(s => s.Room)
-                .Include(s => s.Bookings)
                 .FirstOrDefaultAsync(s => s.SessionId == id);
 
             if (session == null)
@@ -247,6 +237,8 @@ namespace GymSystem.Api.Controllers
 
             await _context.SaveChangesAsync();
 
+            var bookingCount = await _context.Bookings.CountAsync(b => b.SessionId == id);
+
             return Ok(new SessionDTO
             {
                 SessionId = session.SessionId,
@@ -257,7 +249,7 @@ namespace GymSystem.Api.Controllers
                 RoomId = session.Room.RoomId,
                 RoomNumber = session.Room.RoomNumber,
                 MaxCapacity = session.MaxCapacity,
-                BookingCount = session.Bookings.Count,
+                BookingCount = bookingCount,
                 InstructorId = session.Class.User.Id,
                 InstructorName = $"{session.Class.User.FirstName} {session.Class.User.LastName}"
             });

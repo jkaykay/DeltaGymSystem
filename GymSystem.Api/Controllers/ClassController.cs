@@ -24,42 +24,41 @@ namespace GymSystem.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var classes = await _context.Classes
-                .Include(c => c.User)
-                .Include(c => c.Sessions)
+            var result = await _context.Classes
+                .Select(c => new ClassDTO
+                {
+                    ClassId = c.ClassId,
+                    Subject = c.Subject,
+                    UserId = c.UserId,
+                    TrainerName = $"{c.User.FirstName} {c.User.LastName}",
+                    SessionCount = c.Sessions.Count
+                })
                 .ToListAsync();
 
-            var result = classes.Select(c => new ClassDTO
-            {
-                ClassId = c.ClassId,
-                Subject = c.Subject,
-                UserId = c.UserId,
-                TrainerName = $"{c.User.FirstName} {c.User.LastName}",
-                SessionCount = c.Sessions.Count
-            }).ToList();
             return Ok(result);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var classEntity = await _context.Classes
-            .Include(c => c.User)
-            .Include(c => c.Sessions)
-            .FirstOrDefaultAsync(c => c.ClassId == id);
-            if (classEntity == null)
+            var result = await _context.Classes
+                .Where(c => c.ClassId == id)
+                .Select(c => new ClassDTO
+                {
+                    ClassId = c.ClassId,
+                    Subject = c.Subject,
+                    UserId = c.UserId,
+                    TrainerName = $"{c.User.FirstName} {c.User.LastName}",
+                    SessionCount = c.Sessions.Count
+                })
+                .FirstOrDefaultAsync();
+
+            if (result == null)
             {
                 return NotFound();
             }
 
-            return Ok(new ClassDTO
-            {
-                ClassId = classEntity.ClassId,
-                Subject = classEntity.Subject,
-                UserId = classEntity.UserId,
-                TrainerName = $"{classEntity.User.FirstName} {classEntity.User.LastName}",
-                SessionCount = classEntity.Sessions.Count
-            });
+            return Ok(result);
         }
 
         [HttpPost]
@@ -105,7 +104,6 @@ namespace GymSystem.Api.Controllers
         {
             var classEntity = await _context.Classes
                 .Include(c => c.User)
-                .Include(c => c.Sessions)
                 .FirstOrDefaultAsync(c => c.ClassId == id);
 
             if (classEntity == null)
@@ -141,13 +139,15 @@ namespace GymSystem.Api.Controllers
 
             await _context.SaveChangesAsync();
 
+            var sessionCount = await _context.Sessions.CountAsync(s => s.ClassId == id);
+
             return Ok(new ClassDTO
             {
                 ClassId = classEntity.ClassId,
                 Subject = classEntity.Subject,
                 UserId = classEntity.UserId,
                 TrainerName = $"{classEntity.User.FirstName} {classEntity.User.LastName}",
-                SessionCount = classEntity.Sessions.Count
+                SessionCount = sessionCount
             });
         }
 

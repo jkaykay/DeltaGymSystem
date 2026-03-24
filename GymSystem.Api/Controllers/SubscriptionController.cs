@@ -30,7 +30,6 @@ public class SubscriptionController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var subscriptions = await _context.Subscriptions
-            .Include(s => s.Payments)
             .Select(s => new SubscriptionDTO
             {
                 SubId = s.SubId,
@@ -50,24 +49,24 @@ public class SubscriptionController : ControllerBase
     [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Get(int id)
     {
-        var sub = await _context.Subscriptions
-            .Include(s => s.Payments)
-            .Include(s => s.User)
-            .FirstOrDefaultAsync(s => s.SubId == id);
+        var result = await _context.Subscriptions
+            .Where(s => s.SubId == id)
+            .Select(s => new SubscriptionDTO
+            {
+                SubId = s.SubId,
+                State = s.State,
+                StartDate = s.StartDate,
+                EndDate = s.EndDate,
+                TierName = s.TierName,
+                UserId = s.UserId,
+                MemberName = $"{s.User.FirstName} {s.User.LastName}"
+            })
+            .FirstOrDefaultAsync();
 
-        if (sub is null)
+        if (result is null)
             return NotFound();
 
-        return Ok(new SubscriptionDTO
-        {
-            SubId = sub.SubId,
-            State = sub.State,
-            StartDate = sub.StartDate,
-            EndDate = sub.EndDate,
-            TierName = sub.TierName,
-            UserId = sub.UserId,
-            MemberName = $"{sub.User.FirstName} {sub.User.LastName}"
-        });
+        return Ok(result);
     }
 
     /// <summary>

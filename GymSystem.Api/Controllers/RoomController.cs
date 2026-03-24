@@ -22,42 +22,40 @@ namespace GymSystem.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var rooms = await _context.Rooms
-                .Include(r => r.Sessions)
-                .Include(r => r.Equipments)
+            var result = await _context.Rooms
+                .Select(r => new RoomDTO
+                {
+                    RoomId = r.RoomId,
+                    RoomNumber = r.RoomNumber,
+                    BranchId = r.BranchId,
+                    MaxCapacity = r.MaxCapacity,
+                    SessionCount = r.Sessions.Count,
+                    EquipmentCount = r.Equipments.Count
+                })
                 .ToListAsync();
 
-            var result = rooms.Select(r => new RoomDTO
-            {
-                RoomId = r.RoomId,
-                RoomNumber = r.RoomNumber,
-                BranchId = r.BranchId,
-                MaxCapacity = r.MaxCapacity,
-                SessionCount = r.Sessions.Count,
-                EquipmentCount = r.Equipments.Count
-            }).ToList();
             return Ok(result);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var room = await _context.Rooms
-                .Include(r => r.Sessions)
-                .Include(r => r.Equipments)
-                .FirstOrDefaultAsync(r => r.RoomId == id);
+            var result = await _context.Rooms
+                .Where(r => r.RoomId == id)
+                .Select(r => new RoomDTO
+                {
+                    RoomId = r.RoomId,
+                    RoomNumber = r.RoomNumber,
+                    BranchId = r.BranchId,
+                    MaxCapacity = r.MaxCapacity,
+                    SessionCount = r.Sessions.Count,
+                    EquipmentCount = r.Equipments.Count
+                })
+                .FirstOrDefaultAsync();
 
-            if (room == null) return NotFound();
+            if (result == null) return NotFound();
 
-            return Ok(new RoomDTO
-            {
-                RoomId = room.RoomId,
-                RoomNumber = room.RoomNumber,
-                BranchId = room.BranchId,
-                MaxCapacity = room.MaxCapacity,
-                SessionCount = room.Sessions.Count,
-                EquipmentCount = room.Equipments.Count
-            });
+            return Ok(result);
         }
 
         [HttpPost]
@@ -104,8 +102,6 @@ namespace GymSystem.Api.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] UpdateRoomRequest roomRequest)
         {
             var room = await _context.Rooms
-                .Include(r => r.Sessions)
-                .Include(r => r.Equipments)
                 .FirstOrDefaultAsync(r => r.RoomId == id);
 
             if (room == null) return NotFound();
@@ -137,14 +133,17 @@ namespace GymSystem.Api.Controllers
 
             await _context.SaveChangesAsync();
 
+            var sessionCount = await _context.Sessions.CountAsync(s => s.RoomId == id);
+            var equipmentCount = await _context.Equipments.CountAsync(e => e.RoomId == id);
+
             return Ok(new RoomDTO
             {
                 RoomId = room.RoomId,
                 RoomNumber = room.RoomNumber,
                 BranchId = room.BranchId,
                 MaxCapacity = room.MaxCapacity,
-                SessionCount = room.Sessions.Count,
-                EquipmentCount = room.Equipments.Count
+                SessionCount = sessionCount,
+                EquipmentCount = equipmentCount
             });
         }
 

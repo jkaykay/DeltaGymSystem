@@ -21,16 +21,17 @@ namespace GymSystem.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var branches = await _context.Branches.ToListAsync();
-            var result = branches.Select(b => new BranchDTO
-            {
-                BranchId = b.BranchId,
-                Address = b.Address,
-                City = b.City,
-                Province = b.Province,
-                PostCode = b.PostCode,
-                OpenDate = b.OpenDate
-            }).ToList();
+            var result = await _context.Branches
+                .Select(b => new BranchDTO
+                {
+                    BranchId = b.BranchId,
+                    Address = b.Address,
+                    City = b.City,
+                    Province = b.Province,
+                    PostCode = b.PostCode,
+                    OpenDate = b.OpenDate
+                })
+                .ToListAsync();
 
             return Ok(result);
         }

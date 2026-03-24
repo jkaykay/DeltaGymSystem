@@ -26,16 +26,17 @@ namespace GymSystem.Api.Controllers
         [Authorize(Roles = "Staff,Admin")]
         public async Task<IActionResult> GetAll()
         {
-            var attendances = await _context.Attendances.Include(a => a.User).ToListAsync();
-            var result = attendances.Select(a => new AttendanceDTO
-            {
-                AttendanceId = a.AttendanceId,
-                CheckIn = a.CheckIn,
-                CheckOut = a.CheckOut,
-                UserId = a.UserId,
-                MemberName = $"{a.User.FirstName} {a.User.LastName}",
-                InFlag = a.InFlag
-            });
+            var result = await _context.Attendances
+                .Select(a => new AttendanceDTO
+                {
+                    AttendanceId = a.AttendanceId,
+                    CheckIn = a.CheckIn,
+                    CheckOut = a.CheckOut,
+                    UserId = a.UserId,
+                    MemberName = $"{a.User.FirstName} {a.User.LastName}",
+                    InFlag = a.InFlag
+                })
+                .ToListAsync();
 
             return Ok(result);
         }
@@ -45,39 +46,40 @@ namespace GymSystem.Api.Controllers
         public async Task<IActionResult> GetActive()
         {
             var active = await _context.Attendances
-                .Include(a => a.User)
                 .Where(a => a.InFlag)
+                .Select(a => new AttendanceDTO
+                {
+                    AttendanceId = a.AttendanceId,
+                    CheckIn = a.CheckIn,
+                    CheckOut = a.CheckOut,
+                    UserId = a.UserId,
+                    MemberName = $"{a.User.FirstName} {a.User.LastName}",
+                    InFlag = a.InFlag
+                })
                 .ToListAsync();
 
-            var result = active.Select(a => new AttendanceDTO
-            {
-                AttendanceId = a.AttendanceId,
-                CheckIn = a.CheckIn,
-                CheckOut = a.CheckOut,
-                UserId = a.UserId,
-                MemberName = $"{a.User.FirstName} {a.User.LastName}",
-                InFlag = a.InFlag
-            });
-
-            return Ok(result);
+            return Ok(active);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var attendance = await _context.Attendances.Include(a => a.User).FirstOrDefaultAsync(a => a.AttendanceId == id);
+            var attendance = await _context.Attendances
+                .Where(a => a.AttendanceId == id)
+                .Select(a => new AttendanceDTO
+                {
+                    AttendanceId = a.AttendanceId,
+                    CheckIn = a.CheckIn,
+                    CheckOut = a.CheckOut,
+                    UserId = a.UserId,
+                    MemberName = $"{a.User.FirstName} {a.User.LastName}",
+                    InFlag = a.InFlag
+                })
+                .FirstOrDefaultAsync();
 
             if (attendance == null) return NotFound("Specified attendance record does not exist.");
 
-            return Ok(new AttendanceDTO
-            {
-                AttendanceId = attendance.AttendanceId,
-                CheckIn = attendance.CheckIn,
-                CheckOut = attendance.CheckOut,
-                UserId = attendance.UserId,
-                MemberName = $"{attendance.User.FirstName} {attendance.User.LastName}",
-                InFlag = attendance.InFlag
-            });
+            return Ok(attendance);
         }
 
         [HttpGet("member/{memberId}")]
@@ -87,24 +89,22 @@ namespace GymSystem.Api.Controllers
             if (user is null) return NotFound($"No user with ID '{memberId}' was found.");
 
             var memberAttendances = await _context.Attendances
-                .Include(a => a.User)
                 .Where(a => a.UserId == memberId)
+                .Select(a => new AttendanceDTO
+                {
+                    AttendanceId = a.AttendanceId,
+                    CheckIn = a.CheckIn,
+                    CheckOut = a.CheckOut,
+                    UserId = a.UserId,
+                    MemberName = $"{a.User.FirstName} {a.User.LastName}",
+                    InFlag = a.InFlag
+                })
                 .ToListAsync();
 
             if (!memberAttendances.Any())
                 return NotFound($"No attendance records for that user exist yet.");
 
-            var result = memberAttendances.Select(a => new AttendanceDTO
-            {
-                AttendanceId = a.AttendanceId,
-                CheckIn = a.CheckIn,
-                CheckOut = a.CheckOut,
-                UserId = a.UserId,
-                MemberName = $"{a.User.FirstName} {a.User.LastName}",
-                InFlag = a.InFlag
-            });
-
-            return Ok(result);
+            return Ok(memberAttendances);
         }
 
         [HttpPost("checkin")]
