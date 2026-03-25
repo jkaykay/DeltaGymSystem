@@ -135,6 +135,11 @@ builder.Services.AddOutputCache(options =>
         .Expire(TimeSpan.FromSeconds(30))
         .Tag("bookings"));
 
+    // Payments: low mutation rate (members pay ~monthly), safe at 30 s
+    options.AddPolicy("payments", policy => policy
+        .Expire(TimeSpan.FromSeconds(30))
+        .Tag("payments"));
+
     // Attendance changes on every check-in/out — keep TTL very short
     options.AddPolicy("attendance", policy => policy
         .Expire(TimeSpan.FromSeconds(10))
