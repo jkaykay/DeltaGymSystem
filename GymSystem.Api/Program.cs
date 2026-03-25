@@ -91,8 +91,57 @@ builder.Services.AddCors(options =>
     });
 });
 
+// --- Caching ---
+builder.Services.AddMemoryCache();
+builder.Services.AddOutputCache(options =>
+{
+    // Classes list: rarely mutated, 60 s TTL
+    options.AddPolicy("classes", policy => policy
+        .Expire(TimeSpan.FromSeconds(60))
+        .Tag("classes"));
+
+    // Rooms list + total: rarely mutated, 60 s TTL
+    options.AddPolicy("rooms", policy => policy
+        .Expire(TimeSpan.FromSeconds(60))
+        .Tag("rooms"));
+
+    // Member list/total/recents: query string (page, pageSize) is part of
+    // the default cache key, so paginated pages are cached independently
+    options.AddPolicy("members", policy => policy
+        .Expire(TimeSpan.FromSeconds(30))
+        .Tag("members"));
+
+    // Staff list/total: same approach as members
+    options.AddPolicy("staff", policy => policy
+        .Expire(TimeSpan.FromSeconds(30))
+        .Tag("staff"));
+
+    // Trainers: same lifecycle as staff
+    options.AddPolicy("trainers", policy => policy
+        .Expire(TimeSpan.FromSeconds(30))
+        .Tag("trainers"));
+
+    // Branches and tiers almost never change — long TTL is safe
+    options.AddPolicy("branches", policy => policy
+        .Expire(TimeSpan.FromSeconds(120))
+        .Tag("branches"));
+
+    options.AddPolicy("tiers", policy => policy
+        .Expire(TimeSpan.FromSeconds(120))
+        .Tag("tiers"));
+
+    // Bookings: moderate mutation rate
+    options.AddPolicy("bookings", policy => policy
+        .Expire(TimeSpan.FromSeconds(30))
+        .Tag("bookings"));
+
+    // Attendance changes on every check-in/out — keep TTL very short
+    options.AddPolicy("attendance", policy => policy
+        .Expire(TimeSpan.FromSeconds(10))
+        .Tag("attendance"));
+});
+
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -111,6 +160,9 @@ app.UseCors();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Must come after auth so only authenticated responses are cached
+app.UseOutputCache();
 
 app.MapControllers();
 

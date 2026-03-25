@@ -26,10 +26,11 @@ namespace GymSystem.Web.Services
 
         // --- Members ---
 
-        public async Task<List<UserDTO>> GetMembersAsync()
+        public async Task<PagedResult<UserDTO>> GetMembersAsync(int page = 1, int pageSize = 10)
         {
-            var result = await _http.GetFromJsonAsync<List<UserDTO>>("api/member");
-            return result ?? [];
+            var result = await _http.GetFromJsonAsync<PagedResult<UserDTO>>(
+                $"api/member?page={page}&pageSize={pageSize}");
+            return result ?? new PagedResult<UserDTO>();
         }
 
         public async Task<UserDTO?> GetMemberAsync(string id)
@@ -41,7 +42,8 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<UserDTO>();
         }
 
-        public async Task<bool> CreateMemberAsync(CreateMemberViewModel model) {
+        public async Task<bool> CreateMemberAsync(CreateMemberViewModel model)
+        {
             var response = await _http.PostAsJsonAsync("api/member", new
             {
                 model.Email,
@@ -78,10 +80,11 @@ namespace GymSystem.Web.Services
 
         // --- Staff ---
 
-        public async Task<List<UserDTO>> GetStaffAsync()
+        public async Task<PagedResult<UserDTO>> GetStaffAsync(int page = 1, int pageSize = 10)
         {
-            var result = await _http.GetFromJsonAsync<List<UserDTO>>("api/staff");
-            return result ?? [];
+            var result = await _http.GetFromJsonAsync<PagedResult<UserDTO>>(
+                $"api/staff?page={page}&pageSize={pageSize}");
+            return result ?? new PagedResult<UserDTO>();
         }
 
         public async Task<UserDTO?> GetStaffMemberAsync(string id)

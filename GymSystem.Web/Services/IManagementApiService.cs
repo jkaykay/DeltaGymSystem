@@ -1,8 +1,6 @@
 ﻿using GymSystem.Web.Areas.Management.ViewModels;
 using GymSystem.Shared.DTOs;
 
-namespace GymSystem.Web.Services;
-
 public interface IManagementApiService
 {
     // Auth
@@ -10,7 +8,7 @@ public interface IManagementApiService
 
     // Members
     Task<bool> CreateMemberAsync(CreateMemberViewModel model);
-    Task<List<UserDTO>> GetMembersAsync();
+    Task<PagedResult<UserDTO>> GetMembersAsync(int page = 1, int pageSize = 10);
     Task<UserDTO?> GetMemberAsync(string id);
     Task<bool> UpdateMemberAsync(string id, EditMemberViewModel model);
     Task<bool> ToggleMemberActiveAsync(string id);
@@ -19,11 +17,10 @@ public interface IManagementApiService
     Task<List<UserDTO>> GetRecentSignupsAsync();
 
     // Staff
-    Task<List<UserDTO>> GetStaffAsync();
+    Task<PagedResult<UserDTO>> GetStaffAsync(int page = 1, int pageSize = 10);
     Task<UserDTO?> GetStaffMemberAsync(string id);
     Task<bool> CreateStaffAsync(CreateStaffViewModel model);
     Task<bool> UpdateStaffAsync(string id, EditStaffViewModel model);
     Task<bool> DeleteStaffAsync(string id);
     Task<CountResponse> GetTotalStaffAsync();
-
 }

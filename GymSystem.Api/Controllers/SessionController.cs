@@ -1,4 +1,5 @@
 ﻿using GymSystem.Api.Data;
+using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
@@ -22,7 +23,7 @@ namespace GymSystem.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             var result = await _context.Sessions
                 .Select(s => new SessionDTO
@@ -39,7 +40,7 @@ namespace GymSystem.Api.Controllers
                     InstructorId = s.Class.User.Id,
                     InstructorName = $"{s.Class.User.FirstName} {s.Class.User.LastName}"
                 })
-                .ToListAsync();
+                .ToPagedResultAsync(page, pageSize);
 
             return Ok(result);
         }

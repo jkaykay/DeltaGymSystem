@@ -4,6 +4,7 @@ using GymSystem.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 
 namespace GymSystem.Api.Controllers
@@ -15,13 +16,17 @@ namespace GymSystem.Api.Controllers
     {
         private readonly GymDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        public ClassController(GymDbContext context, UserManager<ApplicationUser> userManager)
+        private readonly IOutputCacheStore _outputCache;
+
+        public ClassController(GymDbContext context, UserManager<ApplicationUser> userManager, IOutputCacheStore outputCache)
         {
             _context = context;
             _userManager = userManager;
+            _outputCache = outputCache;
         }
 
         [HttpGet]
+        [OutputCache(PolicyName = "classes")]
         public async Task<IActionResult> GetAll()
         {
             var result = await _context.Classes
@@ -39,6 +44,7 @@ namespace GymSystem.Api.Controllers
         }
 
         [HttpGet("{id}")]
+        [OutputCache(PolicyName = "classes")]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _context.Classes
@@ -88,6 +94,8 @@ namespace GymSystem.Api.Controllers
             _context.Classes.Add(newClass);
             var rowsAffected = await _context.SaveChangesAsync();
             if (rowsAffected == 0) return BadRequest("Class creation failed.");
+
+            await _outputCache.EvictByTagAsync("classes", default);
 
             return CreatedAtAction(nameof(GetById), new { id = newClass.ClassId }, new ClassDTO
             {
@@ -146,6 +154,8 @@ namespace GymSystem.Api.Controllers
 
             await _context.SaveChangesAsync();
 
+            await _outputCache.EvictByTagAsync("classes", default);
+
             return Ok(new ClassDTO
             {
                 ClassId = classEntity.ClassId,
@@ -167,14 +177,10 @@ namespace GymSystem.Api.Controllers
             _context.Classes.Remove(classEntity);
             var rowsAffected = await _context.SaveChangesAsync();
             if (rowsAffected == 0) return BadRequest("Class deletion failed.");
-            return NoContent();
-        }
 
-        [HttpGet("total")]
-        public async Task<IActionResult> GetTotal()
-        {
-            var total = await _context.Classes.CountAsync();
-            return Ok(new CountResponse { Count = total });
+            await _outputCache.EvictByTagAsync("classes", default);
+
+            return NoContent();
         }
     }
 }

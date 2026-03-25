@@ -1,4 +1,4 @@
-﻿@model List<UserDTO>
+﻿@model PagedResult<UserDTO>
 
 @{
     ViewData["Title"] = "Manage Staff";
@@ -12,7 +12,7 @@
             {
                 <a asp-action="Create">➕ Add Staff</a>
             }
-            <span>@Model.Count total</span>
+            <span>@Model.TotalCount total</span>
         </div>
     </div>
 
@@ -48,7 +48,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var staff in Model)
+                    @foreach (var staff in Model.Items)
                     {
                         <tr>
                             <td>@staff.FirstName @staff.LastName</td>
@@ -88,11 +88,13 @@
                 </tbody>
             </table>
         </div>
-        @if (!Model.Any())
+        @if (!Model.Items.Any())
         {
             <div>
                 <p>No staff members found.</p>
             </div>
         }
+
+        <partial name="_Pagination" model="Model" />
     </div>
 </div>

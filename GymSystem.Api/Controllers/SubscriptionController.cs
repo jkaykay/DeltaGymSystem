@@ -1,4 +1,5 @@
 ﻿using GymSystem.Api.Data;
+using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
 using GymSystem.Shared.Enums;
@@ -27,9 +28,9 @@ public class SubscriptionController : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = "Admin,Staff")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var subscriptions = await _context.Subscriptions
+        var result = await _context.Subscriptions
             .Select(s => new SubscriptionDTO
             {
                 SubId = s.SubId,
@@ -40,10 +41,11 @@ public class SubscriptionController : ControllerBase
                 UserId = s.UserId,
                 MemberName = $"{s.User.FirstName} {s.User.LastName}"
             })
-            .ToListAsync();
+            .ToPagedResultAsync(page, pageSize);
 
-        return Ok(subscriptions);
+        return Ok(result);
     }
+
 
     [HttpGet("{id}")]
     [Authorize(Roles = "Admin,Staff")]

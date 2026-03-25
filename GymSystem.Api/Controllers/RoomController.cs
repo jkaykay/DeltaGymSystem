@@ -3,6 +3,7 @@ using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 
 namespace GymSystem.Api.Controllers
@@ -13,13 +14,16 @@ namespace GymSystem.Api.Controllers
     public class RoomController : ControllerBase
     {
         private readonly GymDbContext _context;
+        private readonly IOutputCacheStore _outputCache;
 
-        public RoomController(GymDbContext context)
+        public RoomController(GymDbContext context, IOutputCacheStore outputCache)
         {
             _context = context;
+            _outputCache = outputCache;
         }
 
         [HttpGet]
+        [OutputCache(PolicyName = "rooms")]
         public async Task<IActionResult> GetAll()
         {
             var result = await _context.Rooms
@@ -38,6 +42,7 @@ namespace GymSystem.Api.Controllers
         }
 
         [HttpGet("{id}")]
+        [OutputCache(PolicyName = "rooms")]
         public async Task<IActionResult> Get(int id)
         {
             var result = await _context.Rooms
@@ -85,6 +90,8 @@ namespace GymSystem.Api.Controllers
             _context.Rooms.Add(room);
             var rowsAffected = await _context.SaveChangesAsync();
             if (rowsAffected == 0) return BadRequest("Failed to create room.");
+
+            await _outputCache.EvictByTagAsync("rooms", default);
 
             return CreatedAtAction(nameof(Get), new { id = room.RoomId }, new RoomDTO
             {
@@ -139,6 +146,8 @@ namespace GymSystem.Api.Controllers
 
             await _context.SaveChangesAsync();
 
+            await _outputCache.EvictByTagAsync("rooms", default);
+
             return Ok(new RoomDTO
             {
                 RoomId = room.RoomId,
@@ -161,10 +170,13 @@ namespace GymSystem.Api.Controllers
             var rowsAffected = await _context.SaveChangesAsync();
             if (rowsAffected == 0) return BadRequest("Failed to delete room.");
 
+            await _outputCache.EvictByTagAsync("rooms", default);
+
             return NoContent();
         }
 
         [HttpGet("total")]
+        [OutputCache(PolicyName = "rooms")]
         public async Task<IActionResult> GetTotal()
         {
             var total = await _context.Rooms.CountAsync();

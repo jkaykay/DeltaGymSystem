@@ -17,10 +17,10 @@ public class StaffController : Controller
         _api = api;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
     {
-        var staff = await _api.GetStaffAsync();
-        return View(staff);
+        var result = await _api.GetStaffAsync(page, pageSize);
+        return View(result);
     }
 
     public async Task<IActionResult> Details(string id)
