@@ -4,7 +4,7 @@ using GymSystem.Web.Areas.Member.ViewModels;
 namespace GymSystem.Web.Areas.Member.Controllers;
 
 [Area("Member")]
-public class DashboardController : Controller
+public class BookingController : Controller
 {
     public IActionResult Index()
     {

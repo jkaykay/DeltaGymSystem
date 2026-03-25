@@ -1,0 +1,290 @@
+@{
+    Layout = null;
+}
+
+@{
+    ViewData["Title"] = "Classes";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DELTA GYMS-Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> // For carousel and bootstrap components
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"> // For icons from bootstrap
+  <link rel="stylesheet" href="~/css/members/classes.css"/>
+</head>
+<body>
+
+  <!-- NAV  BAR-->
+  <nav>
+   <div class="nav-logo">
+      <img src="~/images/logo.png" alt="Delta Gyms Logo" class="nav-logo-img"/>
+    </div>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/Classes">Classes</a></li>
+      <li><a href="/Memberships">Memberships</a></li>
+      <li><a href="/Dashboard" class="active">Dashboard</a></li>
+      <li><a href="/MyProfile">MyProfile</a></li>
+      <li><a href="/Support">Support</a></li>
+    </ul>
+    <div class="nav-logout"><a href="#">Logout</a></div>
+  </nav>
+
+  <!-- TOP SECTION -->
+  <div class="top-section">
+
+    <h1 class="page-title reveal">Classes and Personal Trainers</h1>
+
+    <div id="carouselExampleIndicators" class="carousel slide">
+  <div class="carousel-indicators" > 
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+  </div>
+  <div class="carousel-inner" style="border-radius: 13px; width: 100%; height: 580px; margin: top 20px;">
+    <div class="carousel-item active ">
+      <img src="images/people-working-out-indoors-together-with-dumbbells.jpg" class="d-block w-100" alt="Cardio class image">
+    </div>
+    <div class="carousel-item" >
+      <img src="images/pilates-group-working-out-gym.jpg" class="d-block w-100" alt="Strength Training class image">
+    </div>
+    <div class="carousel-item">
+      <img src="images/athletic-people-training-boxing-competition.jpg" class="d-block w-100" alt="Yoga class image">
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+
+    <!-- Class Type -->
+    <div id="class-type" class="section-label reveal">
+      Class Type
+     <i class="bi bi-arrow-right"></i>
+    </div>
+
+    <div class="class-type-row reveal">
+      <div class="class-pill active" onclick="scrollToClass('cardio')">
+        <div class="class-pill-icon">
+         <i class="bi bi-heart-fill"></i>
+        </div>
+        <span class="class-pill-label" >Cardio</span>
+      </div>
+      <div class="class-pill" onclick="scrollToClass('strength')">
+  <div class="class-pill-icon">
+    <i class="bi bi-bar-chart-line"></i>
+  </div>
+  <span class="class-pill-label">Strength Training</span>
+</div>
+      <div class="class-pill" onclick="scrollToClass('hiit')">
+        <div class="class-pill-icon">
+          <i class="bi bi-lightning-fill"></i>
+        </div>
+        <span class="class-pill-label">HIIT</span>
+      </div>
+      <div class="class-pill" onclick="scrollToClass('yoga')">
+        <div class="class-pill-icon">
+          <i class="bi bi-person"></i>
+        </div>
+        <span class="class-pill-label">Yoga</span>
+      </div>
+      <div class="class-pill" onclick="scrollToClass('boxing')">
+        <div class="class-pill-icon">
+          <i class="bi bi-shield"></i>
+        </div>
+        <span class="class-pill-label">Boxing</span>
+      </div>
+    </div>
+
+    <!-- Personal Training -->
+    <div id="personal-training" class="section-label reveal">Personal Training</div>
+
+<div class="personal-training-row reveal">
+<div class="pt-pill text-center">
+  <img src="images/Char1.jpg" class="rounded-circle mb-2" width="80" height="80">
+  <div class="fw-bold">John Carter</div>
+</div>
+
+<div class="pt-pill text-center">
+  <img src="images/Char2.jpg" class="rounded-circle mb-2" width="80" height="80">
+  <div class="fw-bold">Somapalaa</div>
+</div>
+
+<div class="pt-pill text-center">
+  <img src="images/Char3.jpg" class="rounded-circle mb-2" width="80" height="80">
+  <div class="fw-bold">Mahinda Mahathaya</div>
+</div>
+
+<div class="pt-pill text-center">
+  <img src="images/Char4.jpg" class="rounded-circle mb-2" width="80" height="80">
+  <div class="fw-bold">Sirisena</div>
+</div>
+
+<div class="pt-pill text-center">
+  <img src="images/Char5.jpg" class="rounded-circle mb-2" width="80" height="80">
+  <div class="fw-bold">Wikramasingha</div>
+</div>
+
+<div class="pt-pill text-center">
+  <img src="images/Char6.jpg" class="rounded-circle mb-2" width="80" height="80">
+  <div class="fw-bold">Mama thama ado</div>
+</div>
+ </div>
+  </div>
+
+  <!-- FULL WIDTH CLASS ROWS -->
+  <div class="classes-list">
+
+    <!-- Cardio: info left, red right -->
+     
+    <div class="class-row info-left reveal" id="cardio">
+      <div class="class-info-panel">
+        <div class="class-name">Cardio</div>
+        <div class="class-tagline">Burn your FAT</div>
+        <p class="class-desc">By joining you can view all the cardio class session times and availability. Get access to all scheduled sessions and book your spot instantly.</p>
+        <a asp-controller="Booking" asp-action="Index" class="join-btn">Join</a>
+      </div>
+      <div class="class-bg-panel bg-red"></div>
+    </div>
+
+    <!-- Strength Training: black left, info right -->
+    <div class="class-row info-right reveal" id="strength">
+      <div class="class-bg-panel bg-black"></div>
+      <div class="class-info-panel">
+        <div class="class-name">Strength Training</div>
+        <div class="class-tagline">Build your strength</div>
+        <p class="class-desc">By joining you can view all the strength class session times and availability. Get access to all scheduled sessions and book your spot instantly.</p>
+        <button class="join-btn" onclick="window.location.href='booking.html'">Join</button>
+      </div>
+    </div>
+
+    <!-- HIIT: info left, red right -->
+    <div class="class-row info-left reveal" id="hiit">
+      <div class="class-info-panel">
+        <div class="class-name">HIIT</div>
+        <div class="class-tagline">Build your strength and burn your Fat</div>
+        <p class="class-desc">By joining you can view all the HIIT class session times and availability. Get access to all scheduled sessions and book your spot instantly.</p>
+        <button class="join-btn" onclick="window.location.href='booking.html'">Join</button>
+      </div>
+      <div class="class-bg-panel bg-red"></div>
+    </div>
+
+    <!-- Yoga: black left, info right -->
+    <div class="class-row info-right reveal" id="yoga">
+      <div class="class-bg-panel bg-black"></div>
+      <div class="class-info-panel">
+        <div class="class-name">Yoga</div>
+        <div class="class-tagline">This is what your body needs</div>
+        <p class="class-desc">By joining you can view all the yoga class session times and availability. Get access to all scheduled sessions and book your spot instantly.</p>
+        <button class="join-btn" onclick="window.location.href='booking.html'">Join</button>
+      </div>
+    </div>
+
+    <!-- Boxing: info left, red right -->
+    <div class="class-row info-left reveal" id="boxing">
+      <div class="class-info-panel">
+        <div class="class-name">Boxing Training</div>
+        <div class="class-tagline">Build your power</div>
+        <p class="class-desc">By joining you can view all the boxing class session times and availability. Get access to all scheduled sessions and book your spot instantly.</p>
+        <button class="join-btn" onclick="window.location.href='booking.html'">Join</button>
+      </div>
+      <div class="class-bg-panel bg-red"></div>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top-btn" id="scrollTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+  <i class="bi bi-arrow-up"></i>
+</button>
+
+<!-- Questions and answers -->
+      <div class="faq-section reveal">
+        <h2 class="faq-title">Common Questions</h2>
+        <div class="faq-list">
+
+          <div class="faq-item">
+            <div class="faq-header">
+              <div class="faq-icon">i</div>
+              <div class="faq-question">What are the benefits of joining a gym class?</div>
+            </div>
+            <p class="faq-answer">Joining a gym class keeps you motivated, focused, and pushing your limits. With our expert fitness instructors guiding every move, you get the best workout and the support of a community cheering you on. Classes add variety, help you stay consistent, and boost your mental wellbeing by reducing stress and lifting your mood.</p>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-header">
+              <div class="faq-icon">i</div>
+              <div class="faq-question">Do workout classes build muscle?</div>
+            </div>
+            <p class="faq-answer">Yes, workout classes can help build muscle, especially strength training and HIIT classes.</p>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-header">
+              <div class="faq-icon">i</div>
+              <div class="faq-question">Can you lose weight doing gym classes?</div>
+            </div>
+            <p class="faq-answer">Yes, you can lose weight by participating in gym classes. Classes like HIIT and cardio are particularly effective for weight loss. <br> Combining regular workouts (3–5 times a week) with a balanced diet and consistent effort can help you slim down, tone up, and feel stronger.</p>
+          </div>
+
+        </div>
+      </div>
+
+
+  </div>
+
+  <script>
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+      nav.style.boxShadow = window.scrollY > 10 ? '0 4px 24px rgba(0,0,0,0.08)' : 'none';
+    });
+
+    document.querySelectorAll('.class-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.class-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+      });
+    });
+
+    const items = document.querySelectorAll('.reveal');
+    items.forEach((el, i) => el.style.transitionDelay = `${i * 60}ms`);
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      });
+    }, { threshold: 0.08 });
+    items.forEach(el => observer.observe(el));
+
+    function scrollToClass(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    const offset = el.getBoundingClientRect().top + window.scrollY - 90;
+    window.scrollTo({ top: offset, behavior: 'smooth' });
+  }
+}
+
+// Show/hide scroll to top button
+const scrollTopBtn = document.getElementById('scrollTopBtn');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 400) {
+    scrollTopBtn.classList.add('visible');
+  } else {
+    scrollTopBtn.classList.remove('visible');
+  }
+});
+
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

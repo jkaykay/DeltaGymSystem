@@ -104,8 +104,14 @@ app.MapControllerRoute(
 
 app.MapControllerRoute(
     name: "areas",
-    pattern: "{area:exists}/{controller=Dashboard}/{action=index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{area:exists}/{controller=Dashboard}/{action=index}/{id?}");
     
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Booking}/{action=index}/{id?}");
+
+  app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Classes}/{action=index}/{id?}");  
 
 app.Run();
