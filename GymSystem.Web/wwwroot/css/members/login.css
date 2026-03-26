@@ -1,0 +1,65 @@
+   :root {
+      --bg: #000000;
+      --primary-color: #c21c1c;
+   }
+
+   body {
+      background: var(--bg);
+      overflow-x: hidden;
+    }
+
+/* Login and Register Container */
+.container-user {
+    max-width: 550px;
+    margin: 100px auto 30px; /* Center the container horizontally, add top margin */
+    background: white;
+    padding: 80px;
+    border-radius: 20px;
+    border: black 2px solid;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+.container-user h2 {
+    color: var(--text-dark);  /* Use the theme's dark text color */
+    margin-bottom: 25px;  /* Add spacing below the heading */
+    font-weight: 700;
+}
+
+.container-user input {
+    width: 100%;
+    padding: 12px 41px;
+    margin-bottom: 15px;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    font-size: 16px;
+    transition: all 0.2s ease; /* Little animation when focusing */
+    text-align: center;
+}
+
+.container-user input:focus {
+    border-color: var(--primary-color); /* Highlight input with main color */
+    outline: none;
+    background: #fff; /* Make it look a bit brighter */
+    text-align: center;
+  
+}
+
+.login-btn, .registrer-btn {
+    background:  #c21c1c;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 10px; /*Rounded Buttons */
+    border: none; /* No borders */
+    font-weight: 600;
+    width: 100%;
+    margin-top: 10px;
+    transition: transform 0.3s; /* Smooth hover lift */
+}
+
+.login-btn:hover, .registrer-btn:hover {
+    transform: translateY(-3px); /* Small "lift up" animation */
+    background: #fefeff;
+    color:rgb(0, 0, 0);
+    border: #000000 2px solid;
+}
