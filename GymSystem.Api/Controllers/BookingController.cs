@@ -4,7 +4,9 @@ using GymSystem.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace GymSystem.Api.Controllers
 {
@@ -15,109 +17,209 @@ namespace GymSystem.Api.Controllers
     {
         private readonly GymDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IOutputCacheStore _outputCache;
 
-        public BookingController(GymDbContext context, UserManager<ApplicationUser> userManager)
+        public BookingController(GymDbContext context, UserManager<ApplicationUser> userManager, IOutputCacheStore outputCache)
         {
             _context = context;
             _userManager = userManager;
+            _outputCache = outputCache;
         }
 
-        private IQueryable<Booking> BookingsQuery()
-        {
-            return _context.Bookings
-                .Include(b => b.Session)
-                    .ThenInclude(s => s.Class)
-                .Include(b => b.Session)
-                    .ThenInclude(s => s.Room)
-                .Include(b => b.User);
-        }
-
-        private static BookingDTO ToDto(Booking b) => new()
-        {
-            BookingId = b.BookingId,
-            BookDate = b.BookDate,
-            SessionId = b.Session.SessionId,
-            SessionStart = b.Session.Start,
-            SessionEnd = b.Session.End,
-            Subject = b.Session.Class.Subject,
-            RoomNumber = b.Session.Room.RoomNumber,
-            UserId = b.User.Id,
-            UserName = $"{b.User.FirstName} {b.User.LastName}"
-        };
+        // --- Admin/Staff endpoints ---
 
         [HttpGet]
         [Authorize(Roles = "Admin,Staff")]
+        [OutputCache(PolicyName = "bookings")]
         public async Task<IActionResult> GetAll()
         {
-            var bookings = await BookingsQuery().ToListAsync();
-            var result = bookings.Select(ToDto).ToList();
+            var result = await _context.Bookings
+                .Select(b => new BookingDTO
+                {
+                    BookingId = b.BookingId,
+                    BookDate = b.BookDate,
+                    SessionId = b.Session.SessionId,
+                    SessionStart = b.Session.Start,
+                    SessionEnd = b.Session.End,
+                    Subject = b.Session.Class.Subject,
+                    RoomNumber = b.Session.Room.RoomNumber,
+                    UserId = b.User.Id,
+                    UserName = $"{b.User.FirstName} {b.User.LastName}"
+                })
+                .ToListAsync();
+
             return Ok(result);
         }
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,Staff")]
+        [OutputCache(PolicyName = "bookings")]
         public async Task<IActionResult> Get(int id)
         {
-            var booking = await BookingsQuery()
-                .FirstOrDefaultAsync(b => b.BookingId == id);
+            var result = await _context.Bookings
+                .Where(b => b.BookingId == id)
+                .Select(b => new BookingDTO
+                {
+                    BookingId = b.BookingId,
+                    BookDate = b.BookDate,
+                    SessionId = b.Session.SessionId,
+                    SessionStart = b.Session.Start,
+                    SessionEnd = b.Session.End,
+                    Subject = b.Session.Class.Subject,
+                    RoomNumber = b.Session.Room.RoomNumber,
+                    UserId = b.User.Id,
+                    UserName = $"{b.User.FirstName} {b.User.LastName}"
+                })
+                .FirstOrDefaultAsync();
 
-            if (booking == null)
-            {
+            if (result is null)
                 return NotFound();
-            }
 
-            return Ok(ToDto(booking));
+            return Ok(result);
         }
 
         [HttpGet("user/{userId}")]
+        [Authorize(Roles = "Admin,Staff")]  // Restricted — members use GET my instead
+        [OutputCache(PolicyName = "bookings")]
         public async Task<IActionResult> GetByUser(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
+            if (user is null)
                 return NotFound("User not found.");
-            }
 
-            var bookings = await BookingsQuery()
+            var result = await _context.Bookings
                 .Where(b => b.UserId == userId)
+                .Select(b => new BookingDTO
+                {
+                    BookingId = b.BookingId,
+                    BookDate = b.BookDate,
+                    SessionId = b.Session.SessionId,
+                    SessionStart = b.Session.Start,
+                    SessionEnd = b.Session.End,
+                    Subject = b.Session.Class.Subject,
+                    RoomNumber = b.Session.Room.RoomNumber,
+                    UserId = b.User.Id,
+                    UserName = $"{b.User.FirstName} {b.User.LastName}"
+                })
                 .ToListAsync();
 
-            var result = bookings.Select(ToDto).ToList();
             return Ok(result);
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Staff")]  // Admin/Staff book on behalf of a user
         public async Task<IActionResult> Create([FromBody] AddBookingRequest request)
         {
-            var user = await _userManager.FindByIdAsync(request.UserId);
-            if (user == null)
-            {
+            return await ProcessBookingAsync(request.UserId, request.SessionId);
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Staff")]  // Admin/Staff can delete any booking
+        public async Task<IActionResult> Delete(int id)
+        {
+            var booking = await _context.Bookings.FindAsync(id);
+            if (booking is null)
+                return NotFound();
+
+            _context.Bookings.Remove(booking);
+            var rowsAffected = await _context.SaveChangesAsync();
+            if (rowsAffected == 0) return BadRequest("Failed to delete booking.");
+
+            await _outputCache.EvictByTagAsync("bookings", default);
+            return NoContent();
+        }
+
+        [HttpGet("total")]
+        [Authorize(Roles = "Admin,Staff")]
+        [OutputCache(PolicyName = "bookings")]
+        public async Task<IActionResult> GetTotal()
+        {
+            var total = await _context.Bookings.CountAsync();
+            return Ok(new CountResponse { Count = total });
+        }
+
+        // --- Member self-service endpoints ---
+
+        [HttpGet("my")]
+        [Authorize(Roles = "Member")]
+        public async Task<IActionResult> GetMy()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+            var result = await _context.Bookings
+                .Where(b => b.UserId == userId)
+                .Select(b => new BookingDTO
+                {
+                    BookingId = b.BookingId,
+                    BookDate = b.BookDate,
+                    SessionId = b.Session.SessionId,
+                    SessionStart = b.Session.Start,
+                    SessionEnd = b.Session.End,
+                    Subject = b.Session.Class.Subject,
+                    RoomNumber = b.Session.Room.RoomNumber,
+                    UserId = b.User.Id,
+                    UserName = $"{b.User.FirstName} {b.User.LastName}"
+                })
+                .ToListAsync();
+
+            return Ok(result);
+        }
+
+        [HttpPost("my")]
+        [Authorize(Roles = "Member")]  // UserId comes from claims — members can only book for themselves
+        public async Task<IActionResult> CreateMy([FromBody] AddMyBookingRequest request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            return await ProcessBookingAsync(userId, request.SessionId);
+        }
+
+        [HttpDelete("my/{id}")]
+        [Authorize(Roles = "Member")]
+        public async Task<IActionResult> DeleteMy(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+            var booking = await _context.Bookings.FindAsync(id);
+            if (booking is null)
+                return NotFound();
+
+            // Ownership check — members can only cancel their own bookings
+            if (booking.UserId != userId)
+                return Forbid();
+
+            _context.Bookings.Remove(booking);
+            var rowsAffected = await _context.SaveChangesAsync();
+            if (rowsAffected == 0) return BadRequest("Failed to delete booking.");
+
+            await _outputCache.EvictByTagAsync("bookings", default);
+            return NoContent();
+        }
+
+        // --- Shared logic ---
+
+        private async Task<IActionResult> ProcessBookingAsync(string userId, int sessionId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user is null)
                 return BadRequest("User not found.");
-            }
 
             var session = await _context.Sessions
                 .Include(s => s.Class)
                 .Include(s => s.Room)
                 .Include(s => s.Bookings)
-                .FirstOrDefaultAsync(s => s.SessionId == request.SessionId);
+                .FirstOrDefaultAsync(s => s.SessionId == sessionId);
 
-            if (session == null)
-            {
+            if (session is null)
                 return BadRequest("Session not found.");
-            }
 
             if (session.Bookings.Count >= session.MaxCapacity)
-            {
                 return Conflict("This session is fully booked.");
-            }
 
             var alreadyBooked = await _context.Bookings.AnyAsync(b =>
-                b.SessionId == request.SessionId && b.UserId == request.UserId);
+                b.SessionId == sessionId && b.UserId == userId);
 
             if (alreadyBooked)
-            {
                 return Conflict("User has already booked this session.");
-            }
 
             var booking = new Booking
             {
@@ -132,6 +234,8 @@ namespace GymSystem.Api.Controllers
             var rowsAffected = await _context.SaveChangesAsync();
             if (rowsAffected == 0) return BadRequest("Failed to create booking.");
 
+            await _outputCache.EvictByTagAsync("bookings", default);
+
             return CreatedAtAction(nameof(Get), new { id = booking.BookingId }, new BookingDTO
             {
                 BookingId = booking.BookingId,
@@ -144,30 +248,6 @@ namespace GymSystem.Api.Controllers
                 UserId = user.Id,
                 UserName = $"{user.FirstName} {user.LastName}"
             });
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var booking = await _context.Bookings.FindAsync(id);
-            if (booking == null)
-            {
-                return NotFound();
-            }
-
-            _context.Bookings.Remove(booking);
-            var rowsAffected = await _context.SaveChangesAsync();
-            if (rowsAffected == 0) return BadRequest("Failed to delete booking.");
-
-            return NoContent();
-        }
-
-        [HttpGet("total")]
-        [Authorize(Roles = "Admin,Staff")]
-        public async Task<IActionResult> GetTotal()
-        {
-            var total = await _context.Bookings.CountAsync();
-            return Ok(new CountResponse { Count = total });
         }
     }
 }

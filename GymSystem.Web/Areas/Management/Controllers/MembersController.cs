@@ -17,10 +17,10 @@ public class MembersController : Controller
         _api = api;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
     {
-        var members = await _api.GetMembersAsync();
-        return View(members);
+        var result = await _api.GetMembersAsync(page, pageSize);
+        return View(result);
     }
 
     public async Task<IActionResult> Details(string id)
