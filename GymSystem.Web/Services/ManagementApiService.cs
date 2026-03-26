@@ -148,5 +148,10 @@ namespace GymSystem.Web.Services
             var result = await _http.GetFromJsonAsync<List<UserDTO>>("api/member/recents");
             return result ?? new List<UserDTO>();
         }
+
+        public async Task LogoutAsync()
+        {
+            await _http.PostAsync("api/auth/logout", null);
+        }
     }
 }

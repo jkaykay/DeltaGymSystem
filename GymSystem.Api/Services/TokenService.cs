@@ -24,6 +24,7 @@ namespace GymSystem.Api.Services
 
             var claims = new List<Claim>
             {
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new(ClaimTypes.NameIdentifier, user.Id),
                 new(ClaimTypes.Email, user.Email!),
                 new(ClaimTypes.GivenName, user.FirstName),

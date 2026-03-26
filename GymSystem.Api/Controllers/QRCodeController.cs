@@ -97,6 +97,10 @@ public class QRCodeController : ControllerBase
         if (user is null)
             return NotFound(new { message = $"No member found with ID '{payload.MemberId}'." });
 
+        if (!user.Active)
+            return StatusCode(StatusCodes.Status403Forbidden,
+                new { message = $"{user.FirstName} {user.LastName} is not an active member." });
+
         // Check if member has an open session → check out; otherwise → check in
         var openSession = await _context.Attendances
             .FirstOrDefaultAsync(a => a.UserId == payload.MemberId && a.InFlag);

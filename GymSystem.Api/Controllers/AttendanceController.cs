@@ -109,7 +109,7 @@ public class AttendanceController : ControllerBase
             .ToListAsync();
 
         if (!memberAttendances.Any())
-            return NotFound($"No attendance records for that user exist yet.");
+            return Ok(new List<AttendanceDTO>());
 
         return Ok(memberAttendances);
     }
