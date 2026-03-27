@@ -175,6 +175,16 @@ public class MemberController : ControllerBase
         if (!roles.Contains("Member"))
             return NotFound("User is not a member.");
 
+        if (request.Email is not null)
+        {
+            var existing = await _userManager.FindByEmailAsync(request.Email);
+            if (existing is not null && existing.Id != user.Id)
+                return Conflict("A user with this email already exists.");
+
+            user.Email = request.Email;
+            user.NormalizedEmail = request.Email.ToUpperInvariant();
+        }
+
         if (request.FirstName is not null) user.FirstName = request.FirstName;
         if (request.LastName is not null) user.LastName = request.LastName;
 
@@ -182,28 +192,6 @@ public class MemberController : ControllerBase
         if (request.Active.HasValue && IsAdminOrStaff())
             user.Active = request.Active.Value;
 
-        var result = await _userManager.UpdateAsync(user);
-        if (!result.Succeeded)
-            return BadRequest(result.Errors);
-
-        await _outputCache.EvictByTagAsync("members", default);
-
-        return NoContent();
-    }
-
-    [HttpPost("{id}/toggle-active")]
-    [Authorize(Roles = "Admin,Staff")]
-    public async Task<IActionResult> ToggleActive(string id)
-    {
-        var user = await _userManager.FindByIdAsync(id);
-        if (user is null)
-            return NotFound();
-
-        var roles = await _userManager.GetRolesAsync(user);
-        if (!roles.Contains("Member"))
-            return NotFound("User is not a member.");
-
-        user.Active = !user.Active;
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
             return BadRequest(result.Errors);

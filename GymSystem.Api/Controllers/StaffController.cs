@@ -206,14 +206,20 @@ public class StaffController : ControllerBase
         if (!roles.Contains("Staff") && !roles.Contains("Admin"))
             return NotFound("User is not a staff member.");
 
-        if (request.Email is not null)
+         if (request.Email is not null)
         {
-            var existingByEmail = await _userManager.FindByEmailAsync(request.Email);
-            if (existingByEmail is not null && existingByEmail.Id != user.Id)
+            var existing = await _userManager.FindByEmailAsync(request.Email);
+            if (existing is not null && existing.Id != user.Id)
                 return Conflict("A user with this email already exists.");
 
             user.Email = request.Email;
             user.NormalizedEmail = request.Email.ToUpperInvariant();
+
+            if (string.IsNullOrWhiteSpace(user.EmployeeId))
+            {
+                user.UserName = request.Email.Split('@')[0];
+                user.NormalizedUserName = user.UserName.ToUpperInvariant();
+            }
         }
 
         if (request.FirstName is not null) user.FirstName = request.FirstName;
@@ -245,6 +251,33 @@ public class StaffController : ControllerBase
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
             return BadRequest(result.Errors);
+
+        await _outputCache.EvictByTagAsync("staff", default);
+
+        return NoContent();
+    }
+
+    [HttpPut("{id}/role")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UpdateRole(string id, [FromBody] UpdateStaffRoleRequest request)
+    {
+        if (request.Role is not "Admin" and not "Staff")
+            return BadRequest($"Invalid role '{request.Role}'. Must be 'Admin' or 'Staff'.");
+
+        var user = await _userManager.FindByIdAsync(id);
+        if (user is null)
+            return NotFound();
+
+        var roles = await _userManager.GetRolesAsync(user);
+        if (!roles.Contains("Staff") && !roles.Contains("Admin"))
+            return NotFound("User is not a staff member.");
+
+        if (roles.Contains(request.Role))
+            return Conflict($"User is already in the '{request.Role}' role.");
+
+        var staffRoles = roles.Where(r => r is "Admin" or "Staff").ToList();
+        await _userManager.RemoveFromRolesAsync(user, staffRoles);
+        await _userManager.AddToRoleAsync(user, request.Role);
 
         await _outputCache.EvictByTagAsync("staff", default);
 
