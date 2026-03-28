@@ -231,7 +231,7 @@ public class SubscriptionController : ControllerBase
         if (rowsAffected == 0)
             return BadRequest("Subscription creation failed.");
 
-        return CreatedAtAction(nameof(GetMy), new SubscriptionDTO
+        return CreatedAtAction(nameof(GetMy), null, new SubscriptionDTO
         {
             SubId = sub.SubId,
             State = sub.State,

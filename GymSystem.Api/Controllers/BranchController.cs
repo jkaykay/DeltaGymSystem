@@ -68,7 +68,8 @@ public class BranchController : ControllerBase
             Address = request.Address,
             City = request.City,
             Province = request.Province,
-            PostCode = request.PostCode
+            PostCode = request.PostCode,
+            OpenDate = request.OpenDate ?? DateTime.UtcNow
         };
 
         _context.Branches.Add(branch);

@@ -128,7 +128,7 @@ public class TrainerController : ControllerBase
     }
 
     [HttpPut("me")]
-    [Authorize(Roles = "Trainer")]   // ← now reachable; class-level no longer conflicts
+    [Authorize(Roles = "Trainer")]
     public async Task<IActionResult> UpdateSelf([FromBody] UpdateTrainerProfileRequest request)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

@@ -6,5 +6,6 @@ public record AddBranchRequest(
     [Required, MaxLength(200)] string Address,
     [Required, MaxLength(100)] string City,
     [Required, MaxLength(100)] string Province,
-    [Required, MaxLength(10)] string PostCode
+    [Required, MaxLength(10)] string PostCode,
+    DateTime? OpenDate
 );
