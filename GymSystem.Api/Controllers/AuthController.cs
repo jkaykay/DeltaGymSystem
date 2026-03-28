@@ -1,11 +1,15 @@
-﻿using GymSystem.Shared.DTOs;
-using GymSystem.Api.Models;
+﻿using GymSystem.Api.Models;
 using GymSystem.Api.Services;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+
+using GymSystem.Shared.DTOs;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace GymSystem.Api.Controllers
 {
@@ -47,7 +51,7 @@ namespace GymSystem.Api.Controllers
                 JoinDate = DateTime.UtcNow,
                 Active = false
             };
-
+            
             var result = await _userManager.CreateAsync(user, request.Password);
 
             if (!result.Succeeded) return BadRequest(result.Errors);
@@ -63,19 +67,25 @@ namespace GymSystem.Api.Controllers
             var user = await _userManager.FindByEmailAsync(request.EmailOrUserName)
                        ?? await _userManager.FindByNameAsync(request.EmailOrUserName);
 
+
             if (user == null || !await _userManager.CheckPasswordAsync(user, request.Password))
                 return Unauthorized(new { message = "Invalid email/username or password." });
 
             var token = await _tokenService.GenerateTokenAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
 
+            var gymLocation = user.Branch != null
+                ? $"{user.Branch.City}, {user.Branch.Province}"
+                : "";
+
             return Ok(new LoginResponse(
                 token,
                 user.Id,
                 user.UserName ?? string.Empty,
-                user.Email!,
+                user.Email ?? string.Empty,
                 user.FirstName,
                 user.LastName,
+                gymLocation,
                 [.. roles]
             ));
         }
@@ -138,5 +148,47 @@ namespace GymSystem.Api.Controllers
 
             return NoContent();
         }
+
+        [Authorize]
+        [HttpPut("profile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request) 
+        {
+            //get user id
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            //safety check
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized();
+            //get user
+            var user = await _userManager.FindByIdAsync(userId);
+            
+            //safety check
+            if (user == null)
+                return NotFound();
+
+            
+            
+            var existingEmail = await _userManager.FindByEmailAsync(request.Email);
+            
+            //check if the email already exists from another user
+            if (existingEmail is not null && existingEmail.Id != user.Id)
+                return Conflict("A user with this email alreadt exists");
+
+            //change the user's email to the new one
+            user.Email = request.Email;
+
+            //update the user in the datavase
+            var result = await _userManager.UpdateAsync(user);
+
+            //if update failedF
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            return Ok();
+        }
+        
     }
+
+
+        
 }

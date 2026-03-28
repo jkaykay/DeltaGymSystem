@@ -8,11 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GymSystem.Shared\GymSystem.Shared.csproj" />
+    <Compile Remove="Areas\Trainer\ViewModels\**" />
+    <Content Remove="Areas\Trainer\ViewModels\**" />
+    <EmbeddedResource Remove="Areas\Trainer\ViewModels\**" />
+    <None Remove="Areas\Trainer\ViewModels\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Trainer\ViewModels\" />
+    <ProjectReference Include="..\GymSystem.Shared\GymSystem.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

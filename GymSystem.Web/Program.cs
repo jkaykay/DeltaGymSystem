@@ -12,6 +12,7 @@ builder.Services.AddTransient<TokenDelegatingHandler>();
 // --- API service ---
 builder.Services.AddScoped<IManagementApiService, ManagementApiService>();
 builder.Services.AddScoped<IMemberApiService, MemberApiService>();
+builder.Services.AddScoped<IAuthApiService, AuthApiService>();
 
 // --- Typed HttpClient for API consumption ---
 builder.Services.AddHttpClient("GymApi", client =>
@@ -95,6 +96,24 @@ app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Account}/{action=Login}/{id?}")
     .WithStaticAssets();
+
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Login}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Profile}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Schedule}/{action=Index}/{id?}");
+
 
 // --- Default route (public-facing) ---
 app.MapControllerRoute(

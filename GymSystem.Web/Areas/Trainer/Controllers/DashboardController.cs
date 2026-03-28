@@ -1,23 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-//using GymSystem.Web.Areas.Trainer.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 
-namespace GymSystem.Web.Areas.Trainer.Controllers;
-
-[Area("Trainer")]
-[Authorize(Roles = "Trainer")]
-public class DashboardController : Controller
+namespace GymSystem.Web.Areas.Trainer.Controllers
 {
-    private readonly HttpClient _api;
-
-    public DashboardController(IHttpClientFactory httpClientFactory)
+    [Area("Trainer")]
+    public class DashboardController : Controller
     {
-        _api = httpClientFactory.CreateClient("GymApi");
-    }
-
-    public async Task<IActionResult> Index()
-    {
-        // Call API — no business logic here
-        return View();
+        public IActionResult Index()
+        {
+            return View();
+        }
     }
 }

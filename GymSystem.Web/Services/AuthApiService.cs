@@ -4,10 +4,9 @@ using GymSystem.Shared.DTOs;
 
 namespace GymSystem.Web.Services
 {
-    //this creates the service class and implement the interface( a promise that tells us it must have a login method)
     public class AuthApiService : IAuthApiService
     {
-        //create httpclient, this is a tool c# uses to make web requests
+        //create httpclient
         private readonly IHttpClientFactory _httpClientFactory;
 
         //constructor 
@@ -33,15 +32,20 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<LoginResponse>(cancellationToken: cancellationToken);
         }
 
+        //send request to the api and check if updateprofile worked or not
         public async Task<bool> UpdateProfileAsync(UpdateProfileRequest request, string token, CancellationToken cancellationToken = default)
         {
+            //create an http client
             var client = _httpClientFactory.CreateClient("GymApi");
 
+            //send this request as currently logged in user
             client.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
 
+            //send HTTP PUT request
             var response = await client.PutAsJsonAsync("api/auth/profile", request, cancellationToken);
 
+            //check if success
             return response.IsSuccessStatusCode;
         }
     }
