@@ -93,7 +93,7 @@ app.UseAuthorization();
 // --- Area routing (must come before default) ---
 app.MapControllerRoute(
     name: "areas",
-    pattern: "{area:exists}/{controller=Account}/{action=Login}/{id?}")
+    pattern: "{area:exists}/{controller=Home}/{action=Login}/{id?}")
     .WithStaticAssets();
 
 // --- Default route (public-facing) ---
@@ -101,42 +101,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
-app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists}/{controller=Dashboard}/{action=index}/{id?}");
-    
-app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists}/{controller=Booking}/{action=index}/{id?}");
-
-  app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists}/{controller=Classes}/{action=index}/{id?}");  
-
-app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists}/{controller=Home}/{action=index}/{id?}");  
-
-
-app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists}/{controller=Login}/{action=index}/{id?}");  
-
-    app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists}/{controller=Memberships}/{action=index}/{id?}");  
-
- app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists}/{controller=MyProfile}/{action=index}/{id?}");  
-
-app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists}/{controller=Subscribe}/{action=index}/{id?}");  
-
-
-
 
 
 app.Run();

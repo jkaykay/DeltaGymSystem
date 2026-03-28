@@ -26,12 +26,12 @@
       <img src="images/logo.png" alt="Delta Gyms Logo" class="nav-logo-img"/>
     </div>
     <ul class="nav-links">
-      <li><a href="index.html" class="active">Home</a></li>
-      <li><a href="classes.html">Classes</a></li>
-      <li><a href="memberships.html">Memberships</a></li>
-      <li><a href="dashboard.html">Dashboard</a></li>
-      <li><a href="myprofile.html">MyProfile</a></li>
-      <li><a href="support.html">Support</a></li>
+      <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+      <li><a asp-area="" asp-controller="Classes" asp-action="Index">Classes</a></li>
+      <li><a asp-area="" asp-controller="Memberships" asp-action="Index">Memberships</a></li>
+      <li><a asp-area="Member" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+      <li><a asp-area="Member" asp-controller="MyProfile" asp-action="Index">MyProfile</a></li>
+      <li><a asp-area="" asp-controller="Support" asp-action="Index">Support</a></li>
     </ul>
     <div class="nav-logout"><a href="#">Logout</a></div>
   </nav>
