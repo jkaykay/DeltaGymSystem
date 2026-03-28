@@ -1,9 +1,11 @@
 ﻿using GymSystem.Api.Data;
-using GymSystem.Shared.DTOs;
+using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
+using GymSystem.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 
 namespace GymSystem.Api.Controllers;
@@ -15,11 +17,13 @@ public class StaffController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly GymDbContext _context;
+    private readonly IOutputCacheStore _outputCache;
 
-    public StaffController(UserManager<ApplicationUser> userManager, GymDbContext context)
+    public StaffController(UserManager<ApplicationUser> userManager, GymDbContext context, IOutputCacheStore outputCache)
     {
         _userManager = userManager;
         _context = context;
+        _outputCache = outputCache;
     }
 
     private IQueryable<ApplicationUser> StaffQuery()
@@ -35,9 +39,10 @@ public class StaffController : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = "Admin,Staff")]
-    public async Task<IActionResult> GetAll()
+    [OutputCache(PolicyName = "staff")]
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var staffWithRoles = await StaffQuery()
+        var pagedStaff = await StaffQuery()
             .Select(u => new
             {
                 u.Id,
@@ -57,27 +62,35 @@ public class StaffController : ControllerBase
                         (ur, r) => r.Name!)
                     .ToList()
             })
-            .ToListAsync();
+            .ToPagedResultAsync(page, pageSize);
 
-        var result = staffWithRoles.Select(s => new UserDTO
+        // Map anonymous type to UserDTO after paging
+        var result = new PagedResult<UserDTO>
         {
-            Id = s.Id,
-            Email = s.Email,
-            UserName = s.UserName,
-            FirstName = s.FirstName,
-            LastName = s.LastName,
-            HireDate = s.HireDate,
-            EmployeeId = s.EmployeeId,
-            Active = s.Active,
-            BranchId = s.BranchId,
-            Roles = s.Roles
-        }).ToList();
+            Page = pagedStaff.Page,
+            PageSize = pagedStaff.PageSize,
+            TotalCount = pagedStaff.TotalCount,
+            Items = pagedStaff.Items.Select(s => new UserDTO
+            {
+                Id = s.Id,
+                Email = s.Email,
+                UserName = s.UserName,
+                FirstName = s.FirstName,
+                LastName = s.LastName,
+                HireDate = s.HireDate,
+                EmployeeId = s.EmployeeId,
+                Active = s.Active,
+                BranchId = s.BranchId,
+                Roles = s.Roles
+            }).ToList()
+        };
 
         return Ok(result);
     }
 
     [HttpGet("total")]
     [Authorize(Roles = "Admin,Staff")]
+    [OutputCache(PolicyName = "staff")]
     public async Task<IActionResult> GetTotal()
     {
         var count = await StaffQuery().CountAsync();
@@ -124,7 +137,6 @@ public class StaffController : ControllerBase
 
         if (!string.IsNullOrWhiteSpace(request.EmployeeId))
         {
-            // DB-level uniqueness check instead of loading all staff/admin
             var duplicateEmployeeId = await StaffQuery()
                 .AnyAsync(u => u.EmployeeId == request.EmployeeId);
 
@@ -164,6 +176,8 @@ public class StaffController : ControllerBase
             return BadRequest(result.Errors);
 
         await _userManager.AddToRoleAsync(user, request.Role);
+
+        await _outputCache.EvictByTagAsync("staff", default);
 
         return CreatedAtAction(nameof(Get), new { id = user.Id }, new UserDTO
         {
@@ -207,7 +221,6 @@ public class StaffController : ControllerBase
 
         if (!string.IsNullOrWhiteSpace(request.EmployeeId))
         {
-            // DB-level uniqueness check instead of loading all staff/admin
             var duplicateEmployeeId = await StaffQuery()
                 .AnyAsync(u => u.Id != user.Id && u.EmployeeId == request.EmployeeId);
 
@@ -233,6 +246,8 @@ public class StaffController : ControllerBase
         if (!result.Succeeded)
             return BadRequest(result.Errors);
 
+        await _outputCache.EvictByTagAsync("staff", default);
+
         return NoContent();
     }
 
@@ -251,6 +266,8 @@ public class StaffController : ControllerBase
         var result = await _userManager.DeleteAsync(user);
         if (!result.Succeeded)
             return BadRequest(result.Errors);
+
+        await _outputCache.EvictByTagAsync("staff", default);
 
         return NoContent();
     }

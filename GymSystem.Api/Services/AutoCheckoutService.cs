@@ -1,4 +1,5 @@
 ﻿using GymSystem.Api.Data;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 
 namespace GymSystem.Api.Services;
@@ -7,15 +8,18 @@ public class AutoCheckoutService : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<AutoCheckoutService> _logger;
+    private readonly IOutputCacheStore _outputCache;
     private readonly TimeSpan _checkInterval = TimeSpan.FromMinutes(60);
     private readonly TimeSpan _maxSessionDuration = TimeSpan.FromHours(4);
 
     public AutoCheckoutService(
         IServiceScopeFactory scopeFactory,
-        ILogger<AutoCheckoutService> logger)
+        ILogger<AutoCheckoutService> logger,
+        IOutputCacheStore outputCache)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
+        _outputCache = outputCache;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -59,6 +63,7 @@ public class AutoCheckoutService : BackgroundService
         }
 
         await context.SaveChangesAsync(ct);
+        await _outputCache.EvictByTagAsync("attendance", ct);
 
         _logger.LogInformation(
             "Auto-checked out {Count} stale attendance record(s) older than {Hours}h.",
