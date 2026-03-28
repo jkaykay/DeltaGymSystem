@@ -127,5 +127,16 @@ app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Memberships}/{action=index}/{id?}");  
 
+ app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=MyProfile}/{action=index}/{id?}");  
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Subscribe}/{action=index}/{id?}");  
+
+
+
+
 
 app.Run();

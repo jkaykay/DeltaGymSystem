@@ -1,0 +1,158 @@
+@{
+    Layout= null;
+}
+
+@{
+    ViewData["Title"] = "Subscribe";
+}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DELTA GYMS-Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/subscribe.css" /> 
+</head>
+<body>
+
+  <!-- NAV  BAR-->
+  <nav>
+    <div class="nav-logo">
+      <img src="images/logo.png" alt="Delta Gyms Logo" class="nav-logo-img"/>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="classes.html">Classes</a></li>
+      <li><a href="memberships.html">Memberships</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="myprofile.html">MyProfile</a></li>
+      <li><a href="support.html">Support</a></li>
+    </ul>
+    <div class="nav-logout"><a href="#">Logout</a></div>
+  </nav>
+
+  <!-- PAGE -->
+  <div class="page">
+    <div class="checkout-card">
+
+      <!-- Banner -->
+      <div class="card-banner">
+        <a href="memberships.html" class="back-link">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <line x1="19" y1="12" x2="5" y2="12"/>
+            <polyline points="12 19 5 12 12 5"/>
+          </svg>
+          Back
+        </a>
+        <div class="banner-label">Checkout</div>
+        <div class="banner-title">Confirm Your Plan</div>
+      </div>
+
+      <!-- Body -->
+      <div class="card-body">
+
+        <div class="summary-block">
+          <div class="summary-row">
+            <span class="s-label">Member Name</span>
+            <span class="s-value" id="member-name">USERNAME</span>
+          </div>
+          <div class="summary-row">
+            <span class="s-label">Plan</span>
+            <span class="s-value">
+              <span class="membership-badge" id="plan-badge">PRO</span>
+            </span>
+          </div>
+          <div class="summary-row">
+            <span class="s-label">Billing</span>
+            <span class="s-value">Monthly</span>
+          </div>
+          <div class="summary-row">
+            <span class="s-label">Amount</span>
+            <span class="s-value price" id="plan-price">$39.99</span>
+          </div>
+        </div>
+
+        <hr class="divider"/>
+
+        <div class="total-row">
+          <span class="t-label">Total Due Today</span>
+          <span class="t-amount" id="total-amount">$39.99</span>
+        </div>
+
+        <button class="confirm-btn" onclick="confirmPayment()">
+          CONFIRM PAYMENT
+        </button>
+
+        <div class="secure-note">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          Secured &amp; encrypted payment
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS OVERLAY -->
+  <div class="overlay" id="overlay">
+    <div class="success-modal">
+      <div class="modal-top">
+        <h2>Thanks!</h2>
+      </div>
+      <div class="modal-bottom">
+        <div class="success-icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <h3>You're all set!</h3>
+        <p>Your membership is now active. Welcome to DeltaGyms — let's get to work!</p>
+        <div class="modal-ref" id="payment-ref">REF: DG-PAY-000000</div>
+        <button class="modal-btn" onclick="goToProfile()">GO TO MY PROFILE</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Nav shadow
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+      nav.style.boxShadow = window.scrollY > 10 ? '0 4px 24px rgba(0,0,0,0.08)' : 'none';
+    });
+
+    // Read plan from URL params so you can pass ?plan=basic or ?plan=pro
+    // e.g. href="checkout.html?plan=basic" from memberships page
+    const params = new URLSearchParams(window.location.search);
+    const plan = params.get('plan') || 'pro';
+
+    const plans = {
+      basic: { label: 'BASIC', price: '$19.99' },
+      pro:   { label: 'PRO',   price: '$39.99' }
+    };
+
+    const selected = plans[plan] || plans.pro;
+    document.getElementById('plan-badge').textContent   = selected.label;
+    document.getElementById('plan-price').textContent   = selected.price;
+    document.getElementById('total-amount').textContent = selected.price;
+
+    // Confirm payment
+    function confirmPayment() {
+      const ref = 'DG-PAY-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+      document.getElementById('payment-ref').textContent = 'REF: ' + ref;
+      document.getElementById('overlay').classList.add('show');
+    }
+
+    // Redirect to profile
+    function goToProfile() {
+      window.location.href = 'myprofile.html';
+    }
+  </script>
+</body>
+</html>
