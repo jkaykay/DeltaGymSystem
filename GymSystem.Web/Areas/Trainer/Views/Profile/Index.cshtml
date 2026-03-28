@@ -1,0 +1,71 @@
+﻿@model GymSystem.Web.Areas.Trainer.Models.TrainerProfileViewModel
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<main class="profile-page">
+    <section class="profile-wrapper">
+        <div class="profile-top">
+            <div>
+                <h1 class="profile-name">@Model.FullName</h1>
+                <p class="profile-role">@Model.RoleLabel</p>
+            </div>
+
+            @if (!Model.IsEditing)
+            {
+                <a asp-area="Trainer" asp-controller="Profile" asp-action="Index" asp-route-edit="true" class="edit-button">
+                    Edit Profile
+                </a>
+            }
+        </div>
+
+        <form asp-area="Trainer" asp-controller="Profile" asp-action="Index" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="profile-grid">
+                <div class="profile-card">
+                    <h2>Account Details</h2>
+
+                    <div class="profile-item">
+                        <span class="label">Username</span>
+                        <span class="value">@Model.UserName</span>
+                    </div>
+
+                    <div class="profile-item">
+                        <span class="label">Email</span>
+                        @if (Model.IsEditing)
+                        {
+                            <input asp-for="Email" class="value" />
+                        }
+                        else
+                        {
+                            <span class="value">@Model.Email</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="profile-card">
+                    <h2>Professional Details</h2>
+
+                    <div class="profile-item">
+                        <span class="label">Trainer Title</span>
+                        <span class="value">@Model.RoleLabel</span>
+                    </div>
+
+                    <div class="profile-item">
+                        <span class="label">Gym Location</span>
+                        <span class="value">@Model.GymLocation</span>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.IsEditing)
+            {
+                <div class="form-actions">
+                    <button type="submit" class="edit-button">Save Changes</button>
+                    <a asp-area="Trainer" asp-controller="Profile" asp-action="Index" class="edit-button">Cancel</a>
+                </div>
+            }
+        </form>
+    </section>
+</main>

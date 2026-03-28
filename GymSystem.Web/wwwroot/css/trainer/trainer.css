@@ -1,0 +1,413 @@
+﻿body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: black;
+    color: white;
+}
+
+.topbar {
+    background: #f2f2f2;
+    border-bottom: 1px solid #d9d9d9;
+}
+
+.topbar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo-box {
+    width: 56px;
+    height: 56px;
+    border: 2px solid black;
+    border-radius: 14px;
+    background: white;
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.nav-links {
+    display: flex;
+    gap: 28px;
+}
+
+    .nav-links a {
+        text-decoration: none;
+        color: black;
+        font-weight: 600;
+    }
+
+.logout-btn {
+    text-decoration: none;
+    color: black;
+    border: 2px solid black;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: 700;
+    background: white;
+}
+
+.page-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+}
+
+/*dashboard page*/
+
+.dashboard-hero h1 {
+    font-size: 56px;
+    margin: 0 0 10px 0;
+    font-weight: 800;
+}
+
+.dashboard-hero p {
+    color: #d0d0d0;
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+
+.stat-card,
+.schedule-card {
+    background: #f2f2f2;
+    color: black;
+    border-radius: 22px;
+    padding: 24px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+    .stat-card h2 {
+        font-size: 42px;
+        margin: 0 0 8px 0;
+    }
+
+    .stat-card p {
+        margin: 0;
+        color: #666;
+        font-weight: 600;
+    }
+
+.section-header {
+    margin-bottom: 20px;
+}
+
+    .section-header h2 {
+        margin: 0 0 16px 0;
+    }
+
+.schedule-btn {
+    text-decoration: none;
+    background: #c21c1c;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-weight: 700;
+    display: inline-block;
+    border: none;
+    cursor: pointer;
+}
+
+    .schedule-btn:hover {
+        background: #e14d18;
+    }
+
+.schedule-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+    .schedule-row:last-of-type {
+        margin-bottom: 14px;
+    }
+
+.availability-card {
+    background: #f2f2f2;
+    color: black;
+    border-radius: 22px;
+    padding: 24px;
+    margin-top: 32px;
+}
+
+.availability-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+    .availability-header h2 {
+        margin: 0;
+    }
+
+.availability-preview {
+    margin-top: 10px;
+}
+
+.availability-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.availability-form {
+    display: none;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #ccc;
+}
+
+    .availability-form h3 {
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+    max-width: 320px;
+}
+
+    .form-row label {
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .form-row select,
+    .form-row input {
+        padding: 12px;
+        border: 1px solid #bbb;
+        border-radius: 12px;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.save-btn {
+    background: #c21c1c;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 18px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.cancel-btn {
+    background: white;
+    color: black;
+    border: 1px solid #bbb;
+    border-radius: 12px;
+    padding: 10px 18px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/*schedule page*/
+.schedule-page-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.schedule-page-card {
+    background: #f2f2f2;
+    color: black;
+    border-radius: 22px;
+    padding: 24px;
+    width: 800px;
+}
+
+
+/*Profile*/
+.profile-page {
+    display: flex;
+    justify-content: center;
+    padding: 30px 20px 40px;
+}
+
+.profile-wrapper {
+    width: 100%;
+    max-width: 1000px;
+}
+
+.profile-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    background: #efefef;
+    padding: 25px 30px;
+    border-radius: 24px;
+}
+
+.profile-name {
+    margin: 0;
+    font-size: 32px;
+    color: #111;
+}
+
+.profile-role {
+    margin-top: 8px;
+    color: #555;
+    font-size: 18px;
+}
+
+.edit-button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 14px;
+    background: #c21c1c;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.profile-card {
+    background: #efefef;
+    padding: 25px;
+    border-radius: 24px;
+}
+
+    .profile-card h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: #111;
+        font-size: 22px;
+    }
+
+.profile-item {
+    margin-bottom: 16px;
+}
+
+.label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #111;
+}
+
+.value {
+    display: block;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: #333;
+}
+
+/*login*/
+.login-page {
+    min-height: calc(100vh - 82px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-card {
+    max-width: 480px;
+    width: 100%;
+    padding: 30px;
+    background: #efefef;
+    border-radius: 24px;
+}
+
+.login-title {
+    font-size: 42px;
+    margin-bottom: 10px;
+    color: #111;
+}
+
+.login-subtitle {
+    color: #555;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: black;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 14px;
+        border: 1px solid #ccc;
+        border-radius: 12px;
+        box-sizing: border-box;
+    }
+
+.form-row {
+    margin: 15px 0 25px;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    color: black;
+}
+
+.forgot-password {
+    color: #111;
+    text-decoration: none;
+}
+
+.login-button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    background: #c21c1c;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.bottom-text {
+    text-align: center;
+    margin-top: 18px;
+    color: #666;
+}
+
+.text-danger {
+
+    color: black;
+}
