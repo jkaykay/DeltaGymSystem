@@ -111,6 +111,7 @@ namespace GymSystem.Api.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] UpdateClassRequest request)
         {
             var classData = await _context.Classes
+                .Include(c => c.User)
                 .Where(c => c.ClassId == id)
                 .Select(c => new
                 {

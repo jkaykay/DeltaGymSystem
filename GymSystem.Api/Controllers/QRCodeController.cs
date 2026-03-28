@@ -53,12 +53,7 @@ public class QRCodeController : ControllerBase
         // Return the cached PNG if the token is still within its validity window
         if (_memoryCache.TryGetValue(cacheKey, out QrCacheEntry? cached) && cached!.ExpiresAt > DateTime.UtcNow)
         {
-            return Ok(new
-            {
-                qrCodeBase64 = cached.QrBase64,
-                expiresAt = cached.ExpiresAt,
-                note = "Display as: <img src=\"data:image/png;base64,{qrCodeBase64}\" />"
-            });
+            return Ok(new QRCodeResponse(cached.QrBase64, cached.ExpiresAt));
         }
 
         // Cache miss — generate a new token and render the PNG
@@ -72,12 +67,7 @@ public class QRCodeController : ControllerBase
                 AbsoluteExpiration = new DateTimeOffset(result.ExpiresAt, TimeSpan.Zero)
             });
 
-        return Ok(new
-        {
-            qrCodeBase64 = qrBase64,
-            expiresAt = result.ExpiresAt,
-            note = "Display as: <img src=\"data:image/png;base64,{qrCodeBase64}\" />"
-        });
+        return Ok(new QRCodeResponse(qrBase64, result.ExpiresAt));
     }
 
     /// Staff scans a member's QR code — automatically checks them in or out.
@@ -101,6 +91,8 @@ public class QRCodeController : ControllerBase
             return StatusCode(StatusCodes.Status403Forbidden,
                 new { message = $"{user.FirstName} {user.LastName} is not an active member." });
 
+        var memberName = $"{user.FirstName} {user.LastName}";
+
         // Check if member has an open session → check out; otherwise → check in
         var openSession = await _context.Attendances
             .FirstOrDefaultAsync(a => a.UserId == payload.MemberId && a.InFlag);
@@ -114,13 +106,8 @@ public class QRCodeController : ControllerBase
 
             await _outputCache.EvictByTagAsync("attendance", default);
 
-            return Ok(new
-            {
-                action = "checkout",
-                memberId = payload.MemberId,
-                memberName = $"{user.FirstName} {user.LastName}",
-                checkOut = openSession.CheckOut
-            });
+            return Ok(new ScanResponse("checkout", payload.MemberId, memberName,
+                CheckIn: null, CheckOut: openSession.CheckOut));
         }
 
         var attendance = new Attendance
@@ -137,13 +124,8 @@ public class QRCodeController : ControllerBase
 
         await _outputCache.EvictByTagAsync("attendance", default);
 
-        return Ok(new
-        {
-            action = "checkin",
-            memberId = payload.MemberId,
-            memberName = $"{user.FirstName} {user.LastName}",
-            checkIn = attendance.CheckIn
-        });
+        return Ok(new ScanResponse("checkin", payload.MemberId, memberName,
+            CheckIn: attendance.CheckIn, CheckOut: null));
     }
 
     private static string RenderQrCodeBase64(string content)

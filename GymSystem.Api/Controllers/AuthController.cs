@@ -81,6 +81,49 @@ namespace GymSystem.Api.Controllers
         }
 
         [Authorize]
+        [HttpGet("me")]
+        public async Task<IActionResult> GetMe()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId!);
+            if (user is null)
+                return NotFound();
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return Ok(new UserDTO
+            {
+                Id = user.Id,
+                Email = user.Email!,
+                UserName = user.UserName!,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                JoinDate = user.JoinDate,
+                HireDate = user.HireDate,
+                EmployeeId = user.EmployeeId,
+                BranchId = user.BranchId,
+                Active = user.Active,
+                Roles = [.. roles]
+            });
+        }
+
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId!);
+            if (user is null)
+                return NotFound();
+
+            var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            return NoContent();
+        }
+
+        [Authorize]
         [HttpPost("logout")]
         public IActionResult Logout()
         {

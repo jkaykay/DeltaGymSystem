@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace GymSystem.Api.Controllers;
 
@@ -85,6 +86,9 @@ public class AttendanceController : ControllerBase
 
         if (attendance == null) return NotFound("Specified attendance record does not exist.");
 
+        if (!IsAdminOrStaff() && !IsSelf(attendance.UserId))
+            return Forbid();
+
         return Ok(attendance);
     }
 
@@ -92,6 +96,9 @@ public class AttendanceController : ControllerBase
     [OutputCache(PolicyName = "attendance")]
     public async Task<IActionResult> GetMemberAttendances(string memberId)
     {
+        if (!IsAdminOrStaff() && !IsSelf(memberId))
+            return Forbid();
+
         var user = await _userManager.FindByIdAsync(memberId);
         if (user is null) return NotFound($"No user with ID '{memberId}' was found.");
 
@@ -114,12 +121,14 @@ public class AttendanceController : ControllerBase
         return Ok(memberAttendances);
     }
 
-    [HttpPost("checkin")]
+    [HttpPost("checkin/{memberId}")]
     [Authorize(Roles = "Staff,Admin")]
     public async Task<IActionResult> CheckIn(string memberId)
     {
         var user = await _userManager.FindByIdAsync(memberId);
         if (user is null) return NotFound($"No user with ID '{memberId}' was found.");
+
+        if (!user.Active) return Forbid();
 
         var openSession = await _context.Attendances
             .FirstOrDefaultAsync(a => a.UserId == memberId && a.InFlag);
@@ -197,4 +206,10 @@ public class AttendanceController : ControllerBase
 
         return NoContent();
     }
+
+    private bool IsSelf(string id) =>
+        User.FindFirstValue(ClaimTypes.NameIdentifier) == id;
+
+    private bool IsAdminOrStaff() =>
+        User.IsInRole("Admin") || User.IsInRole("Staff");
 }
