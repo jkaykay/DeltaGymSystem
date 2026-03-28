@@ -1,8 +1,10 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
-    <File Path="API Tests/PaymentSub.http" />
-    <File Path="API Tests/Tier.http" />
+    <File Path="API Tests/Branch.http" />
+    <File Path="API Tests/QR.http" />
+    <File Path="API Tests/Subscriptions.http" />
+    <File Path="API Tests/Trainer.http" />
     <File Path="README.md" />
   </Folder>
   <Project Path="GymSystem.Api/GymSystem.Api.csproj" />

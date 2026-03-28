@@ -21,5 +21,10 @@ namespace GymSystem.Web.Services
 
             return await response.Content.ReadFromJsonAsync<LoginResponse>();
         }
+
+        public async Task MemberLogoutAsync()
+        {
+            await _http.PostAsync("api/auth/logout", null);
+        }
     }
 }
