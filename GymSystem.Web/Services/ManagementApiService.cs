@@ -143,6 +143,14 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<CountResponse>() ?? new CountResponse();
         }
 
+        public async Task<CountResponse> GetTotalTrainersAsync()
+        {
+            var response = await _http.GetAsync("api/trainer/total");
+            if (!response.IsSuccessStatusCode)
+                return new CountResponse();
+            return await response.Content.ReadFromJsonAsync<CountResponse>() ?? new CountResponse();
+        }
+
         public async Task<List<UserDTO>> GetRecentSignupsAsync()
         {
             var result = await _http.GetFromJsonAsync<List<UserDTO>>("api/member/recents");

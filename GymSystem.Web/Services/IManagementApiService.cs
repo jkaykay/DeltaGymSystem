@@ -26,5 +26,8 @@ namespace GymSystem.Web.Services
         Task<bool> UpdateStaffAsync(string id, EditStaffViewModel model);
         Task<bool> DeleteStaffAsync(string id);
         Task<CountResponse> GetTotalStaffAsync();
+
+        //Trainer
+        Task<CountResponse> GetTotalTrainersAsync();
     }
 }
