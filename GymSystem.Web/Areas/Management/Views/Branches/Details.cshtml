@@ -1,0 +1,42 @@
+﻿@model BranchDTO
+
+@{
+    ViewData["Title"] = "Branch Details";
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">Branch Details</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
+
+<div class="detail-card">
+    <div class="card-header">
+        <h5>Branch #@Model.BranchId</h5>
+    </div>
+    <div class="detail-body">
+        <p class="detail-name">@Model.Address, @Model.City</p>
+        <dl class="detail-dl">
+            <dt>Address</dt>
+            <dd>@Model.Address</dd>
+
+            <dt>City</dt>
+            <dd>@Model.City</dd>
+
+            <dt>Province</dt>
+            <dd>@Model.Province</dd>
+
+            <dt>Post Code</dt>
+            <dd>@Model.PostCode</dd>
+
+            <dt>Opened</dt>
+            <dd>@Model.OpenDate.ToString("MMMM dd, yyyy")</dd>
+        </dl>
+    </div>
+    <div class="detail-actions">
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.BranchId" class="btn btn-primary">Edit</a>
+        }
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>

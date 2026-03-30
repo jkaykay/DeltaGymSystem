@@ -1,47 +1,35 @@
 ﻿@model UserDTO
 
 @{
-    ViewData["Title"] = "Staff Details";
+    ViewData["Title"] = "Trainer Details";
 }
 
 <div class="page-header">
-    <h1 class="page-header-title">Staff Details</h1>
+    <h1 class="page-header-title">Trainer Details</h1>
     <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
 </div>
 
 <div class="detail-card">
     <div class="card-header">
-        <h5>Staff Profile</h5>
+        <h5>Trainer Profile</h5>
     </div>
     <div class="detail-body">
-        <p class="detail-name">
-            @Model.FirstName @Model.LastName
-            @foreach (var role in Model.Roles)
-            {
-                <span class="badge badge-role">@role</span>
-            }
-        </p>
+        <p class="detail-name">@Model.FirstName @Model.LastName</p>
         <dl class="detail-dl">
             <dt>Email</dt>
             <dd>@Model.Email</dd>
 
+            <dt>Username</dt>
+            <dd>@Model.UserName</dd>
+
             <dt>Employee ID</dt>
             <dd>@(Model.EmployeeId ?? "—")</dd>
 
+            <dt>Branch</dt>
+            <dd>@(Model.BranchId?.ToString() ?? "—")</dd>
+
             <dt>Hire Date</dt>
             <dd>@(Model.HireDate?.ToString("MMMM dd, yyyy") ?? "—")</dd>
-
-            <dt>Status</dt>
-            <dd>
-                @if (Model.Active)
-                {
-                    <span class="badge badge-active">Active</span>
-                }
-                else
-                {
-                    <span class="badge badge-inactive">Inactive</span>
-                }
-            </dd>
         </dl>
     </div>
     <div class="detail-actions">

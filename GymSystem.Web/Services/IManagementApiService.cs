@@ -27,7 +27,33 @@ namespace GymSystem.Web.Services
         Task<bool> DeleteStaffAsync(string id);
         Task<CountResponse> GetTotalStaffAsync();
 
-        //Trainer
+        // Trainers
+        Task<PagedResult<UserDTO>> GetTrainersAsync(int page = 1, int pageSize = 10);
+        Task<UserDTO?> GetTrainerAsync(string id);
+        Task<bool> CreateTrainerAsync(CreateTrainerViewModel model);
+        Task<bool> UpdateTrainerAsync(string id, EditTrainerViewModel model);
+        Task<bool> DeleteTrainerAsync(string id);
         Task<CountResponse> GetTotalTrainersAsync();
+
+        // Tiers
+        Task<List<TierDTO>> GetTiersAsync();
+        Task<TierDTO?> GetTierAsync(string tierName);
+        Task<bool> CreateTierAsync(CreateTierViewModel model);
+        Task<bool> UpdateTierAsync(string tierName, EditTierViewModel model);
+        Task<bool> DeleteTierAsync(string tierName);
+
+        // Branches
+        Task<List<BranchDTO>> GetBranchesAsync();
+        Task<BranchDTO?> GetBranchAsync(int id);
+        Task<bool> CreateBranchAsync(CreateBranchViewModel model);
+        Task<bool> UpdateBranchAsync(int id, EditBranchViewModel model);
+        Task<bool> DeleteBranchAsync(int id);
+
+        // Rooms
+        Task<List<RoomDTO>> GetRoomsAsync();
+        Task<RoomDTO?> GetRoomAsync(int id);
+        Task<bool> CreateRoomAsync(CreateRoomViewModel model);
+        Task<bool> UpdateRoomAsync(int id, EditRoomViewModel model);
+        Task<bool> DeleteRoomAsync(int id);
     }
 }

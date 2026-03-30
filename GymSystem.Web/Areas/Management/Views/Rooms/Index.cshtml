@@ -1,0 +1,78 @@
+﻿@model List<RoomDTO>
+
+@{
+    ViewData["Title"] = "Manage Rooms";
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">🚪 Rooms</h1>
+    <div class="page-actions">
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn btn-primary">➕ Add Room</a>
+        }
+        <span class="record-count">@Model.Count total</span>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["Success"]
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-error" role="alert">
+        @TempData["Error"]
+    </div>
+}
+
+<div class="dashboard-card">
+    <div class="card-header">
+        <h5>Room Directory</h5>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Room #</th>
+                <th>Branch ID</th>
+                <th>Max Capacity</th>
+                <th>Sessions</th>
+                <th>Equipment</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var room in Model)
+            {
+                <tr>
+                    <td>@room.RoomNumber</td>
+                    <td>@room.BranchId</td>
+                    <td>@room.MaxCapacity</td>
+                    <td>@room.SessionCount</td>
+                    <td>@room.EquipmentCount</td>
+                    <td>
+                        <div class="table-actions">
+                            <a asp-action="Details" asp-route-id="@room.RoomId" class="btn btn-secondary btn-sm">Details</a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Edit" asp-route-id="@room.RoomId" class="btn btn-secondary btn-sm">Edit</a>
+                                <form asp-action="Delete" asp-route-id="@room.RoomId" method="post"
+                                      onsubmit="return confirm('Are you sure you want to delete Room @room.RoomNumber?');">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <p>No rooms found.</p>
+        </div>
+    }
+</div>
