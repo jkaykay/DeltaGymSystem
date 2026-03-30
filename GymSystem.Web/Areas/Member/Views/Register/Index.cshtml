@@ -1,0 +1,65 @@
+@model GymSystem.Web.Areas.Member.ViewModels.RegisterViewModel
+
+@{
+    Layout = null;
+}
+
+@{
+    ViewData["Title"] = "Register";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>@ViewData["Title"]</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="~/css/members/login.css"/>
+</head>
+<body>
+
+<section id="register" class="min-vh-100 d-flex align-items-center justify-content-center">
+  <div class="container-user">
+    <h2>Create An New Account</h2>
+
+    <div asp-validation-summary="ModelOnly" class="error mb-2"></div>
+
+    <form asp-action="Register" asp-controller="Account" asp-area="Member" method="post">
+      @Html.AntiForgeryToken()
+
+      <input asp-for="UserName" placeholder="Username" class="form-control"/>
+      <span asp-validation-for="UserName" class="error"></span>
+
+      <input asp-for="Email" placeholder="Email" class="form-control"/>
+      <span asp-validation-for="Email" class="error"></span>
+
+      <input asp-for="FirstName" placeholder="First Name" class="form-control"/>
+      <span asp-validation-for="FirstName" class="error"></span>
+
+      <input asp-for="LastName" placeholder="Last Name" class="form-control"/>
+      <span asp-validation-for="LastName" class="error"></span>
+
+      <input asp-for="Password" type="password" placeholder="Password" class="form-control"/>
+      <span asp-validation-for="Password" class="error"></span>
+
+      <input asp-for="ConfirmPassword" type="password" placeholder="Confirm Password" class="form-control"/>
+      <span asp-validation-for="ConfirmPassword" class="error"></span>
+
+      <button type="submit" class="registrer-btn">Sign Up</button>
+    </form>
+
+    <div class="mt-4">
+      <p class="text-muted">
+        Already have an account?
+        <a asp-action="Login" asp-controller="Account" asp-area="Member">Login</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

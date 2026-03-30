@@ -12,11 +12,31 @@ public class MemberApiService : IMemberApiService
         _http = http;
     }
 
-    public async Task<LoginResponse?> LoginAsync(string email, string password)
+   public async Task<(bool Success, LoginResponse? Data, string? Error)> LoginAsync(LoginRequest request)
+{
+    var response = await _http.PostAsJsonAsync("api/auth/login", request);
+
+    if (!response.IsSuccessStatusCode)
     {
-        var response = await _http.PostAsJsonAsync("api/auth/login", new { email, password });
-        if (!response.IsSuccessStatusCode) return null;
-        return await response.Content.ReadFromJsonAsync<LoginResponse>();
+        var error = await response.Content.ReadAsStringAsync();
+        return (false, null, error);
+    }
+
+    var data = await response.Content.ReadFromJsonAsync<LoginResponse>();
+    return (true, data, null);
+}
+
+    public async Task<(bool Success, string? Error)> RegisterAsync(RegisterRequest request)
+    {
+        var response = await _http.PostAsJsonAsync("api/auth/register", request);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            return (false, error);
+        }
+
+        return (true, null);
     }
 
     public async Task<int> GetUpcomingClassesCountAsync(string memberId)

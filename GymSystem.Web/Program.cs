@@ -26,9 +26,9 @@ builder.Services.AddHttpClient("GymApi", client =>
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies", options =>
     {
-        options.LoginPath = "/Account/Login";
-        options.LogoutPath = "/Account/Logout";
-        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.LoginPath = "/Member/Account/Login";
+        options.LogoutPath = "/Member/Account/Logout";
+        options.AccessDeniedPath = "/Member/Account/AccessDenied";
 
         options.Events.OnRedirectToLogin = ctx =>
         {
@@ -93,7 +93,7 @@ app.UseAuthorization();
 // --- Area routing (must come before default) ---
 app.MapControllerRoute(
     name: "areas",
-    pattern: "{area:exists}/{controller=Home}/{action=Login}/{id?}")
+    pattern: "{area:exists}/{controller=Account}/{action=Login}/{id?}")
     .WithStaticAssets();
 
 // --- Default route (public-facing) ---

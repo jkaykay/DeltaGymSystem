@@ -1,3 +1,4 @@
+@model GymSystem.Web.Areas.Member.ViewModels.LoginViewModel
 @{
     Layout = null;
 }
@@ -11,66 +12,71 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DELTA GYMS-Login</title>
+  <title>@ViewData["Title"]</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="~/css/members/login.css"/>
 </head>
 <body>
 
+
 <section id="login" class="min-vh-100 d-flex align-items-center justify-content-center">
-      <div class="container-user">
+    <div class="container-user">
+        
         <h2>Welcome Back</h2>
-        <input type="text" id="username" placeholder="Username" class="form-control" /> <!-- Username input field -->
-        <p id="ValidationUsername" class="error"></p> <!-- Username validation message -->
-        
-        <input type="password" id="password" placeholder="Password" class="form-control" /> <!-- Password input field -->
-        <p id="ValidationPassword" class="error"></p> <!-- Password validation message -->
 
-        <div id="greeting-message"></div> 
+        <!-- Success message -->
+        @if (TempData["SuccessMessage"] is string msg)
+        {
+            <div class="alert alert-success">@msg</div>
+        }
 
-        <button class="login-btn" onclick="window.location.href='index.html'">Login</button> <!-- Login button -->
-        
-        <div class="mt-4">
+        <!-- Error summary -->
+        <div asp-validation-summary="ModelOnly" class="error mb-2"></div>
+
+        <form asp-action="Login" asp-controller="Account" asp-area="Member" method="post">
+            
+            @Html.AntiForgeryToken()
+
+            <input asp-for="ReturnUrl" type="hidden"/>
+
+            <!-- Username / Email -->
+            <input asp-for="EmailOrUserName" 
+                   placeholder="Email or Username" 
+                   class="form-control mb-2"/>
+            <span asp-validation-for="EmailOrUserName" class="error"></span>
+
+            <!-- Password -->
+            <input asp-for="Password" 
+                   type="password" 
+                   placeholder="Password" 
+                   class="form-control mb-2"/>
+            <span asp-validation-for="Password" class="error"></span>
+
+            <!-- Submit -->
+            <button type="submit" class="login-btn w-100 mt-2">
+                Login
+            </button>
+
+        </form>
+
+        <!-- Register link -->
+        <div class="mt-4 text-center">
             <p class="text-muted">
-                Don't have an account? <a href="#" onclick="showRegisterPage()">Register</a> <!-- Link to registration page and I used # as it is single page-->
+                Don't have an account?
+                <a asp-action="Register" asp-controller="Account" asp-area="Member">
+                    Register
+                </a>
             </p>
         </div>
-      </div>
-    </section>
 
-    <!-- Register Section -->
-    <section id="register" class="min-vh-100 d-flex align-items-center justify-content-center" style="display: none"> <!-- Hidden by default using display: none , as I want my logging page first-->
-      <div class="container-user">
-        <h2>Create Account</h2>
-        <input type="text" id="username" placeholder="Username" class="form-control" />
-        <p id="ValidationUsername" class="error"></p> <!-- Username validation message -->
+    </div>
+</section>
 
-        <input type="email" id="email" placeholder="Email" class="form-control" />
-        <p id="ValidationEmail" class="error"></p> <!-- Email validation message -->
+<!-- Scripts -->
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
-        <input type="password" id="password" placeholder="Password" class="form-control" />
-        <p id="ValidationPassword" class="error"></p> <!-- Password validation message -->
-
-        <input type="password" id="confirm-password" placeholder="Confirm Password" class="form-control" />
-        <p id="ValidationConfirmPassword" class="error"></p> <!-- Confirm Password validation message -->
-
-        <input type="number" id="age" placeholder="Age" class="form-control" />
-        <p id="ValidationAge" class="error"></p> <!-- Age validation message -->
- 
-        <div id="greeting-message"></div>
-
-        <button class="registrer-btn" onclick="Registeruser()">Sign Up</button> <!-- Register button -->
-        
-        <div class="mt-4">
-            <p class="text-muted">
-                Already have an account? <a href="#" onclick="showLoginPage()">Login</a> <!-- Link to login page with # as it is a single page-->
-            </p>
-        </div>
-      </div>
-    </section>
-
-
-    <script src="js/script.js"></script> <!-- My custom JavaScript file -->
 </body>
 </html>
