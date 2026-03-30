@@ -72,8 +72,10 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
             var principal = new ClaimsPrincipal(identity);
 
             //remember me, the login cookied presists longer
+
             var authProperties = new AuthenticationProperties
             {
+
                 IsPersistent = model.RememberMe
             };
 

@@ -86,11 +86,13 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
             var identity = new ClaimsIdentity(claims, "Cookies");
             var principal = new ClaimsPrincipal(identity);
 
+
+
             var authProperties = new AuthenticationProperties();
-            authProperties.StoreTokens(new[]
-            {
-                new AuthenticationToken
-                {
+
+            authProperties.StoreTokens(new[] {
+
+                new AuthenticationToken{
                     Name = "access_token",
                     Value = token
                 }

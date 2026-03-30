@@ -1,5 +1,6 @@
 ﻿using GymSystem.Api.Models;
 using GymSystem.Api.Services;
+using GymSystem.Api.Data;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -20,15 +21,18 @@ namespace GymSystem.Api.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ITokenService _tokenService;
         private readonly ITokenRevocationService _revocationService;
+        private readonly GymDbContext _context;
 
         public AuthController(
             UserManager<ApplicationUser> userManager,
             ITokenService tokenService,
-            ITokenRevocationService revocationService)
+            ITokenRevocationService revocationService,
+            GymDbContext context)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _revocationService = revocationService;
+            _context = context;
         }
 
         [HttpPost("register")]
@@ -64,6 +68,7 @@ namespace GymSystem.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
+            //
             var user = await _userManager.FindByEmailAsync(request.EmailOrUserName)
                        ?? await _userManager.FindByNameAsync(request.EmailOrUserName);
 
@@ -71,12 +76,23 @@ namespace GymSystem.Api.Controllers
             if (user == null || !await _userManager.CheckPasswordAsync(user, request.Password))
                 return Unauthorized(new { message = "Invalid email/username or password." });
 
+            string gymLocation = "";
+
+            if (user.BranchId != null) 
+            {
+
+                var branch = await _context.Branches.FindAsync(user.BranchId);
+
+                if (branch != null)
+                {
+
+                    gymLocation = $"{branch.City}, {branch.Province}";
+                }
+            }
+              
+
             var token = await _tokenService.GenerateTokenAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
-
-            var gymLocation = user.Branch != null
-                ? $"{user.Branch.City}, {user.Branch.Province}"
-                : "";
 
             return Ok(new LoginResponse(
                 token,
@@ -186,8 +202,13 @@ namespace GymSystem.Api.Controllers
 
             return Ok();
         }
-        
+
+
+   
     }
+
+
+            
 
 
         
