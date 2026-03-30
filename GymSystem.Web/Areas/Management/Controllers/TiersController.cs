@@ -16,9 +16,9 @@ public class TiersController : Controller
         _api = api;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
     {
-        var tiers = await _api.GetTiersAsync();
+        var tiers = await _api.GetTiersAsync(page, pageSize);
         return View(tiers);
     }
 

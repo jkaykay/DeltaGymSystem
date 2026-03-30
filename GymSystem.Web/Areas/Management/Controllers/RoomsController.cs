@@ -16,9 +16,9 @@ public class RoomsController : Controller
         _api = api;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
     {
-        var rooms = await _api.GetRoomsAsync();
+        var rooms = await _api.GetRoomsAsync(page, pageSize);
         return View(rooms);
     }
 
@@ -35,7 +35,7 @@ public class RoomsController : Controller
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create()
     {
-        ViewBag.Branches = await _api.GetBranchesAsync();
+        ViewBag.Branches = await _api.GetAllBranchesAsync();
         return View(new CreateRoomViewModel());
     }
 
@@ -46,7 +46,7 @@ public class RoomsController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.Branches = await _api.GetBranchesAsync();
+            ViewBag.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
 
@@ -55,7 +55,7 @@ public class RoomsController : Controller
         if (!success)
         {
             ModelState.AddModelError(string.Empty, "Failed to create room. The room number may already exist in this branch.");
-            ViewBag.Branches = await _api.GetBranchesAsync();
+            ViewBag.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
 
@@ -71,7 +71,7 @@ public class RoomsController : Controller
         if (room is null)
             return NotFound();
 
-        ViewBag.Branches = await _api.GetBranchesAsync();
+        ViewBag.Branches = await _api.GetAllBranchesAsync();
 
         var vm = new EditRoomViewModel
         {
@@ -91,7 +91,7 @@ public class RoomsController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.Branches = await _api.GetBranchesAsync();
+            ViewBag.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
 
@@ -100,7 +100,7 @@ public class RoomsController : Controller
         if (!success)
         {
             ModelState.AddModelError(string.Empty, "Failed to update room. The room number may already exist in this branch.");
-            ViewBag.Branches = await _api.GetBranchesAsync();
+            ViewBag.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
 

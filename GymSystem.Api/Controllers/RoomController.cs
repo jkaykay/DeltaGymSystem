@@ -1,4 +1,5 @@
 ﻿using GymSystem.Api.Data;
+using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
@@ -24,7 +25,7 @@ namespace GymSystem.Api.Controllers
 
         [HttpGet]
         [OutputCache(PolicyName = "rooms")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             var result = await _context.Rooms
                 .Select(r => new RoomDTO
@@ -36,7 +37,7 @@ namespace GymSystem.Api.Controllers
                     SessionCount = r.Sessions.Count,
                     EquipmentCount = r.Equipments.Count
                 })
-                .ToListAsync();
+                .ToPagedResultAsync(page, pageSize);
 
             return Ok(result);
         }
@@ -108,7 +109,6 @@ namespace GymSystem.Api.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateRoomRequest roomRequest)
         {
-            // Load room with counts in a single query
             var roomData = await _context.Rooms
                 .Where(r => r.RoomId == id)
                 .Select(r => new

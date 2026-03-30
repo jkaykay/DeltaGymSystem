@@ -16,9 +16,9 @@ public class BranchesController : Controller
         _api = api;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
     {
-        var branches = await _api.GetBranchesAsync();
+        var branches = await _api.GetBranchesAsync(page, pageSize);
         return View(branches);
     }
 

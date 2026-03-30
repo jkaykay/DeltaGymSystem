@@ -35,7 +35,7 @@ public class TrainersController : Controller
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create()
     {
-        ViewBag.Branches = await _api.GetBranchesAsync();
+        ViewBag.Branches = await _api.GetAllBranchesAsync();
         return View(new CreateTrainerViewModel());
     }
 
@@ -46,7 +46,7 @@ public class TrainersController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.Branches = await _api.GetBranchesAsync();
+            ViewBag.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
 
@@ -55,7 +55,7 @@ public class TrainersController : Controller
         if (!success)
         {
             ModelState.AddModelError(string.Empty, "Failed to create trainer. Check password requirements or duplicate email/employee ID.");
-            ViewBag.Branches = await _api.GetBranchesAsync();
+            ViewBag.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
 
@@ -71,7 +71,7 @@ public class TrainersController : Controller
         if (trainer is null)
             return NotFound();
 
-        ViewBag.Branches = await _api.GetBranchesAsync();
+        ViewBag.Branches = await _api.GetAllBranchesAsync();
 
         var vm = new EditTrainerViewModel
         {
@@ -93,7 +93,7 @@ public class TrainersController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.Branches = await _api.GetBranchesAsync();
+            ViewBag.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
 
@@ -102,7 +102,7 @@ public class TrainersController : Controller
         if (!success)
         {
             ModelState.AddModelError(string.Empty, "Failed to update trainer.");
-            ViewBag.Branches = await _api.GetBranchesAsync();
+            ViewBag.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
 

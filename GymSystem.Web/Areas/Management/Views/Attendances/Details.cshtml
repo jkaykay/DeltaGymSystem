@@ -1,0 +1,51 @@
+﻿@model AttendanceDTO
+
+@{
+    ViewData["Title"] = "Attendance Details";
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">Attendance Details</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
+
+<div class="detail-card">
+    <div class="card-header">
+        <h5>Record #@Model.AttendanceId</h5>
+    </div>
+    <div class="detail-body">
+        <p class="detail-name">@Model.MemberName</p>
+        <dl class="detail-dl">
+            <dt>Member</dt>
+            <dd>@Model.MemberName</dd>
+
+            <dt>Status</dt>
+            <dd>
+                @if (Model.InFlag)
+                {
+                    <span class="badge badge-active">Checked In</span>
+                }
+                else
+                {
+                    <span class="badge badge-inactive">Checked Out</span>
+                }
+            </dd>
+
+            <dt>Check In</dt>
+            <dd>@Model.CheckIn.ToString("MMMM dd, yyyy HH:mm")</dd>
+
+            <dt>Check Out</dt>
+            <dd>@(Model.CheckOut.HasValue? Model.CheckOut.Value.ToString("MMMM dd, yyyy HH:mm") : "—")</dd>
+
+            @if (Model.CheckOut.HasValue)
+            {
+                var duration = Model.CheckOut.Value - Model.CheckIn;
+                <dt>Duration</dt>
+                <dd>@($"{(int)duration.TotalHours}h {duration.Minutes}m")</dd>
+            }
+        </dl>
+    </div>
+    <div class="detail-actions">
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>

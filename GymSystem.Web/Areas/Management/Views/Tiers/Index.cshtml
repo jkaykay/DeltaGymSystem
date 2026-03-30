@@ -1,4 +1,4 @@
-﻿@model List<TierDTO>
+﻿@model PagedResult<TierDTO>
 
 @{
     ViewData["Title"] = "Manage Tiers";
@@ -8,7 +8,7 @@
     <h1 class="page-header-title">💳 Membership Tiers</h1>
     <div class="page-actions">
         <a asp-action="Create" class="btn btn-primary">➕ Add Tier</a>
-        <span class="record-count">@Model.Count total</span>
+        <span class="record-count">@Model.TotalCount total</span>
     </div>
 </div>
 
@@ -39,7 +39,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var tier in Model)
+            @foreach (var tier in Model.Items)
             {
                 <tr>
                     <td>@tier.TierName</td>
@@ -59,10 +59,13 @@
             }
         </tbody>
     </table>
-    @if (!Model.Any())
+    @if (!Model.Items.Any())
     {
         <div class="empty-state">
             <p>No tiers found.</p>
         </div>
     }
+    <div class="pagination-wrapper">
+        <partial name="_Pagination" model="Model" />
+    </div>
 </div>

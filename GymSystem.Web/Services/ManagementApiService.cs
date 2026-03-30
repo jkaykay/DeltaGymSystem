@@ -78,6 +78,13 @@ namespace GymSystem.Web.Services
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<List<UserDTO>> GetAllMembersAsync()
+        {
+            var result = await _http.GetFromJsonAsync<PagedResult<UserDTO>>(
+                "api/member?page=1&pageSize=999");
+            return result?.Items ?? new List<UserDTO>();
+        }
+
         // --- Staff ---
 
         public async Task<PagedResult<UserDTO>> GetStaffAsync(int page = 1, int pageSize = 10)
@@ -156,10 +163,18 @@ namespace GymSystem.Web.Services
 
         // --- Branches ---
 
-        public async Task<List<BranchDTO>> GetBranchesAsync()
+        public async Task<PagedResult<BranchDTO>> GetBranchesAsync(int page = 1, int pageSize = 10)
         {
-            var result = await _http.GetFromJsonAsync<List<BranchDTO>>("api/branch");
-            return result ?? new List<BranchDTO>();
+            var result = await _http.GetFromJsonAsync<PagedResult<BranchDTO>>(
+                $"api/branch?page={page}&pageSize={pageSize}");
+            return result ?? new PagedResult<BranchDTO>();
+        }
+
+        public async Task<List<BranchDTO>> GetAllBranchesAsync()
+        {
+            var result = await _http.GetFromJsonAsync<PagedResult<BranchDTO>>(
+                "api/branch?page=1&pageSize=999");
+            return result?.Items ?? new List<BranchDTO>();
         }
 
         public async Task<BranchDTO?> GetBranchAsync(int id)
@@ -204,10 +219,18 @@ namespace GymSystem.Web.Services
 
         // --- Tiers ---
 
-        public async Task<List<TierDTO>> GetTiersAsync()
+        public async Task<PagedResult<TierDTO>> GetTiersAsync(int page = 1, int pageSize = 10)
         {
-            var result = await _http.GetFromJsonAsync<List<TierDTO>>("api/tier");
-            return result ?? new List<TierDTO>();
+            var result = await _http.GetFromJsonAsync<PagedResult<TierDTO>>(
+                $"api/tier?page={page}&pageSize={pageSize}");
+            return result ?? new PagedResult<TierDTO>();
+        }
+
+        public async Task<List<TierDTO>> GetAllTiersAsync()
+        {
+            var result = await _http.GetFromJsonAsync<PagedResult<TierDTO>>(
+                "api/tier?page=1&pageSize=999");
+            return result?.Items ?? new List<TierDTO>();
         }
 
         public async Task<TierDTO?> GetTierAsync(string tierName)
@@ -302,12 +325,19 @@ namespace GymSystem.Web.Services
             return response.IsSuccessStatusCode;
         }
 
-        // --- Rooms ---
-
-        public async Task<List<RoomDTO>> GetRoomsAsync()
+        public async Task<List<UserDTO>> GetAllTrainersAsync()
         {
-            var result = await _http.GetFromJsonAsync<List<RoomDTO>>("api/room");
-            return result ?? new List<RoomDTO>();
+            var result = await _http.GetFromJsonAsync<PagedResult<UserDTO>>(
+                "api/trainer?page=1&pageSize=999");
+            return result?.Items ?? new List<UserDTO>();
+        }
+
+        // --- Rooms ---
+        public async Task<PagedResult<RoomDTO>> GetRoomsAsync(int page = 1, int pageSize = 10)
+        {
+            var result = await _http.GetFromJsonAsync<PagedResult<RoomDTO>>(
+                $"api/room?page={page}&pageSize={pageSize}");
+            return result ?? new PagedResult<RoomDTO>();
         }
 
         public async Task<RoomDTO?> GetRoomAsync(int id)
@@ -344,6 +374,283 @@ namespace GymSystem.Web.Services
         public async Task<bool> DeleteRoomAsync(int id)
         {
             var response = await _http.DeleteAsync($"api/room/{id}");
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<List<RoomDTO>> GetAllRoomsAsync()
+        {
+            var result = await _http.GetFromJsonAsync<PagedResult<RoomDTO>>(
+                "api/room?page=1&pageSize=999");
+            return result?.Items ?? new List<RoomDTO>();
+        }
+
+        // --- Classes ---
+
+        public async Task<PagedResult<ClassDTO>> GetClassesAsync(int page = 1, int pageSize = 10)
+        {
+            var result = await _http.GetFromJsonAsync<PagedResult<ClassDTO>>(
+                $"api/class?page={page}&pageSize={pageSize}");
+            return result ?? new PagedResult<ClassDTO>();
+        }
+
+        public async Task<ClassDTO?> GetClassAsync(int id)
+        {
+            var response = await _http.GetAsync($"api/class/{id}");
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadFromJsonAsync<ClassDTO>();
+        }
+
+        public async Task<bool> CreateClassAsync(CreateClassViewModel model)
+        {
+            var response = await _http.PostAsJsonAsync("api/class", new
+            {
+                model.Subject,
+                model.UserId
+            });
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> UpdateClassAsync(int id, EditClassViewModel model)
+        {
+            var response = await _http.PutAsJsonAsync($"api/class/{id}", new
+            {
+                model.Subject,
+                model.UserId
+            });
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteClassAsync(int id)
+        {
+            var response = await _http.DeleteAsync($"api/class/{id}");
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<List<ClassDTO>> GetAllClassesAsync()
+        {
+            var result = await _http.GetFromJsonAsync<PagedResult<ClassDTO>>(
+                "api/class?page=1&pageSize=999");
+            return result?.Items ?? new List<ClassDTO>();
+        }
+
+        // --- Sessions ---
+
+        public async Task<PagedResult<SessionDTO>> GetSessionsAsync(int page = 1, int pageSize = 10)
+        {
+            var result = await _http.GetFromJsonAsync<PagedResult<SessionDTO>>(
+                $"api/session?page={page}&pageSize={pageSize}");
+            return result ?? new PagedResult<SessionDTO>();
+        }
+
+        public async Task<SessionDTO?> GetSessionAsync(int id)
+        {
+            var response = await _http.GetAsync($"api/session/{id}");
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadFromJsonAsync<SessionDTO>();
+        }
+
+        public async Task<bool> CreateSessionAsync(CreateSessionViewModel model)
+        {
+            var response = await _http.PostAsJsonAsync("api/session", new
+            {
+                model.Start,
+                model.End,
+                model.RoomId,
+                model.ClassId,
+                model.MaxCapacity
+            });
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> UpdateSessionAsync(int id, EditSessionViewModel model)
+        {
+            var response = await _http.PutAsJsonAsync($"api/session/{id}", new
+            {
+                model.Start,
+                model.End,
+                model.RoomId,
+                model.MaxCapacity
+            });
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteSessionAsync(int id)
+        {
+            var response = await _http.DeleteAsync($"api/session/{id}");
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<List<SessionDTO>> GetAllSessionsAsync()
+        {
+            var result = await _http.GetFromJsonAsync<PagedResult<SessionDTO>>(
+                "api/session?page=1&pageSize=999");
+            return result?.Items ?? new List<SessionDTO>();
+        }
+
+        // --- Subscriptions ---
+
+        public async Task<PagedResult<SubscriptionDTO>> GetSubscriptionsAsync(int page = 1, int pageSize = 10)
+        {
+            var result = await _http.GetFromJsonAsync<PagedResult<SubscriptionDTO>>(
+                $"api/subscription?page={page}&pageSize={pageSize}");
+            return result ?? new PagedResult<SubscriptionDTO>();
+        }
+
+        public async Task<SubscriptionDTO?> GetSubscriptionAsync(int id)
+        {
+            var response = await _http.GetAsync($"api/subscription/{id}");
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadFromJsonAsync<SubscriptionDTO>();
+        }
+
+        public async Task<bool> CreateSubscriptionAsync(CreateSubscriptionViewModel model)
+        {
+            var response = await _http.PostAsJsonAsync("api/subscription", new
+            {
+                model.TierName,
+                model.UserId
+            });
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> UpdateSubscriptionAsync(int id, EditSubscriptionViewModel model)
+        {
+            var response = await _http.PutAsJsonAsync($"api/subscription/{id}", new
+            {
+                model.TierName,
+                model.State,
+                model.StartDate,
+                model.EndDate
+            });
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteSubscriptionAsync(int id)
+        {
+            var response = await _http.DeleteAsync($"api/subscription/{id}");
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<List<SubscriptionDTO>> GetAllSubscriptionsAsync()
+        {
+            var result = await _http.GetFromJsonAsync<PagedResult<SubscriptionDTO>>(
+                "api/subscription?page=1&pageSize=999");
+            return result?.Items ?? new List<SubscriptionDTO>();
+        }
+
+        // --- Payments ---
+
+        public async Task<PagedResult<PaymentDTO>> GetPaymentsAsync(int page = 1, int pageSize = 10)
+        {
+            var result = await _http.GetFromJsonAsync<PagedResult<PaymentDTO>>(
+                $"api/payment?page={page}&pageSize={pageSize}");
+            return result ?? new PagedResult<PaymentDTO>();
+        }
+
+        public async Task<PaymentDTO?> GetPaymentAsync(int id)
+        {
+            var response = await _http.GetAsync($"api/payment/{id}");
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadFromJsonAsync<PaymentDTO>();
+        }
+
+        public async Task<bool> CreatePaymentAsync(CreatePaymentViewModel model)
+        {
+            var response = await _http.PostAsJsonAsync("api/payment", new
+            {
+                model.Amount,
+                model.UserId,
+                model.SubId
+            });
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeletePaymentAsync(int id)
+        {
+            var response = await _http.DeleteAsync($"api/payment/{id}");
+            return response.IsSuccessStatusCode;
+        }
+
+        // --- Bookings ---
+
+        public async Task<PagedResult<BookingDTO>> GetBookingsAsync(int page = 1, int pageSize = 10)
+        {
+            var result = await _http.GetFromJsonAsync<PagedResult<BookingDTO>>(
+                $"api/booking?page={page}&pageSize={pageSize}");
+            return result ?? new PagedResult<BookingDTO>();
+        }
+
+        public async Task<BookingDTO?> GetBookingAsync(int id)
+        {
+            var response = await _http.GetAsync($"api/booking/{id}");
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadFromJsonAsync<BookingDTO>();
+        }
+
+        public async Task<bool> CreateBookingAsync(CreateBookingViewModel model)
+        {
+            var response = await _http.PostAsJsonAsync("api/booking", new
+            {
+                model.SessionId,
+                model.UserId
+            });
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteBookingAsync(int id)
+        {
+            var response = await _http.DeleteAsync($"api/booking/{id}");
+            return response.IsSuccessStatusCode;
+        }
+
+        // --- Attendances ---
+
+        public async Task<List<AttendanceDTO>> GetAttendancesAsync()
+        {
+            var result = await _http.GetFromJsonAsync<List<AttendanceDTO>>("api/attendance");
+            return result ?? new List<AttendanceDTO>();
+        }
+
+        public async Task<List<AttendanceDTO>> GetActiveAttendancesAsync()
+        {
+            var result = await _http.GetFromJsonAsync<List<AttendanceDTO>>("api/attendance/active");
+            return result ?? new List<AttendanceDTO>();
+        }
+
+        public async Task<AttendanceDTO?> GetAttendanceAsync(int id)
+        {
+            var response = await _http.GetAsync($"api/attendance/{id}");
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadFromJsonAsync<AttendanceDTO>();
+        }
+
+        public async Task<bool> CheckInMemberAsync(string memberId)
+        {
+            var response = await _http.PostAsync($"api/attendance/checkin/{memberId}", null);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> CheckOutMemberAsync(string memberId)
+        {
+            var response = await _http.PutAsync($"api/attendance/checkout/{memberId}", null);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteAttendanceAsync(int id)
+        {
+            var response = await _http.DeleteAsync($"api/attendance/{id}");
             return response.IsSuccessStatusCode;
         }
     }

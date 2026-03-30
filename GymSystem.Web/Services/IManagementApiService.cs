@@ -19,6 +19,8 @@ namespace GymSystem.Web.Services
         Task<CountResponse> GetTotalMembersAsync();
         Task<List<UserDTO>> GetRecentSignupsAsync();
 
+        Task<List<UserDTO>> GetAllMembersAsync(); // for dropdowns
+
         // Staff
         Task<PagedResult<UserDTO>> GetStaffAsync(int page = 1, int pageSize = 10);
         Task<UserDTO?> GetStaffMemberAsync(string id);
@@ -34,26 +36,74 @@ namespace GymSystem.Web.Services
         Task<bool> UpdateTrainerAsync(string id, EditTrainerViewModel model);
         Task<bool> DeleteTrainerAsync(string id);
         Task<CountResponse> GetTotalTrainersAsync();
-
-        // Tiers
-        Task<List<TierDTO>> GetTiersAsync();
-        Task<TierDTO?> GetTierAsync(string tierName);
-        Task<bool> CreateTierAsync(CreateTierViewModel model);
-        Task<bool> UpdateTierAsync(string tierName, EditTierViewModel model);
-        Task<bool> DeleteTierAsync(string tierName);
+        Task<List<UserDTO>> GetAllTrainersAsync(); // for dropdowns
 
         // Branches
-        Task<List<BranchDTO>> GetBranchesAsync();
+        Task<PagedResult<BranchDTO>> GetBranchesAsync(int page = 1, int pageSize = 10);
+        Task<List<BranchDTO>> GetAllBranchesAsync();  // for dropdowns
         Task<BranchDTO?> GetBranchAsync(int id);
         Task<bool> CreateBranchAsync(CreateBranchViewModel model);
         Task<bool> UpdateBranchAsync(int id, EditBranchViewModel model);
         Task<bool> DeleteBranchAsync(int id);
 
+        // Tiers
+        Task<PagedResult<TierDTO>> GetTiersAsync(int page = 1, int pageSize = 10);
+        Task<List<TierDTO>> GetAllTiersAsync();  // for dropdowns
+        Task<TierDTO?> GetTierAsync(string tierName);
+        Task<bool> CreateTierAsync(CreateTierViewModel model);
+        Task<bool> UpdateTierAsync(string tierName, EditTierViewModel model);
+        Task<bool> DeleteTierAsync(string tierName);
+
         // Rooms
-        Task<List<RoomDTO>> GetRoomsAsync();
+        Task<PagedResult<RoomDTO>> GetRoomsAsync(int page = 1, int pageSize = 10);
         Task<RoomDTO?> GetRoomAsync(int id);
         Task<bool> CreateRoomAsync(CreateRoomViewModel model);
         Task<bool> UpdateRoomAsync(int id, EditRoomViewModel model);
         Task<bool> DeleteRoomAsync(int id);
+        Task<List<RoomDTO>> GetAllRoomsAsync();    // for dropdowns
+
+        // Classes
+        Task<PagedResult<ClassDTO>> GetClassesAsync(int page = 1, int pageSize = 10);
+        Task<ClassDTO?> GetClassAsync(int id);
+        Task<bool> CreateClassAsync(CreateClassViewModel model);
+        Task<bool> UpdateClassAsync(int id, EditClassViewModel model);
+        Task<bool> DeleteClassAsync(int id);
+        Task<List<ClassDTO>> GetAllClassesAsync(); // for dropdowns
+
+        // Sessions
+        Task<PagedResult<SessionDTO>> GetSessionsAsync(int page = 1, int pageSize = 10);
+        Task<SessionDTO?> GetSessionAsync(int id);
+        Task<bool> CreateSessionAsync(CreateSessionViewModel model);
+        Task<bool> UpdateSessionAsync(int id, EditSessionViewModel model);
+        Task<bool> DeleteSessionAsync(int id);
+        Task<List<SessionDTO>> GetAllSessionsAsync();
+
+        // Subscriptions
+        Task<PagedResult<SubscriptionDTO>> GetSubscriptionsAsync(int page = 1, int pageSize = 10);
+        Task<SubscriptionDTO?> GetSubscriptionAsync(int id);
+        Task<bool> CreateSubscriptionAsync(CreateSubscriptionViewModel model);
+        Task<bool> UpdateSubscriptionAsync(int id, EditSubscriptionViewModel model);
+        Task<bool> DeleteSubscriptionAsync(int id);
+        Task<List<SubscriptionDTO>> GetAllSubscriptionsAsync();
+
+        // Payments
+        Task<PagedResult<PaymentDTO>> GetPaymentsAsync(int page = 1, int pageSize = 10);
+        Task<PaymentDTO?> GetPaymentAsync(int id);
+        Task<bool> CreatePaymentAsync(CreatePaymentViewModel model);
+        Task<bool> DeletePaymentAsync(int id);
+
+        // Bookings
+        Task<PagedResult<BookingDTO>> GetBookingsAsync(int page = 1, int pageSize = 10);
+        Task<BookingDTO?> GetBookingAsync(int id);
+        Task<bool> CreateBookingAsync(CreateBookingViewModel model);
+        Task<bool> DeleteBookingAsync(int id);
+
+        // Attendances
+        Task<List<AttendanceDTO>> GetAttendancesAsync();
+        Task<List<AttendanceDTO>> GetActiveAttendancesAsync();
+        Task<AttendanceDTO?> GetAttendanceAsync(int id);
+        Task<bool> CheckInMemberAsync(string memberId);
+        Task<bool> CheckOutMemberAsync(string memberId);
+        Task<bool> DeleteAttendanceAsync(int id);
     }
 }

@@ -1,15 +1,15 @@
-﻿@model PagedResult<BranchDTO>
+﻿@model PagedResult<ClassDTO>
 
 @{
-    ViewData["Title"] = "Manage Branches";
+    ViewData["Title"] = "Manage Classes";
 }
 
 <div class="page-header">
-    <h1 class="page-header-title">🏢 Branches</h1>
+    <h1 class="page-header-title">📋 Classes</h1>
     <div class="page-actions">
         @if (User.IsInRole("Admin"))
         {
-            <a asp-action="Create" class="btn btn-primary">➕ Add Branch</a>
+            <a asp-action="Create" class="btn btn-primary">➕ Add Class</a>
         }
         <span class="record-count">@Model.TotalCount total</span>
     </div>
@@ -30,38 +30,34 @@
 
 <div class="dashboard-card">
     <div class="card-header">
-        <h5>Branch Locations</h5>
+        <h5>Class Directory</h5>
     </div>
     <table class="data-table">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Address</th>
-                <th>City</th>
-                <th>Province</th>
-                <th>Post Code</th>
-                <th>Opened</th>
+                <th>Subject</th>
+                <th>Trainer</th>
+                <th>Sessions</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var branch in Model.Items)
+            @foreach (var gymClass in Model.Items)
             {
                 <tr>
-                    <td>@branch.BranchId</td>
-                    <td>@branch.Address</td>
-                    <td>@branch.City</td>
-                    <td>@branch.Province</td>
-                    <td>@branch.PostCode</td>
-                    <td>@branch.OpenDate.ToString("MMM dd, yyyy")</td>
+                    <td>@gymClass.ClassId</td>
+                    <td>@gymClass.Subject</td>
+                    <td>@gymClass.TrainerName</td>
+                    <td>@gymClass.SessionCount</td>
                     <td>
                         <div class="table-actions">
-                            <a asp-action="Details" asp-route-id="@branch.BranchId" class="btn btn-secondary btn-sm">Details</a>
+                            <a asp-action="Details" asp-route-id="@gymClass.ClassId" class="btn btn-secondary btn-sm">Details</a>
                             @if (User.IsInRole("Admin"))
                             {
-                                <a asp-action="Edit" asp-route-id="@branch.BranchId" class="btn btn-secondary btn-sm">Edit</a>
-                                <form asp-action="Delete" asp-route-id="@branch.BranchId" method="post"
-                                      onsubmit="return confirm('Are you sure you want to delete this branch?');">
+                                <a asp-action="Edit" asp-route-id="@gymClass.ClassId" class="btn btn-secondary btn-sm">Edit</a>
+                                <form asp-action="Delete" asp-route-id="@gymClass.ClassId" method="post"
+                                      onsubmit="return confirm('Are you sure you want to delete this class?');">
                                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                 </form>
                             }
@@ -74,7 +70,7 @@
     @if (!Model.Items.Any())
     {
         <div class="empty-state">
-            <p>No branches found.</p>
+            <p>No classes found.</p>
         </div>
     }
     <div class="pagination-wrapper">
