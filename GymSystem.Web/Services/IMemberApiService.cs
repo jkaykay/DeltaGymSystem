@@ -6,7 +6,7 @@ namespace GymSystem.Web.Services;
 public interface IMemberApiService
 {
     // Auth
-   // Task<LoginResponse?> LoginAsync(string email, string password);//
+    // Task<LoginResponse?> LoginAsync(string email, string password);//
     Task<(bool Success, LoginResponse? Data, string? Error)> LoginAsync(LoginRequest request);
     Task<(bool Success, string? Error)> RegisterAsync(RegisterRequest request);
 
@@ -21,4 +21,3 @@ public interface IMemberApiService
     // Payment History
     Task<List<PaymentItem>> GetPaymentHistoryAsync(string memberId);
 }
-

@@ -7,29 +7,9 @@ public class MemberApiService : IMemberApiService
 {
     private readonly HttpClient _http;
 
-    public MemberApiService(HttpClient http)
-    {
-        _http = http;
-    }
-
     public MemberApiService(IHttpClientFactory factory)
     {
         _http = factory.CreateClient("GymApi");
-    }
-
-    public async Task<LoginResponse?> MemberLoginAsync(string emailOrUserName, string password)
-    {
-        var response = await _http.PostAsJsonAsync("api/auth/login", new { emailOrUserName, password });
-
-        if (!response.IsSuccessStatusCode)
-            return null;
-
-        return await response.Content.ReadFromJsonAsync<LoginResponse>();
-    }
-
-    public async Task MemberLogoutAsync()
-    {
-        await _http.PostAsync("api/auth/logout", null);
     }
 
     public async Task<(bool Success, LoginResponse? Data, string? Error)> LoginAsync(LoginRequest request)
