@@ -1,0 +1,47 @@
+﻿@model CheckInViewModel
+@using GymSystem.Shared.DTOs
+
+@{
+    ViewData["Title"] = "Check In Member";
+    var members = ViewBag.Members as List<UserDTO> ?? new List<UserDTO>();
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">➕ Check In Member</h1>
+    <a asp-action="Active" class="btn btn-secondary">← Back to Active</a>
+</div>
+
+<div class="form-card">
+    <div class="card-header">
+        <h5>Member Check-In</h5>
+    </div>
+    <form asp-action="CheckIn" method="post">
+        <div class="form-body">
+            <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+            <div class="form-group">
+                <label asp-for="UserId"></label>
+                <select asp-for="UserId" class="form-control">
+                    <option value="">— Select a Member —</option>
+                    @foreach (var member in members)
+                    {
+                        <option value="@member.Id">@member.FirstName @member.LastName (@member.Email)</option>
+                    }
+                </select>
+                <span asp-validation-for="UserId" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-text">
+                <small>The check-in time will be recorded automatically. Members must have an active account.</small>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Check In</button>
+            <a asp-action="Active" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

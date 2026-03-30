@@ -21,6 +21,7 @@ public class DashboardController : Controller
         {
             TotalMembers = (await _api.GetTotalMembersAsync()).Count,
             TotalStaff = (await _api.GetTotalStaffAsync()).Count,
+            TotalTrainers = (await _api.GetTotalTrainersAsync()).Count,
             RecentSignups = await _api.GetRecentSignupsAsync()
         };
 

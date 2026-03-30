@@ -1,0 +1,60 @@
+﻿@model CreateSubscriptionViewModel
+@using GymSystem.Shared.DTOs
+
+@{
+    ViewData["Title"] = "Create Subscription";
+    var members = ViewBag.Members as List<UserDTO> ?? new List<UserDTO>();
+    var tiers = ViewBag.Tiers as List<TierDTO> ?? new List<TierDTO>();
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">➕ Create New Subscription</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
+
+<div class="form-card">
+    <div class="card-header">
+        <h5>Subscription Information</h5>
+    </div>
+    <form asp-action="Create" method="post">
+        <div class="form-body">
+            <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+            <div class="form-group">
+                <label asp-for="UserId"></label>
+                <select asp-for="UserId" class="form-control">
+                    <option value="">— Select a Member —</option>
+                    @foreach (var member in members)
+                    {
+                        <option value="@member.Id">@member.FirstName @member.LastName (@member.Email)</option>
+                    }
+                </select>
+                <span asp-validation-for="UserId" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="TierName"></label>
+                <select asp-for="TierName" class="form-control">
+                    <option value="">— Select a Tier —</option>
+                    @foreach (var tier in tiers)
+                    {
+                        <option value="@tier.TierName">@tier.TierName (@tier.Price.ToString("C")/month)</option>
+                    }
+                </select>
+                <span asp-validation-for="TierName" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-text">
+                <small>The subscription will be created in a <strong>Pending</strong> state and activated once payment is recorded.</small>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Create Subscription</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

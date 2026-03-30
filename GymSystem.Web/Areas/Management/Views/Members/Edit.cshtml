@@ -4,49 +4,49 @@
     ViewData["Title"] = "Edit Member";
 }
 
-<div>
-    <h1>Edit Member</h1>
+<div class="page-header">
+    <h1 class="page-header-title">Edit Member</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
 
-    <div style="max-width: 500px;">
-        <div>
-            <h5>Member Information</h5>
-        </div>
-        <div>
-            <form asp-action="Edit" method="post">
-                <input type="hidden" asp-for="Id" />
-
-                <div asp-validation-summary="ModelOnly" role="alert"></div>
-
-                <div>
-                    <label asp-for="Email"></label>
-                    <input asp-for="Email" readonly />
-                    <span asp-validation-for="Email"></span>
-                </div>
-
-                <div>
-                    <label asp-for="FirstName"></label>
-                    <input asp-for="FirstName" />
-                    <span asp-validation-for="FirstName"></span>
-                </div>
-
-                <div>
-                    <label asp-for="LastName"></label>
-                    <input asp-for="LastName" />
-                    <span asp-validation-for="LastName"></span>
-                </div>
-
-                <div>
-                    <input asp-for="Active" />
-                    <label asp-for="Active"></label>
-                </div>
-
-                <div>
-                    <button type="submit">Save Changes</button>
-                    <a asp-action="Index">Cancel</a>
-                </div>
-            </form>
-        </div>
+<div class="form-card">
+    <div class="card-header">
+        <h5>Member Information</h5>
     </div>
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+        <div class="form-body">
+            <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" readonly />
+                <span asp-validation-for="Email" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="FirstName"></label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="field-validation-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName"></label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="field-validation-error"></span>
+                </div>
+            </div>
+
+            <div class="form-check">
+                <input asp-for="Active" type="checkbox" />
+                <label asp-for="Active"></label>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
 </div>
 
 @section Scripts {

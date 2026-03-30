@@ -1,4 +1,5 @@
 ﻿using GymSystem.Api.Data;
+using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
@@ -24,7 +25,7 @@ public class TierController : ControllerBase
 
     [HttpGet]
     [OutputCache(PolicyName = "tiers")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         var result = await _context.Tiers
             .Select(t => new TierDTO
@@ -33,7 +34,7 @@ public class TierController : ControllerBase
                 Price = t.Price,
                 SubCount = t.Subscriptions.Count
             })
-            .ToListAsync();
+            .ToPagedResultAsync(page, pageSize);
 
         return Ok(result);
     }

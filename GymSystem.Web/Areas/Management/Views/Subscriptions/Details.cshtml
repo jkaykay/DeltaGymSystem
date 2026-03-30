@@ -1,0 +1,40 @@
+﻿@model SubscriptionDTO
+@using GymSystem.Shared.Enums
+
+@{
+    ViewData["Title"] = "Subscription Details";
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">Subscription Details</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
+
+<div class="detail-card">
+    <div class="card-header">
+        <h5>Subscription #@Model.SubId</h5>
+    </div>
+    <div class="detail-body">
+        <p class="detail-name">@Model.MemberName — @Model.TierName</p>
+        <dl class="detail-dl">
+            <dt>Member</dt>
+            <dd>@Model.MemberName</dd>
+
+            <dt>Tier</dt>
+            <dd>@Model.TierName</dd>
+
+            <dt>State</dt>
+            <dd>@Model.State</dd>
+
+            <dt>Start Date</dt>
+            <dd>@(Model.StartDate == default ? "—" : Model.StartDate.ToString("MMMM dd, yyyy"))</dd>
+
+            <dt>End Date</dt>
+            <dd>@(Model.EndDate == default ? "—" : Model.EndDate.ToString("MMMM dd, yyyy"))</dd>
+        </dl>
+    </div>
+    <div class="detail-actions">
+        <a asp-action="Edit" asp-route-id="@Model.SubId" class="btn btn-primary">Edit</a>
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>

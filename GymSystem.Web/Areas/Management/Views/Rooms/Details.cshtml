@@ -1,0 +1,42 @@
+﻿@model RoomDTO
+
+@{
+    ViewData["Title"] = "Room Details";
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">Room Details</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
+
+<div class="detail-card">
+    <div class="card-header">
+        <h5>Room #@Model.RoomNumber</h5>
+    </div>
+    <div class="detail-body">
+        <p class="detail-name">Room @Model.RoomNumber — Branch @Model.BranchId</p>
+        <dl class="detail-dl">
+            <dt>Room Number</dt>
+            <dd>@Model.RoomNumber</dd>
+
+            <dt>Branch ID</dt>
+            <dd>@Model.BranchId</dd>
+
+            <dt>Max Capacity</dt>
+            <dd>@Model.MaxCapacity</dd>
+
+            <dt>Scheduled Sessions</dt>
+            <dd>@Model.SessionCount</dd>
+
+            <dt>Equipment Items</dt>
+            <dd>@Model.EquipmentCount</dd>
+        </dl>
+    </div>
+    <div class="detail-actions">
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.RoomId" class="btn btn-primary">Edit</a>
+        }
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>

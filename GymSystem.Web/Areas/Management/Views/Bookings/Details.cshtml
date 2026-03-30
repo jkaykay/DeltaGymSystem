@@ -1,0 +1,45 @@
+﻿@model BookingDTO
+
+@{
+    ViewData["Title"] = "Booking Details";
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">Booking Details</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
+
+<div class="detail-card">
+    <div class="card-header">
+        <h5>Booking #@Model.BookingId</h5>
+    </div>
+    <div class="detail-body">
+        <p class="detail-name">@Model.UserName — @Model.Subject</p>
+        <dl class="detail-dl">
+            <dt>Member</dt>
+            <dd>@Model.UserName</dd>
+
+            <dt>Class</dt>
+            <dd>@Model.Subject</dd>
+
+            <dt>Room</dt>
+            <dd>Room @Model.RoomNumber</dd>
+
+            <dt>Session Start</dt>
+            <dd>@Model.SessionStart.ToString("MMMM dd, yyyy HH:mm")</dd>
+
+            <dt>Session End</dt>
+            <dd>@Model.SessionEnd.ToString("MMMM dd, yyyy HH:mm")</dd>
+
+            <dt>Booked On</dt>
+            <dd>@Model.BookDate.ToString("MMMM dd, yyyy")</dd>
+        </dl>
+    </div>
+    <div class="detail-actions">
+        <form asp-action="Delete" asp-route-id="@Model.BookingId" method="post"
+              onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+            <button type="submit" class="btn btn-danger">Cancel Booking</button>
+        </form>
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>

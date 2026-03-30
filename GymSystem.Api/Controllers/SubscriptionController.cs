@@ -172,7 +172,7 @@ public class SubscriptionController : ControllerBase
 
     [HttpGet("my")]
     [Authorize(Roles = "Member")]
-    public async Task<IActionResult> GetMy()
+    public async Task<IActionResult> GetMy([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -188,7 +188,7 @@ public class SubscriptionController : ControllerBase
                 UserId = s.UserId,
                 MemberName = $"{s.User.FirstName} {s.User.LastName}"
             })
-            .ToListAsync();
+            .ToPagedResultAsync(page, pageSize);
 
         return Ok(subscriptions);
     }

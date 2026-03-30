@@ -1,0 +1,81 @@
+﻿@model CreatePaymentViewModel
+@using GymSystem.Shared.DTOs
+
+@{
+    ViewData["Title"] = "Record Payment";
+    var pendingSubs = ViewBag.PendingSubscriptions as List<SubscriptionDTO> ?? new List<SubscriptionDTO>();
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">➕ Record Payment</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
+
+<div class="form-card">
+    <div class="card-header">
+        <h5>Payment Information</h5>
+    </div>
+    <form asp-action="Create" method="post">
+        <input type="hidden" asp-for="UserId" id="userId" />
+        <div class="form-body">
+            <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+            <div class="form-group">
+                <label asp-for="SubId"></label>
+                <select asp-for="SubId" id="subSelect" class="form-control" onchange="onSubscriptionChanged()">
+                    <option value="">— Select a Pending Subscription —</option>
+                    @foreach (var sub in pendingSubs)
+                    {
+                        <option value="@sub.SubId"
+                                data-userid="@sub.UserId"
+                                data-tiername="@sub.TierName"
+                                data-member="@sub.MemberName">
+                            #@sub.SubId — @sub.MemberName (@sub.TierName)
+                        </option>
+                    }
+                </select>
+                <span asp-validation-for="SubId" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group" id="selectedMemberInfo" style="display:none;">
+                <label>Selected Member</label>
+                <input id="memberDisplay" class="form-control" disabled />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Amount"></label>
+                <input asp-for="Amount" class="form-control" type="number" step="0.01" min="0.01" />
+                <small class="form-text">Amount must match the tier price exactly.</small>
+                <span asp-validation-for="Amount" class="field-validation-error"></span>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Record Payment</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function onSubscriptionChanged() {
+            const select = document.getElementById('subSelect');
+            const option = select.options[select.selectedIndex];
+            const userId = option.getAttribute('data-userid') ?? '';
+            const member = option.getAttribute('data-member') ?? '';
+
+            document.getElementById('userId').value = userId;
+
+            const memberInfo = document.getElementById('selectedMemberInfo');
+            const memberDisplay = document.getElementById('memberDisplay');
+            if (userId) {
+                memberDisplay.value = member;
+                memberInfo.style.display = '';
+            } else {
+                memberDisplay.value = '';
+                memberInfo.style.display = 'none';
+            }
+        }
+    </script>
+}
