@@ -1,0 +1,63 @@
+﻿@model CreateBookingViewModel
+@using GymSystem.Shared.DTOs
+
+@{
+    ViewData["Title"] = "Create Booking";
+    var members = ViewBag.Members as List<UserDTO> ?? new List<UserDTO>();
+    var sessions = ViewBag.Sessions as List<SessionDTO> ?? new List<SessionDTO>();
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">➕ Create New Booking</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
+
+<div class="form-card">
+    <div class="card-header">
+        <h5>Booking Information</h5>
+    </div>
+    <form asp-action="Create" method="post">
+        <div class="form-body">
+            <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+            <div class="form-group">
+                <label asp-for="UserId"></label>
+                <select asp-for="UserId" class="form-control">
+                    <option value="">— Select a Member —</option>
+                    @foreach (var member in members)
+                    {
+                        <option value="@member.Id">@member.FirstName @member.LastName (@member.Email)</option>
+                    }
+                </select>
+                <span asp-validation-for="UserId" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="SessionId"></label>
+                <select asp-for="SessionId" class="form-control">
+                    <option value="">— Select a Session —</option>
+                    @foreach (var session in sessions)
+                    {
+                        var spotsLabel = session.AvailableSpots > 0
+                            ? $"{session.AvailableSpots} spot(s) left"
+                            : "Full";
+                        <option value="@session.SessionId" disabled="@(session.AvailableSpots == 0)">
+                            @session.Subject — Room @session.RoomNumber —
+                            @session.Start.ToString("MMM dd HH:mm") to @session.End.ToString("HH:mm")
+                            (@spotsLabel)
+                        </option>
+                    }
+                </select>
+                <span asp-validation-for="SessionId" class="field-validation-error"></span>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Create Booking</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

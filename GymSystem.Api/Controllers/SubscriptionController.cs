@@ -1,11 +1,11 @@
 ﻿using GymSystem.Api.Data;
+using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
 using GymSystem.Shared.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -27,10 +27,9 @@ public class SubscriptionController : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = "Admin,Staff")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var subscriptions = await _context.Subscriptions
-            .Include(s => s.Payments)
+        var result = await _context.Subscriptions
             .Select(s => new SubscriptionDTO
             {
                 SubId = s.SubId,
@@ -41,33 +40,34 @@ public class SubscriptionController : ControllerBase
                 UserId = s.UserId,
                 MemberName = $"{s.User.FirstName} {s.User.LastName}"
             })
-            .ToListAsync();
+            .ToPagedResultAsync(page, pageSize);
 
-        return Ok(subscriptions);
+        return Ok(result);
     }
+
 
     [HttpGet("{id}")]
     [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Get(int id)
     {
-        var sub = await _context.Subscriptions
-            .Include(s => s.Payments)
-            .Include(s => s.User)
-            .FirstOrDefaultAsync(s => s.SubId == id);
+        var result = await _context.Subscriptions
+            .Where(s => s.SubId == id)
+            .Select(s => new SubscriptionDTO
+            {
+                SubId = s.SubId,
+                State = s.State,
+                StartDate = s.StartDate,
+                EndDate = s.EndDate,
+                TierName = s.TierName,
+                UserId = s.UserId,
+                MemberName = $"{s.User.FirstName} {s.User.LastName}"
+            })
+            .FirstOrDefaultAsync();
 
-        if (sub is null)
+        if (result is null)
             return NotFound();
 
-        return Ok(new SubscriptionDTO
-        {
-            SubId = sub.SubId,
-            State = sub.State,
-            StartDate = sub.StartDate,
-            EndDate = sub.EndDate,
-            TierName = sub.TierName,
-            UserId = sub.UserId,
-            MemberName = $"{sub.User.FirstName} {sub.User.LastName}"
-        });
+        return Ok(result);
     }
 
     /// <summary>
@@ -172,7 +172,7 @@ public class SubscriptionController : ControllerBase
 
     [HttpGet("my")]
     [Authorize(Roles = "Member")]
-    public async Task<IActionResult> GetMy()
+    public async Task<IActionResult> GetMy([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -188,7 +188,7 @@ public class SubscriptionController : ControllerBase
                 UserId = s.UserId,
                 MemberName = $"{s.User.FirstName} {s.User.LastName}"
             })
-            .ToListAsync();
+            .ToPagedResultAsync(page, pageSize);
 
         return Ok(subscriptions);
     }
@@ -231,7 +231,7 @@ public class SubscriptionController : ControllerBase
         if (rowsAffected == 0)
             return BadRequest("Subscription creation failed.");
 
-        return CreatedAtAction(nameof(GetMy), new SubscriptionDTO
+        return CreatedAtAction(nameof(GetMy), null, new SubscriptionDTO
         {
             SubId = sub.SubId,
             State = sub.State,

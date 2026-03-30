@@ -1,9 +1,11 @@
 ﻿using GymSystem.Api.Data;
-using GymSystem.Shared.DTOs;
+using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
+using GymSystem.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -16,11 +18,13 @@ public class MemberController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly GymDbContext _context;
+    private readonly IOutputCacheStore _outputCache;
 
-    public MemberController(UserManager<ApplicationUser> userManager, GymDbContext context)
+    public MemberController(UserManager<ApplicationUser> userManager, GymDbContext context, IOutputCacheStore outputCache)
     {
         _userManager = userManager;
         _context = context;
+        _outputCache = outputCache;
     }
 
     private IQueryable<ApplicationUser> MembersQuery()
@@ -36,7 +40,8 @@ public class MemberController : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = "Admin,Staff")]
-    public async Task<IActionResult> GetAll()
+    [OutputCache(PolicyName = "members")]
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         var result = await MembersQuery()
             .Select(m => new UserDTO
@@ -49,13 +54,14 @@ public class MemberController : ControllerBase
                 JoinDate = m.JoinDate,
                 Active = m.Active
             })
-            .ToListAsync();
+            .ToPagedResultAsync(page, pageSize);
 
         return Ok(result);
     }
 
     [HttpGet("total")]
     [Authorize(Roles = "Admin,Staff")]
+    [OutputCache(PolicyName = "members")]
     public async Task<IActionResult> GetTotal()
     {
         var count = await MembersQuery().CountAsync();
@@ -64,6 +70,7 @@ public class MemberController : ControllerBase
 
     [HttpGet("recents")]
     [Authorize(Roles = "Admin,Staff")]
+    [OutputCache(PolicyName = "members")]
     public async Task<IActionResult> GetRecentSignups()
     {
         var result = await MembersQuery()
@@ -112,6 +119,8 @@ public class MemberController : ControllerBase
 
         var role = "Member";
         await _userManager.AddToRoleAsync(user, role);
+
+        await _outputCache.EvictByTagAsync("members", default);
 
         return CreatedAtAction(nameof(Get), new { id = user.Id }, new UserDTO
         {
@@ -166,6 +175,16 @@ public class MemberController : ControllerBase
         if (!roles.Contains("Member"))
             return NotFound("User is not a member.");
 
+        if (request.Email is not null)
+        {
+            var existing = await _userManager.FindByEmailAsync(request.Email);
+            if (existing is not null && existing.Id != user.Id)
+                return Conflict("A user with this email already exists.");
+
+            user.Email = request.Email;
+            user.NormalizedEmail = request.Email.ToUpperInvariant();
+        }
+
         if (request.FirstName is not null) user.FirstName = request.FirstName;
         if (request.LastName is not null) user.LastName = request.LastName;
 
@@ -177,25 +196,7 @@ public class MemberController : ControllerBase
         if (!result.Succeeded)
             return BadRequest(result.Errors);
 
-        return NoContent();
-    }
-
-    [HttpPost("{id}/toggle-active")]
-    [Authorize(Roles = "Admin,Staff")]
-    public async Task<IActionResult> ToggleActive(string id)
-    {
-        var user = await _userManager.FindByIdAsync(id);
-        if (user is null)
-            return NotFound();
-
-        var roles = await _userManager.GetRolesAsync(user);
-        if (!roles.Contains("Member"))
-            return NotFound("User is not a member.");
-
-        user.Active = !user.Active;
-        var result = await _userManager.UpdateAsync(user);
-        if (!result.Succeeded)
-            return BadRequest(result.Errors);
+        await _outputCache.EvictByTagAsync("members", default);
 
         return NoContent();
     }
@@ -215,6 +216,8 @@ public class MemberController : ControllerBase
         var result = await _userManager.DeleteAsync(user);
         if (!result.Succeeded)
             return BadRequest(result.Errors);
+
+        await _outputCache.EvictByTagAsync("members", default);
 
         return NoContent();
     }

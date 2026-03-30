@@ -1,0 +1,48 @@
+﻿@model SessionDTO
+
+@{
+    ViewData["Title"] = "Session Details";
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">Session Details</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
+
+<div class="detail-card">
+    <div class="card-header">
+        <h5>@Model.Subject</h5>
+    </div>
+    <div class="detail-body">
+        <p class="detail-name">@Model.Subject — Room @Model.RoomNumber</p>
+        <dl class="detail-dl">
+            <dt>Instructor</dt>
+            <dd>@Model.InstructorName</dd>
+
+            <dt>Start</dt>
+            <dd>@Model.Start.ToString("MMMM dd, yyyy HH:mm")</dd>
+
+            <dt>End</dt>
+            <dd>@Model.End.ToString("MMMM dd, yyyy HH:mm")</dd>
+
+            <dt>Room</dt>
+            <dd>Room @Model.RoomNumber</dd>
+
+            <dt>Max Capacity</dt>
+            <dd>@Model.MaxCapacity</dd>
+
+            <dt>Bookings</dt>
+            <dd>@Model.BookingCount</dd>
+
+            <dt>Available Spots</dt>
+            <dd>@Model.AvailableSpots</dd>
+        </dl>
+    </div>
+    <div class="detail-actions">
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.SessionId" class="btn btn-primary">Edit</a>
+        }
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>

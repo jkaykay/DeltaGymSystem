@@ -12,19 +12,39 @@ public class MemberApiService : IMemberApiService
         _http = http;
     }
 
-   public async Task<(bool Success, LoginResponse? Data, string? Error)> LoginAsync(LoginRequest request)
-{
-    var response = await _http.PostAsJsonAsync("api/auth/login", request);
-
-    if (!response.IsSuccessStatusCode)
+    public MemberApiService(IHttpClientFactory factory)
     {
-        var error = await response.Content.ReadAsStringAsync();
-        return (false, null, error);
+        _http = factory.CreateClient("GymApi");
     }
 
-    var data = await response.Content.ReadFromJsonAsync<LoginResponse>();
-    return (true, data, null);
-}
+    public async Task<LoginResponse?> MemberLoginAsync(string emailOrUserName, string password)
+    {
+        var response = await _http.PostAsJsonAsync("api/auth/login", new { emailOrUserName, password });
+
+        if (!response.IsSuccessStatusCode)
+            return null;
+
+        return await response.Content.ReadFromJsonAsync<LoginResponse>();
+    }
+
+    public async Task MemberLogoutAsync()
+    {
+        await _http.PostAsync("api/auth/logout", null);
+    }
+
+    public async Task<(bool Success, LoginResponse? Data, string? Error)> LoginAsync(LoginRequest request)
+    {
+        var response = await _http.PostAsJsonAsync("api/auth/login", request);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            return (false, null, error);
+        }
+
+        var data = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        return (true, data, null);
+    }
 
     public async Task<(bool Success, string? Error)> RegisterAsync(RegisterRequest request)
     {

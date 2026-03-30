@@ -1,10 +1,12 @@
 ﻿using GymSystem.Api.Data;
+using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
 using GymSystem.Shared.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -17,105 +19,26 @@ namespace GymSystem.Api.Controllers
     {
         private readonly GymDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        public PaymentController(GymDbContext context, UserManager<ApplicationUser> userManager)
+        private readonly IOutputCacheStore _outputCache;
+
+        public PaymentController(GymDbContext context, UserManager<ApplicationUser> userManager, IOutputCacheStore outputCache)
         {
             _context = context;
             _userManager = userManager;
+            _outputCache = outputCache;
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Pay([FromBody] AddPaymentRequest request)
         {
-            var user = await _userManager.FindByIdAsync(request.UserId);
-            if (user is null)
-                return NotFound("User does not exist.");
-
-            var sub = await _context.Subscriptions
-                .Include(s => s.Tier)
-                .FirstOrDefaultAsync(s => s.SubId == request.SubId && s.UserId == request.UserId);
-
-            if (sub is null)
-                return BadRequest("Subscription does not exist for this user.");
-
-            // Validate the amount matches the tier price
-            if (request.Amount != sub.Tier.Price)
-                return BadRequest($"Amount must match the tier price of {sub.Tier.Price:C}.");
-
-            // Cannot pay against an already-expired subscription
-            if (sub.State == SubscriptionState.Expired)
-                return BadRequest("Cannot pay against an expired subscription. Please create a new one.");
-
-            Subscription targetSub;
-
-            if (sub.State == SubscriptionState.Active || sub.State == SubscriptionState.Queued)
-            {
-                // --- Prepay: find the latest end date for this user + tier to chain correctly ---
-                var latestEndDate = await _context.Subscriptions
-                    .Where(s => s.UserId == sub.UserId
-                             && s.TierName == sub.TierName
-                             && (s.State == SubscriptionState.Active || s.State == SubscriptionState.Queued))
-                    .MaxAsync(s => s.EndDate);
-
-                var newSub = new Subscription
-                {
-                    State = SubscriptionState.Queued,
-                    UserId = sub.UserId,
-                    TierName = sub.TierName,
-                    StartDate = latestEndDate,                // starts when the latest one ends
-                    EndDate = latestEndDate.AddMonths(1),
-                    User = user,
-                    Tier = sub.Tier
-                };
-
-                _context.Subscriptions.Add(newSub);
-                await _context.SaveChangesAsync();            // generates newSub.SubId
-
-                targetSub = newSub;
-            }
-            else
-            {
-                // --- First payment: activate the Pending subscription ---
-                sub.State = SubscriptionState.Active;
-                sub.StartDate = DateTime.UtcNow;
-                sub.EndDate = DateTime.UtcNow.AddMonths(1);
-
-                // Activate the member now that they've paid
-                if (!user.Active)
-                {
-                    user.Active = true;
-                    await _userManager.UpdateAsync(user);
-                }
-
-                targetSub = sub;
-            }
-
-            var payment = new Payment
-            {
-                Amount = request.Amount,
-                PaymentDate = DateTime.UtcNow,
-                UserId = request.UserId,
-                User = user,
-                SubId = targetSub.SubId,
-                Subscription = targetSub
-            };
-
-            _context.Payments.Add(payment);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(Get), new { id = payment.PaymentId }, new PaymentDTO
-            {
-                PaymentId = payment.PaymentId,
-                Amount = payment.Amount,
-                PaymentDate = payment.PaymentDate,
-                UserId = payment.UserId,
-                SubId = payment.SubId
-            });
+            return await ProcessPaymentAsync(request.UserId, request.SubId, request.Amount);
         }
 
         [HttpGet]
         [Authorize(Roles = "Admin,Staff")]
-        public async Task<IActionResult> GetAll()
+        [OutputCache(PolicyName = "payments")]
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             var payments = await _context.Payments
                 .Select(p => new PaymentDTO
@@ -126,13 +49,14 @@ namespace GymSystem.Api.Controllers
                     UserId = p.UserId,
                     SubId = p.SubId
                 })
-                .ToListAsync();
+                .ToPagedResultAsync(page, pageSize);
 
             return Ok(payments);
         }
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,Staff")]
+        [OutputCache(PolicyName = "payments")]
         public async Task<IActionResult> Get(int id)
         {
             var payment = await _context.Payments.FindAsync(id);
@@ -154,7 +78,7 @@ namespace GymSystem.Api.Controllers
         // a new one through the validated Pay endpoint.
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]  // Tightened from Admin,Staff to Admin only
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var payment = await _context.Payments.FindAsync(id);
@@ -163,12 +87,17 @@ namespace GymSystem.Api.Controllers
 
             _context.Payments.Remove(payment);
             await _context.SaveChangesAsync();
+
+            await _outputCache.EvictByTagAsync("payments", default);
             return NoContent();
         }
 
+        // GetMy is intentionally not cached — the "payments" policy has no
+        // user-aware vary strategy, so caching here would serve one member's
+        // payment history to another. Same reasoning as BookingController.GetMy.
         [HttpGet("my")]
         [Authorize(Roles = "Member")]
-        public async Task<IActionResult> GetMy()
+        public async Task<IActionResult> GetMy([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -182,7 +111,7 @@ namespace GymSystem.Api.Controllers
                     UserId = p.UserId,
                     SubId = p.SubId
                 })
-                .ToListAsync();
+                .ToPagedResultAsync(page, pageSize);
 
             return Ok(payments);
         }
@@ -192,21 +121,27 @@ namespace GymSystem.Api.Controllers
         public async Task<IActionResult> PayMy([FromBody] AddMyPaymentRequest request)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            return await ProcessPaymentAsync(userId, request.SubId, request.Amount);
+        }
+
+        // --- Shared logic ---
+
+        private async Task<IActionResult> ProcessPaymentAsync(string userId, int subId, decimal amount)
+        {
             var user = await _userManager.FindByIdAsync(userId);
             if (user is null)
                 return NotFound("User does not exist.");
 
             var sub = await _context.Subscriptions
                 .Include(s => s.Tier)
-                .FirstOrDefaultAsync(s => s.SubId == request.SubId && s.UserId == userId);
+                .FirstOrDefaultAsync(s => s.SubId == subId && s.UserId == userId);
 
             if (sub is null)
                 return BadRequest("Subscription does not exist for this user.");
 
-            if (request.Amount != sub.Tier.Price)
+            if (amount != sub.Tier.Price)
                 return BadRequest($"Amount must match the tier price of {sub.Tier.Price:C}.");
 
-            // Cannot pay against an already-expired subscription
             if (sub.State == SubscriptionState.Expired)
                 return BadRequest("Cannot pay against an expired subscription. Please create a new one.");
 
@@ -214,9 +149,8 @@ namespace GymSystem.Api.Controllers
 
             if (sub.State == SubscriptionState.Active || sub.State == SubscriptionState.Queued)
             {
-                // --- Prepay: chain from the latest end date for this user + tier ---
                 var latestEndDate = await _context.Subscriptions
-                    .Where(s => s.UserId == userId
+                    .Where(s => s.UserId == sub.UserId
                              && s.TierName == sub.TierName
                              && (s.State == SubscriptionState.Active || s.State == SubscriptionState.Queued))
                     .MaxAsync(s => s.EndDate);
@@ -224,7 +158,7 @@ namespace GymSystem.Api.Controllers
                 var newSub = new Subscription
                 {
                     State = SubscriptionState.Queued,
-                    UserId = userId,
+                    UserId = sub.UserId,
                     TierName = sub.TierName,
                     StartDate = latestEndDate,
                     EndDate = latestEndDate.AddMonths(1),
@@ -239,12 +173,10 @@ namespace GymSystem.Api.Controllers
             }
             else
             {
-                // --- First payment: activate the Pending subscription ---
                 sub.State = SubscriptionState.Active;
                 sub.StartDate = DateTime.UtcNow;
                 sub.EndDate = DateTime.UtcNow.AddMonths(1);
 
-                // Activate the member now that they've paid
                 if (!user.Active)
                 {
                     user.Active = true;
@@ -256,7 +188,7 @@ namespace GymSystem.Api.Controllers
 
             var payment = new Payment
             {
-                Amount = request.Amount,
+                Amount = amount,
                 PaymentDate = DateTime.UtcNow,
                 UserId = userId,
                 User = user,
@@ -267,7 +199,11 @@ namespace GymSystem.Api.Controllers
             _context.Payments.Add(payment);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetMy), new PaymentDTO
+            // Evict both Pay (Admin/Staff) and PayMy (Member) paths —
+            // both funnel here so eviction is guaranteed in one place
+            await _outputCache.EvictByTagAsync("payments", default);
+
+            return CreatedAtAction(nameof(Get), new { id = payment.PaymentId }, new PaymentDTO
             {
                 PaymentId = payment.PaymentId,
                 Amount = payment.Amount,

@@ -90,6 +90,7 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
+        await _api.LogoutAsync();
         await HttpContext.SignOutAsync("Cookies");
         return RedirectToAction("Login");
     }

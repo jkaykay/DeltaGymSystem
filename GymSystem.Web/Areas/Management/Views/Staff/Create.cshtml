@@ -4,64 +4,64 @@
     ViewData["Title"] = "Create Staff";
 }
 
-<div>
-    <h1>➕ Create New Staff</h1>
+<div class="page-header">
+    <h1 class="page-header-title">➕ Create New Staff</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
 
-    <div style="max-width: 500px;">
-        <div>
-            <h5>Staff Information</h5>
-        </div>
-        <div>
-            <form asp-action="Create" method="post">
-                <div asp-validation-summary="ModelOnly" role="alert"></div>
-
-                <div>
-                    <label asp-for="Email">Email</label>
-                    <input asp-for="Email" type="email" />
-                    <span asp-validation-for="Email"></span>
-                </div>
-
-                <div>
-                    <div>
-                        <label asp-for="FirstName">First Name</label>
-                        <input asp-for="FirstName" />
-                        <span asp-validation-for="FirstName"></span>
-                    </div>
-                    <div>
-                        <label asp-for="LastName">Last Name</label>
-                        <input asp-for="LastName" />
-                        <span asp-validation-for="LastName"></span>
-                    </div>
-                </div>
-
-                <div>
-                    <label asp-for="EmployeeId"></label>
-                    <input asp-for="EmployeeId" placeholder="e.g., GYM-2026-001" />
-                    <span asp-validation-for="EmployeeId"></span>
-                </div>
-
-                <div>
-                    <label asp-for="Role">Role</label>
-                    <select asp-for="Role">
-                        <option value="Staff">Staff</option>
-                        <option value="Admin">Admin</option>
-                    </select>
-                    <span asp-validation-for="Role"></span>
-                </div>
-
-                <div>
-                    <label asp-for="Password">Password</label>
-                    <input asp-for="Password" type="password" />
-                    <span asp-validation-for="Password"></span>
-                </div>
-
-                <div>
-                    <button type="submit">Create Staff</button>
-                    <a asp-action="Index">Cancel</a>
-                </div>
-            </form>
-        </div>
+<div class="form-card">
+    <div class="card-header">
+        <h5>Staff Information</h5>
     </div>
+    <form asp-action="Create" method="post">
+        <div class="form-body">
+            <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" type="email" />
+                <span asp-validation-for="Email" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="FirstName"></label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="field-validation-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName"></label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="field-validation-error"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="EmployeeId"></label>
+                <input asp-for="EmployeeId" class="form-control" placeholder="e.g., GYM-2026-001" />
+                <span asp-validation-for="EmployeeId" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Role"></label>
+                <select asp-for="Role" class="form-control">
+                    <option value="Staff">Staff</option>
+                    <option value="Admin">Admin</option>
+                </select>
+                <span asp-validation-for="Role" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" class="form-control" type="password" />
+                <span asp-validation-for="Password" class="field-validation-error"></span>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Create Staff</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
 </div>
 
 @section Scripts {

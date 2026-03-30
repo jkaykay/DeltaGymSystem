@@ -1,0 +1,52 @@
+﻿@model EditClassViewModel
+@using GymSystem.Shared.DTOs
+
+@{
+    ViewData["Title"] = "Edit Class";
+    var trainers = ViewBag.Trainers as List<UserDTO> ?? new List<UserDTO>();
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">Edit Class</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
+
+<div class="form-card">
+    <div class="card-header">
+        <h5>Class Information</h5>
+    </div>
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="ClassId" />
+        <div class="form-body">
+            <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+            <div class="form-group">
+                <label asp-for="Subject"></label>
+                <input asp-for="Subject" class="form-control" />
+                <span asp-validation-for="Subject" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="UserId"></label>
+                <select asp-for="UserId" class="form-control">
+                    <option value="">— Select a Trainer —</option>
+                    @foreach (var trainer in trainers)
+                    {
+                        <option value="@trainer.Id" selected="@(Model.UserId == trainer.Id)">
+                            @trainer.FirstName @trainer.LastName (@trainer.Email)
+                        </option>
+                    }
+                </select>
+                <span asp-validation-for="UserId" class="field-validation-error"></span>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

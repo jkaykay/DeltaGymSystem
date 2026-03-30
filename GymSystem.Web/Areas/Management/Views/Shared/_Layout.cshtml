@@ -4,16 +4,81 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Management</title>
-    <link rel="stylesheet" href="~/styles/management.css" />
+    <link rel="stylesheet" href="~/css/management.css" />
 </head>
 <body>
-    <nav>
-        <!-- Management sidebar / nav -->
-        <a asp-area="Management" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+    <!-- Topbar -->
+    <nav class="topbar">
+        <div class="topbar-brand">
+            <a asp-area="Management" asp-controller="Dashboard" asp-action="Index">
+                Delta Gym Admin
+            </a>
+        </div>
+        <div class="topbar-links">
+            <a asp-area="Management" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+            <a asp-area="Management" asp-controller="Password" asp-action="Index">Change Password</a>
+            <form asp-area="Management" asp-controller="Account" asp-action="Logout" method="post">
+                <button type="submit" class="topbar-logout">Log Out</button>
+            </form>
+        </div>
     </nav>
-    <main>
-        @RenderBody()
-    </main>
+
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <div class="sidebar-group">
+                    <h3 class="sidebar-heading">People</h3>
+                    <ul>
+                        <li><a asp-area="Management" asp-controller="Members" asp-action="Index">Members</a></li>
+                        <li><a asp-area="Management" asp-controller="Staff" asp-action="Index">Staff</a></li>
+                        <li><a asp-area="Management" asp-controller="Trainers" asp-action="Index">Trainers</a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-group">
+                    <h3 class="sidebar-heading">Gym</h3>
+                    <ul>
+                        <li><a asp-area="Management" asp-controller="Branches" asp-action="Index">Branches</a></li>
+                        <li><a asp-area="Management" asp-controller="Rooms" asp-action="Index">Rooms</a></li>
+                        <li><a asp-area="Management" asp-controller="Equipment" asp-action="Index">Equipment</a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-group">
+                    <h3 class="sidebar-heading">Classes &amp; Sessions</h3>
+                    <ul>
+                        <li><a asp-area="Management" asp-controller="Classes" asp-action="Index">Classes</a></li>
+                        <li><a asp-area="Management" asp-controller="Sessions" asp-action="Index">Sessions</a></li>
+                        <li><a asp-area="Management" asp-controller="Schedules" asp-action="Index">Schedules</a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-group">
+                    <h3 class="sidebar-heading">Memberships</h3>
+                    <ul>
+                        <li><a asp-area="Management" asp-controller="Tiers" asp-action="Index">Tiers</a></li>
+                        <li><a asp-area="Management" asp-controller="Subscriptions" asp-action="Index">Subscriptions</a></li>
+                        <li><a asp-area="Management" asp-controller="Payments" asp-action="Index">Payments</a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-group">
+                    <h3 class="sidebar-heading">Activity</h3>
+                    <ul>
+                        <li><a asp-area="Management" asp-controller="Bookings" asp-action="Index">Bookings</a></li>
+                        <li><a asp-area="Management" asp-controller="Attendances" asp-action="Index">Attendances</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-content">
+            @RenderBody()
+        </main>
+    </div>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

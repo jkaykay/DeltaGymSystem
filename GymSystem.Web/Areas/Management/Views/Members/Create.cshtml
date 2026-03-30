@@ -4,61 +4,61 @@
     ViewData["Title"] = "Create Member";
 }
 
-<div>
-    <h1>➕ Create New Member</h1>
+<div class="page-header">
+    <h1 class="page-header-title">➕ Create New Member</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
 
-    <div style="max-width: 500px;">
-        <div>
-            <h5>Member Information</h5>
-        </div>
-        <div>
-            <form asp-action="Create" method="post">
-                <div asp-validation-summary="ModelOnly" role="alert"></div>
-
-                <div>
-                    <label asp-for="Username"></label>
-                    <input asp-for="Username" />
-                    <span asp-validation-for="Username"></span>
-                </div>
-
-                <div>
-                    <label asp-for="Email"></label>
-                    <input asp-for="Email" type="email" />
-                    <span asp-validation-for="Email"></span>
-                </div>
-
-                <div>
-                    <div>
-                        <label asp-for="FirstName"></label>
-                        <input asp-for="FirstName" />
-                        <span asp-validation-for="FirstName"></span>
-                    </div>
-                    <div>
-                        <label asp-for="LastName"></label>
-                        <input asp-for="LastName" />
-                        <span asp-validation-for="LastName"></span>
-                    </div>
-                </div>
-
-                <div>
-                    <label asp-for="Password"></label>
-                    <input asp-for="Password" type="password" />
-                    <span asp-validation-for="Password"></span>
-                </div>
-
-                <div>
-                    <label asp-for="ConfirmPassword"></label>
-                    <input asp-for="ConfirmPassword" type="password" />
-                    <span asp-validation-for="ConfirmPassword"></span>
-                </div>
-
-                <div>
-                    <button type="submit">Create Member</button>
-                    <a asp-action="Index">Cancel</a>
-                </div>
-            </form>
-        </div>
+<div class="form-card">
+    <div class="card-header">
+        <h5>Member Information</h5>
     </div>
+    <form asp-action="Create" method="post">
+        <div class="form-body">
+            <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+            <div class="form-group">
+                <label asp-for="Username"></label>
+                <input asp-for="Username" class="form-control" />
+                <span asp-validation-for="Username" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" type="email" />
+                <span asp-validation-for="Email" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="FirstName"></label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="field-validation-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName"></label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="field-validation-error"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" class="form-control" type="password" />
+                <span asp-validation-for="Password" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ConfirmPassword"></label>
+                <input asp-for="ConfirmPassword" class="form-control" type="password" />
+                <span asp-validation-for="ConfirmPassword" class="field-validation-error"></span>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Create Member</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
