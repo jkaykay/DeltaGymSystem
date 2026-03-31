@@ -105,5 +105,8 @@ namespace GymSystem.Web.Services
         Task<bool> CheckInMemberAsync(string memberId);
         Task<bool> CheckOutMemberAsync(string memberId);
         Task<bool> DeleteAttendanceAsync(int id);
+
+        // QR Scanner
+        Task<ScanResultViewModel> ScanQRCodeAsync(string token);
     }
 }
