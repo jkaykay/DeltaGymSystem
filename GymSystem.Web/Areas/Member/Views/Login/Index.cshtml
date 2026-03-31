@@ -4,67 +4,58 @@
     ViewData["Title"] = "Login";
 }
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>@ViewData["Title"]</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet"/>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="~/css/members/login.css"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/members/login.css" />
 </head>
 <body>
 
-<section class="min-vh-100 d-flex align-items-center justify-content-center">
+    <section class="min-vh-100 d-flex align-items-center justify-content-center">
 
-    <div class="container-user">
+        <div class="container-user">
 
-        <h2>Member Login</h2>
+            <h2>Member Login</h2>
 
-        <form method="post" asp-action="Login" asp-area="Member">
+            <form method="post" asp-area="Member" asp-controller="Login" asp-action="Index"
+                  asp-route-returnUrl="@ViewData["ReturnUrl"]">
 
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
 
-            <!-- Username / Email -->
-            <input asp-for="EmailOrUserName" placeholder="Username or Email" />
-            <span asp-validation-for="EmailOrUserName" class="text-danger"></span>
+                <input asp-for="EmailOrUserName" placeholder="Username or Email" />
+                <span asp-validation-for="EmailOrUserName" class="text-danger"></span>
 
-            <!-- Password -->
-            <input asp-for="Password" type="password" placeholder="Password" />
-            <span asp-validation-for="Password" class="text-danger"></span>
+                <input asp-for="Password" type="password" placeholder="Password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
 
-            <!-- Remember me option -->
-            <div class="form-check mt-2 mb-2" style="display: inline-block;">
-        <label class="form-check-label" asp-for="RememberMe">
-            Remember  me
-        </label>
-         <input asp-for="RememberMe" />
-    </div>
+                <div class="form-check mt-2 mb-2" style="display: inline-block;">
+                    <label class="form-check-label" asp-for="RememberMe">Remember me</label>
+                    <input asp-for="RememberMe" />
+                </div>
 
-            <!-- Submit -->
-            <button type="submit" class="login-btn">
-                Login
-            </button>
+                <button type="submit" class="login-btn">Login</button>
 
-        </form>
+            </form>
 
-        <!-- Register link -->
-        <div style="margin-top:20px;">
-            <small>
-                Don't have an account?
-                <a asp-controller="Member" asp-action="Register" asp-area="Member">Register by here</a>
-            </small>
+            <div style="margin-top:20px;">
+                <small>
+                    Don't have an account?
+                    <a asp-controller="Member" asp-action="Register" asp-area="Member">Register by here</a>
+                </small>
+            </div>
+
         </div>
 
-    </div>
+    </section>
 
-</section>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
 
 </body>
 </html>

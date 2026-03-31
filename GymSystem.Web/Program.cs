@@ -27,7 +27,7 @@ builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies", options =>
     {
         options.LoginPath = "/Member/Login/Index";
-        options.LogoutPath = "/Member/Login/Index";
+        options.LogoutPath = "/Member/Logout";
         options.AccessDeniedPath = "/Member/Login/AccessDenied";
 
         options.Events.OnRedirectToLogin = ctx =>
