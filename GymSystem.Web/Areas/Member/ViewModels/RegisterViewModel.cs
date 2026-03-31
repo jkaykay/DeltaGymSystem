@@ -5,7 +5,8 @@ namespace GymSystem.Web.Areas.Member.ViewModels
     public class RegisterViewModel
     {
         [Required(ErrorMessage = "Username is required.")]
-        [MaxLength(100)]
+        [StringLength(100, ErrorMessage = "Username must be between 3 and 100 characters.", MinimumLength = 3)]
+        [Display(Name = "Username")]
         public string UserName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Email is required.")]
@@ -14,12 +15,12 @@ namespace GymSystem.Web.Areas.Member.ViewModels
         public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "First name is required.")]
-        [MaxLength(100)]
+        [StringLength(100, ErrorMessage = "First name must be between 1 and 100 characters.", MinimumLength = 1)]
         [Display(Name = "First Name")]
         public string FirstName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Last name is required.")]
-        [MaxLength(100)]
+        [StringLength(100, ErrorMessage = "Last name must be between 1 and 100 characters.", MinimumLength = 1)]
         [Display(Name = "Last Name")]
         public string LastName { get; set; } = string.Empty;
 
