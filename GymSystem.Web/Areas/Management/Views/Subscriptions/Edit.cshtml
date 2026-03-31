@@ -1,0 +1,81 @@
+﻿@model EditSubscriptionViewModel
+@using GymSystem.Shared.DTOs
+@using GymSystem.Shared.Enums
+
+@{
+    ViewData["Title"] = "Edit Subscription";
+    var tiers = ViewBag.Tiers as List<TierDTO> ?? new List<TierDTO>();
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">Edit Subscription</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
+
+<div class="form-card">
+    <div class="card-header">
+        <h5>Subscription #@Model.SubId</h5>
+    </div>
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="SubId" />
+        <input type="hidden" asp-for="MemberName" />
+        <div class="form-body">
+            <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+            <div class="form-group">
+                <label>Member</label>
+                <input value="@Model.MemberName" class="form-control" disabled />
+                <small class="form-text">Member cannot be changed after creation.</small>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="TierName"></label>
+                <select asp-for="TierName" class="form-control">
+                    <option value="">— No Change —</option>
+                    @foreach (var tier in tiers)
+                    {
+                        <option value="@tier.TierName" selected="@(Model.TierName == tier.TierName)">
+                            @tier.TierName (@tier.Price.ToString("C")/month)
+                        </option>
+                    }
+                </select>
+                <span asp-validation-for="TierName" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="State"></label>
+                <select asp-for="State" class="form-control">
+                    <option value="">— No Change —</option>
+                    @foreach (SubscriptionState state in Enum.GetValues(typeof(SubscriptionState)))
+                    {
+                        <option value="@((int)state)" selected="@(Model.State == state)">@state</option>
+                    }
+                </select>
+                <span asp-validation-for="State" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="StartDate"></label>
+                    <input asp-for="StartDate" class="form-control" type="datetime-local"
+                           value="@(Model.StartDate?.ToString("yyyy-MM-ddTHH:mm") ?? "")" />
+                    <span asp-validation-for="StartDate" class="field-validation-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="EndDate"></label>
+                    <input asp-for="EndDate" class="form-control" type="datetime-local"
+                           value="@(Model.EndDate?.ToString("yyyy-MM-ddTHH:mm") ?? "")" />
+                    <span asp-validation-for="EndDate" class="field-validation-error"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

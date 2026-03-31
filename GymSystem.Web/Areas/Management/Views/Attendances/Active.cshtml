@@ -1,0 +1,67 @@
+﻿@model List<AttendanceDTO>
+
+@{
+    ViewData["Title"] = "Active Check-Ins";
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">🟢 Active Check-Ins</h1>
+    <div class="page-actions">
+        <a asp-action="CheckIn" class="btn btn-primary">➕ Check In Member</a>
+        <a asp-action="Index" class="btn btn-secondary">View All Records</a>
+        <span class="record-count">@Model.Count currently in</span>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["Success"]
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-error" role="alert">
+        @TempData["Error"]
+    </div>
+}
+
+<div class="dashboard-card">
+    <div class="card-header">
+        <h5>Members Currently On Premises</h5>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Member</th>
+                <th>Checked In At</th>
+                <th>Duration</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var record in Model)
+            {
+                var duration = DateTime.UtcNow - record.CheckIn;
+                <tr>
+                    <td>@record.MemberName</td>
+                    <td>@record.CheckIn.ToString("HH:mm")</td>
+                    <td>@($"{(int)duration.TotalHours}h {duration.Minutes}m")</td>
+                    <td>
+                        <div class="table-actions">
+                            <form asp-action="CheckOut" asp-route-memberId="@record.UserId" method="post">
+                                <button type="submit" class="btn btn-warning btn-sm">Check Out</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <p>No members are currently checked in.</p>
+        </div>
+    }
+</div>

@@ -1,0 +1,38 @@
+﻿@model PaymentDTO
+
+@{
+    ViewData["Title"] = "Payment Details";
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">Payment Details</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
+
+<div class="detail-card">
+    <div class="card-header">
+        <h5>Payment #@Model.PaymentId</h5>
+    </div>
+    <div class="detail-body">
+        <p class="detail-name">@Model.Amount.ToString("C") — @Model.PaymentDate.ToString("MMMM dd, yyyy")</p>
+        <dl class="detail-dl">
+            <dt>Payment ID</dt>
+            <dd>@Model.PaymentId</dd>
+
+            <dt>Amount</dt>
+            <dd>@Model.Amount.ToString("C")</dd>
+
+            <dt>Payment Date</dt>
+            <dd>@Model.PaymentDate.ToString("MMMM dd, yyyy HH:mm")</dd>
+
+            <dt>Member ID</dt>
+            <dd><code>@Model.UserId</code></dd>
+
+            <dt>Subscription</dt>
+            <dd>#@Model.SubId</dd>
+        </dl>
+    </div>
+    <div class="detail-actions">
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>

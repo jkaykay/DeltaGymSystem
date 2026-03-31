@@ -4,13 +4,61 @@
     ViewData["Title"] = "Management Dashboard";
 }
 
-<h1>Management Dashboard</h1>
-<p>Total Members: @Model.TotalMembers</p>
-<p>Total Staff: @Model.TotalStaff</p>
-<p>Recent Signups:</p>
-<ul>
-    @foreach (var member in Model.RecentSignups)
-    {
-        <li>@member.FirstName @member.LastName</li>
-    }
-</ul>
+<div class="dashboard-page">
+    <h1 class="dashboard-title">Dashboard</h1>
+
+    <!-- Stats Cards -->
+    <div id="stat-card">
+        <div class="stat-row">
+            <h5>Total Members</h5>
+            <h2>@Model.TotalMembers</h2>
+        </div>
+        <div class="stat-row">
+            <h5>Staff</h5>
+            <h2>@Model.TotalStaff</h2>
+        </div>
+        <div class="stat-row">
+            <h5>Trainers</h5>
+            <h2>@Model.TotalTrainers</h2>
+        </div>
+    </div>
+
+    <!-- Quick Actions + Recent Signups -->
+    <div class="dashboard-grid">
+
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h5>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <a href="@Url.Action("Index", "Members")" class="quick-action-item">
+                    <span class="quick-action-label">Manage Members</span>
+                    <span class="quick-action-badge">View All</span>
+                </a>
+                <a href="@Url.Action("Index", "Staff")" class="quick-action-item">
+                    <span class="quick-action-label">Manage Staff</span>
+                    <span class="quick-action-badge">Admin Only</span>
+                </a>
+                <a href="@Url.Action("Scanner", "Scan")" class="quick-action-item">
+                    <span class="quick-action-label">Check In/Out</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h5>Recent Signups</h5>
+            </div>
+            <ul class="signup-list">
+                @foreach (var user in Model.RecentSignups)
+                {
+                    <li class="signup-item">
+                        <span>@user.FirstName @user.LastName</span>
+                        <small>@user.JoinDate?.ToString("MMM dd, yyyy")</small>
+                    </li>
+                }
+            </ul>
+        </div>
+
+    </div>
+</div>

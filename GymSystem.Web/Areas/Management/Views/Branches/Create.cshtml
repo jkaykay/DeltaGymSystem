@@ -1,0 +1,61 @@
+﻿@model CreateBranchViewModel
+
+@{
+    ViewData["Title"] = "Create Branch";
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">➕ Create New Branch</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
+
+<div class="form-card">
+    <div class="card-header">
+        <h5>Branch Information</h5>
+    </div>
+    <form asp-action="Create" method="post">
+        <div class="form-body">
+            <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+            <div class="form-group">
+                <label asp-for="Address"></label>
+                <input asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="City"></label>
+                    <input asp-for="City" class="form-control" />
+                    <span asp-validation-for="City" class="field-validation-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Province"></label>
+                    <input asp-for="Province" class="form-control" />
+                    <span asp-validation-for="Province" class="field-validation-error"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="PostCode"></label>
+                    <input asp-for="PostCode" class="form-control" />
+                    <span asp-validation-for="PostCode" class="field-validation-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="OpenDate"></label>
+                    <input asp-for="OpenDate" class="form-control" type="date" />
+                    <span asp-validation-for="OpenDate" class="field-validation-error"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Create Branch</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

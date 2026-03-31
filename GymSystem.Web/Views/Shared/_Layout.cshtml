@@ -4,13 +4,14 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Gym System</title>
+    <title>@ViewData["Title"] - Gym</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dosis&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
@@ -41,9 +42,15 @@
                     @if (User.IsInRole("Member"))
                     {
                         <div class="menu-link-container">
-                            <a title="My Dashboard" class="menu-links" asp-area="Members" asp-controller="Dashboard" asp-action="Index">
+                            <a title="My Dashboard" class="menu-links" asp-area="Member" asp-controller="Dashboard" asp-action="Index">
                                 My Dashboard
                             </a>
+                        </div>
+
+                        <div class="menu-link-container">
+                            <form asp-area="Member" asp-controller="Account" asp-action="Logout" method="post">
+                                <button type="submit" class="menu-links">Log Out</button>
+                            </form>
                         </div>
                     }
 
@@ -55,23 +62,23 @@
                                 ⚙️ Management
                             </a>
                         </div>
-                    }
 
-                    <div class="menu-link-container">
-                        <form asp-area="Members" asp-controller="Account" asp-action="Logout" method="post">
-                            <button type="submit" class="menu-links">Log Out</button>
-                        </form>
-                    </div>
+                        <div class="menu-link-container">
+                            <form asp-area="Management" asp-controller="Account" asp-action="Logout" method="post">
+                                <button type="submit" class="menu-links">Log Out</button>
+                            </form>
+                        </div>
+                    }
                 }
 
                 else
                 {
                     <!-- Shown when NOT logged in -->
                     <div class="menu-link-container">
-                        <a title="Log In" class="menu-links" asp-area="Members" asp-controller="Account" asp-action="Login">Log In</a>
+                        <a title="Log In" class="menu-links" asp-area="Member" asp-controller="Account" asp-action="Login">Log In</a>
                     </div>
                     <div class="menu-link-container">
-                        <a title="Join Us" class="menu-links" id="important-link" asp-area="" asp-controller="Membership" asp-action="Index">Memberships</a>
+                        <a title="Join Us" class="menu-links" id="important-link" asp-area="" asp-controller="Join" asp-action="Index">Join</a>
                     </div>
                 }
             </div>
@@ -86,12 +93,11 @@
 
     <footer>
         <div>
-            &copy; 2026 - Delta Software - <a asp-area="Public" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; Gym 2026 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

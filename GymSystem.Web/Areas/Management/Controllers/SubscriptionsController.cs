@@ -1,0 +1,127 @@
+﻿using GymSystem.Shared.Enums;
+using GymSystem.Web.Areas.Management.ViewModels;
+using GymSystem.Web.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace GymSystem.Web.Areas.Management.Controllers;
+
+[Area("Management")]
+[Authorize(Roles = "Admin,Staff")]
+public class SubscriptionsController : Controller
+{
+    private readonly IManagementApiService _api;
+
+    public SubscriptionsController(IManagementApiService api)
+    {
+        _api = api;
+    }
+
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+    {
+        var result = await _api.GetSubscriptionsAsync(page, pageSize);
+        return View(result);
+    }
+
+    public async Task<IActionResult> Details(int id)
+    {
+        var subscription = await _api.GetSubscriptionAsync(id);
+        if (subscription is null)
+            return NotFound();
+
+        return View(subscription);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Create()
+    {
+        ViewBag.Members = await _api.GetAllMembersAsync();
+        ViewBag.Tiers = await _api.GetAllTiersAsync();
+        return View(new CreateSubscriptionViewModel());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(CreateSubscriptionViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            ViewBag.Members = await _api.GetAllMembersAsync();
+            ViewBag.Tiers = await _api.GetAllTiersAsync();
+            return View(model);
+        }
+
+        var success = await _api.CreateSubscriptionAsync(model);
+
+        if (!success)
+        {
+            ModelState.AddModelError(string.Empty, "Failed to create subscription. An unpaid subscription for this tier may already exist for this member.");
+            ViewBag.Members = await _api.GetAllMembersAsync();
+            ViewBag.Tiers = await _api.GetAllTiersAsync();
+            return View(model);
+        }
+
+        TempData["Success"] = "Subscription created successfully.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var subscription = await _api.GetSubscriptionAsync(id);
+        if (subscription is null)
+            return NotFound();
+
+        ViewBag.Tiers = await _api.GetAllTiersAsync();
+
+        var vm = new EditSubscriptionViewModel
+        {
+            SubId = subscription.SubId,
+            MemberName = subscription.MemberName,
+            TierName = subscription.TierName,
+            State = subscription.State,
+            StartDate = subscription.StartDate == default ? null : subscription.StartDate,
+            EndDate = subscription.EndDate == default ? null : subscription.EndDate
+        };
+
+        return View(vm);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(EditSubscriptionViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            ViewBag.Tiers = await _api.GetAllTiersAsync();
+            return View(model);
+        }
+
+        var success = await _api.UpdateSubscriptionAsync(model.SubId, model);
+
+        if (!success)
+        {
+            ModelState.AddModelError(string.Empty, "Failed to update subscription.");
+            ViewBag.Tiers = await _api.GetAllTiersAsync();
+            return View(model);
+        }
+
+        TempData["Success"] = "Subscription updated successfully.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var success = await _api.DeleteSubscriptionAsync(id);
+
+        if (success)
+            TempData["Success"] = "Subscription deleted.";
+        else
+            TempData["Error"] = "Failed to delete subscription.";
+
+        return RedirectToAction(nameof(Index));
+    }
+}

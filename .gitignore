@@ -13,6 +13,9 @@ obj/
 *.userosscache
 *.sln.docstates
 *.suo
+.vscode/
+API Tests/
+*.http
 
 ## Roslyn / Analyzers
 *.sonarlint/

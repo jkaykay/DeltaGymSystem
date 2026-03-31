@@ -1,5 +1,5 @@
 ﻿using GymSystem.Web.Areas.Management.ViewModels;
-using GymSystem.Web.DTOs.Management;
+using GymSystem.Shared.DTOs;
 using GymSystem.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,10 +17,10 @@ public class MembersController : Controller
         _api = api;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
     {
-        var members = await _api.GetMembersAsync();
-        return View(members);
+        var result = await _api.GetMembersAsync(page, pageSize);
+        return View(result);
     }
 
     public async Task<IActionResult> Details(string id)
@@ -86,6 +86,33 @@ public class MembersController : Controller
     {
         await _api.DeleteMemberAsync(id);
         TempData["Success"] = "Member deleted.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    public IActionResult Create()
+    {
+        return View(new CreateMemberViewModel());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Create(CreateMemberViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var success = await _api.CreateMemberAsync(model);
+
+        if (!success)
+        {
+            ModelState.AddModelError(string.Empty, "Failed to create member. Check password requirements.");
+            return View(model);
+        }
+
+        TempData["Success"] = "Member created successfully.";
         return RedirectToAction(nameof(Index));
     }
 }
