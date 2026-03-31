@@ -14,8 +14,7 @@
   <title>DeltaGyms-Home</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"> // For icons from bootstrap
-
-  <link rel="stylesheet" href="~/css/members/styleindex.css"/>
+  <link rel="stylesheet" href="~/css/members/styleindex.css" asp-append-version="true"/>
 </head>
 <body>
 
@@ -62,8 +61,8 @@
       <div class="hero-top">
         <h1 class="hero-headline">Push Your<br>Limits</h1>
         <div class="hero-cta">
-          <button class="btn-primary" onclick="window.location.href='memberships.html'">Join Now</button>
-          <button class="btn-outline" onclick="window.location.href='classes.html'">Browse Classes</button>
+          <a asp-area="" asp-controller="Memberships" asp-action="Index" class="btn-primary">Join Now</a>
+          <a asp-area="" asp-controller="Classes" asp-action="Index" class="btn-outline">Browse Classes</a>
         </div>
       </div>
       <p class="hero-sub">World class facilities, expert trainers, and a community<br>that pushes you to be your best every single day.</p>
@@ -106,7 +105,8 @@
             <span class="spots"><span class="smiley">😊</span> 19/20</span>
           </div>
         </div>
-        <a href="booking.html" class="card-footer">JOIN CLASS</a>
+             <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="card-footer">JOIN CLASS</a>
+
       </div>
 
       <!-- Card 2 -->
@@ -240,30 +240,24 @@
   <footer class="site-footer reveal">
     <div class="footer-inner">
 
-      <div>
+  <div class="footer-box">
         <div class="footer-col-title">Get Social</div>
+        <span class="social-label">Follow us on social media for updates, tips, and exclusive content!</span>
         <div class="social-icons">
           <a href="#" class="social-icon icon-facebook" aria-label="Facebook">
-            <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
-              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
-            </svg>
+          <i class="bi bi-facebook"></i>
           </a>
           <a href="#" class="social-icon icon-instagram" aria-label="Instagram">
-            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-              <circle cx="12" cy="12" r="4"/>
-              <circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none"/>
-            </svg>
+           <i class="bi bi-instagram"></i>
           </a>
           <a href="#" class="social-icon icon-tiktok" aria-label="TikTok">
-            <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.17 8.17 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/>
-            </svg>
+            <i class="bi bi-tiktok"></i>
           </a>
         </div>
       </div>
+    
 
-      <div>
+      <div class="footer-box">
         <div class="footer-col-title">About the "GYM"</div>
         <ul class="footer-links">
           <li><a href="#">About us</a></li>

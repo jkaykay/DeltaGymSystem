@@ -135,6 +135,8 @@
       padding: 16px 32px;
       border-radius: 10px;
       font-family: 'Barlow', sans-serif;
+      display: inline-block;
+      text-decoration: none;
       font-weight: 700;
       font-size: 16px;
       cursor: pointer;
@@ -152,6 +154,8 @@
       font-family: 'Barlow', sans-serif;
       font-weight: 700;
       font-size: 16px;
+      display: inline-block;
+      text-decoration: none;
       cursor: pointer;
       transition: background-color 0.2s, color 0.2s, transform 0.15s;
       white-space: nowrap;
@@ -481,21 +485,60 @@
       color: var(--dark);
     }
 
-    .social-icons { display: flex; gap: 16px; align-items: center; }
+   
+    .footer-box {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .footer-box:nth-child(1) {
+      align-items: center;
+      text-align: center;
+    }
+
+    .footer-box:nth-child(2) {
+      align-items: flex-start;
+      text-align: left;
+      margin-left: 89px;
+    }       
+
+    
+
+    .social-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .social-icons { 
+      display: flex; 
+      gap: 19px; 
+      align-items: center; 
+      margin-top: 10px;
+    }
     .social-icon {
-      width: 52px; height: 52px;
+      width: 52px; 
+      height: 52px;
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       transition: transform 0.2s, opacity 0.2s;
       cursor: pointer;
-      overflow: hidden;
+      margin-left: 26px;
     }
+
+    .social-icon i {
+      font-size: 21px;
+      color: white;
+    }
+
     .social-icon:hover { transform: scale(1.08); opacity: 0.9; }
-    .social-icon svg { width: 28px; height: 28px; }
 
     .icon-facebook { background: #1877f2; }
     .icon-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
-    .icon-tiktok { background: #000; }
+    .icon-tiktok { background: #000000; }
 
     .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
     .footer-links a {

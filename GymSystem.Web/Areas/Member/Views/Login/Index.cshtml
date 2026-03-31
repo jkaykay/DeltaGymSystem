@@ -1,7 +1,9 @@
-@model GymSystem.Web.Areas.Member.ViewModels.LoginViewModel
+﻿@model MemberLoginViewModel
+
 @{
     ViewData["Title"] = "Login";
 }
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,64 +17,54 @@
 </head>
 <body>
 
+<section class="min-vh-100 d-flex align-items-center justify-content-center">
 
-<section id="login" class="min-vh-100 d-flex align-items-center justify-content-center">
     <div class="container-user">
-        
-        <h2>Welcome Back</h2>
 
-        <!-- Success message -->
-        @if (TempData["SuccessMessage"] is string msg)
-        {
-            <div class="alert alert-success">@msg</div>
-        }
+        <h2>Member Login</h2>
 
-        <!-- Error summary -->
-        <div asp-validation-summary="ModelOnly" class="error mb-2"></div>
+        <form method="post" asp-action="Login" asp-area="Member">
 
-        <form asp-action="Login" asp-controller="Account" asp-area="Member" method="post">
-            
-            @Html.AntiForgeryToken()
-
-            <input asp-for="ReturnUrl" type="hidden"/>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
 
             <!-- Username / Email -->
-            <input asp-for="EmailOrUserName" 
-                   placeholder="Email or Username" 
-                   class="form-control mb-2"/>
-            <span asp-validation-for="EmailOrUserName" class="error"></span>
+            <input asp-for="EmailOrUserName" placeholder="Username or Email" />
+            <span asp-validation-for="EmailOrUserName" class="text-danger"></span>
 
             <!-- Password -->
-            <input asp-for="Password" 
-                   type="password" 
-                   placeholder="Password" 
-                   class="form-control mb-2"/>
-            <span asp-validation-for="Password" class="error"></span>
+            <input asp-for="Password" type="password" placeholder="Password" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+
+            <!-- Remember me option -->
+            <div class="form-check mt-2 mb-2" style="display: inline-block;">
+        <label class="form-check-label" asp-for="RememberMe">
+            Remember  me
+        </label>
+         <input asp-for="RememberMe" />
+    </div>
 
             <!-- Submit -->
-            <button type="submit" class="login-btn w-100 mt-2">
+            <button type="submit" class="login-btn">
                 Login
             </button>
 
         </form>
 
         <!-- Register link -->
-        <div class="mt-4 text-center">
-            <p class="text-muted">
+        <div style="margin-top:20px;">
+            <small>
                 Don't have an account?
-                <a asp-action="Register" asp-controller="Account" asp-area="Member">
-                    Register
-                </a>
-            </p>
+                <a asp-controller="Member" asp-action="Register" asp-area="Member">Register by here</a>
+            </small>
         </div>
 
     </div>
+
 </section>
 
-<!-- Scripts -->
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
 
 </body>
 </html>
