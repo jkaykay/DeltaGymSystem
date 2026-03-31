@@ -751,3 +751,89 @@ body {
     background-color: var(--rosygranite);
     color: var(--offwhite);
 }
+
+/* ===== QR Scanner ===== */
+.scanner-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 16px 0 8px;
+}
+
+.scanner-hint {
+    font-size: 0.875rem;
+    color: var(--silver);
+    text-align: center;
+    margin: 0;
+}
+
+#qr-reader {
+    width: 100%;
+    max-width: 520px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--dustgrey);
+}
+
+.scan-result-panel {
+    width: 100%;
+    max-width: 520px;
+    padding: 20px 24px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+    .scan-result-panel.hidden {
+        display: none;
+    }
+
+.scan-result-checkin {
+    background-color: #f0faf0;
+    border: 1px solid #b7dfb7;
+    color: #2d6e2d;
+}
+
+.scan-result-checkout {
+    background-color: #eef4fb;
+    border: 1px solid #b0cce8;
+    color: #1a4a7a;
+}
+
+.scan-result-error {
+    background-color: #fdf2f2;
+    border: 1px solid #e8b0b0;
+    color: #7a1a1a;
+}
+
+.scan-result-loading {
+    background-color: var(--alabastergrey);
+    border: 1px solid var(--dustgrey);
+    color: var(--offblack);
+}
+
+.scan-result-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-top: 6px;
+}
+
+.scan-result-time {
+    font-size: 0.78rem;
+    margin-top: 4px;
+    opacity: 0.7;
+}
+
+/* alert-error (used across multiple pages) */
+.alert-error {
+    background-color: #fdf2f2;
+    border: 1px solid #e8b0b0;
+    color: #7a1a1a;
+}
+
+.hidden {
+    display: none;
+}
