@@ -1,39 +1,56 @@
 ﻿@{
     ViewData["Title"] = "QR Scanner";
+    Layout = null;
 }
 
-<div class="page-header">
-    <h1 class="page-header-title">📷 QR Scanner</h1>
-    <div class="page-actions">
-        <a asp-area="Management" asp-controller="Attendances" asp-action="Active" class="btn btn-secondary">🟢 View Active Sessions</a>
-    </div>
-</div>
-
-<div class="dashboard-card">
-    <div class="card-header">
-        <h5>Scan Member QR Code</h5>
-    </div>
-    <div class="scanner-wrapper">
-        <p class="scanner-hint">Point the camera at a member's QR code to check them in or out.</p>
-
-        @Html.AntiForgeryToken()
-
-        <div id="qr-reader"></div>
-
-        <div id="scan-result-panel" class="scan-result-panel hidden">
-            <div id="scan-result-icon"></div>
-            <div id="scan-result-label"></div>
-            <div id="scan-result-name" class="scan-result-name"></div>
-            <div id="scan-result-time" class="scan-result-time"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Management</title>
+    <link rel="stylesheet" href="~/css/management.css" />
+</head>
+<body>
+    <nav class="topbar">
+        <div class="topbar-brand">
+            <a asp-area="Management" asp-controller="Dashboard" asp-action="Index">
+                Delta Gym Admin
+            </a>
+        </div>
+    </nav>
+    <main class="admin-content" style="margin-left: 0; margin-top:50px;">
+        <div class="page-header">
+            <h1 class="page-header-title">📷 QR Scanner</h1>
+            <div class="page-actions">
+                <a asp-area="Management" asp-controller="Attendances" asp-action="Active" class="btn btn-secondary">🟢 View Active Sessions</a>
+            </div>
         </div>
 
-        <div id="camera-error" class="alert alert-error hidden">
-            📵 Camera access was denied. Please allow camera permissions and reload the page.
-        </div>
-    </div>
-</div>
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h5>Scan Member QR Code</h5>
+            </div>
+            <div class="scanner-wrapper">
+                <p class="scanner-hint">Point the camera at a member's QR code to check them in or out.</p>
 
-@section Scripts {
+                @Html.AntiForgeryToken()
+
+                <div id="qr-reader"></div>
+
+                <div id="scan-result-panel" class="scan-result-panel hidden">
+                    <div id="scan-result-icon"></div>
+                    <div id="scan-result-label"></div>
+                    <div id="scan-result-name" class="scan-result-name"></div>
+                    <div id="scan-result-time" class="scan-result-time"></div>
+                </div>
+
+                <div id="camera-error" class="alert alert-error hidden">
+                    📵 Camera access was denied. Please allow camera permissions and reload the page.
+                </div>
+            </div>
+        </div>
+    </main>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script>
         const scanUrl = '@Url.Action("Scan", "QRScanner", new { area = "Management" })';
@@ -137,4 +154,5 @@
         isProcessing = false;
         }
     </script>
-}
+</body>
+</html>
