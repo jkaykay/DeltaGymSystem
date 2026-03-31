@@ -1,4 +1,5 @@
 ﻿using GymSystem.Api.Data;
+using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
 using GymSystem.Shared.Enums;
@@ -37,7 +38,7 @@ namespace GymSystem.Api.Controllers
         [HttpGet]
         [Authorize(Roles = "Admin,Staff")]
         [OutputCache(PolicyName = "payments")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             var payments = await _context.Payments
                 .Select(p => new PaymentDTO
@@ -48,7 +49,7 @@ namespace GymSystem.Api.Controllers
                     UserId = p.UserId,
                     SubId = p.SubId
                 })
-                .ToListAsync();
+                .ToPagedResultAsync(page, pageSize);
 
             return Ok(payments);
         }
@@ -96,7 +97,7 @@ namespace GymSystem.Api.Controllers
         // payment history to another. Same reasoning as BookingController.GetMy.
         [HttpGet("my")]
         [Authorize(Roles = "Member")]
-        public async Task<IActionResult> GetMy()
+        public async Task<IActionResult> GetMy([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -110,7 +111,7 @@ namespace GymSystem.Api.Controllers
                     UserId = p.UserId,
                     SubId = p.SubId
                 })
-                .ToListAsync();
+                .ToPagedResultAsync(page, pageSize);
 
             return Ok(payments);
         }

@@ -1,0 +1,36 @@
+﻿@model ClassDTO
+
+@{
+    ViewData["Title"] = "Class Details";
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">Class Details</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
+
+<div class="detail-card">
+    <div class="card-header">
+        <h5>@Model.Subject</h5>
+    </div>
+    <div class="detail-body">
+        <p class="detail-name">@Model.Subject</p>
+        <dl class="detail-dl">
+            <dt>Class ID</dt>
+            <dd>@Model.ClassId</dd>
+
+            <dt>Trainer</dt>
+            <dd>@Model.TrainerName</dd>
+
+            <dt>Scheduled Sessions</dt>
+            <dd>@Model.SessionCount</dd>
+        </dl>
+    </div>
+    <div class="detail-actions">
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.ClassId" class="btn btn-primary">Edit</a>
+        }
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>

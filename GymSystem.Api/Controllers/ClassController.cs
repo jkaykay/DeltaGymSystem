@@ -1,4 +1,5 @@
 ﻿using GymSystem.Api.Data;
+using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
@@ -27,7 +28,7 @@ namespace GymSystem.Api.Controllers
 
         [HttpGet]
         [OutputCache(PolicyName = "classes")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             var result = await _context.Classes
                 .Select(c => new ClassDTO
@@ -38,7 +39,7 @@ namespace GymSystem.Api.Controllers
                     TrainerName = $"{c.User.FirstName} {c.User.LastName}",
                     SessionCount = c.Sessions.Count
                 })
-                .ToListAsync();
+                .ToPagedResultAsync(page, pageSize);
 
             return Ok(result);
         }

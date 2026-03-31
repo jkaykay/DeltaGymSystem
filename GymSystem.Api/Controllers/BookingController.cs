@@ -1,4 +1,5 @@
 ﻿using GymSystem.Api.Data;
+using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
@@ -31,7 +32,7 @@ namespace GymSystem.Api.Controllers
         [HttpGet]
         [Authorize(Roles = "Admin,Staff")]
         [OutputCache(PolicyName = "bookings")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             var result = await _context.Bookings
                 .Select(b => new BookingDTO
@@ -46,7 +47,7 @@ namespace GymSystem.Api.Controllers
                     UserId = b.User.Id,
                     UserName = $"{b.User.FirstName} {b.User.LastName}"
                 })
-                .ToListAsync();
+                .ToPagedResultAsync(page, pageSize);
 
             return Ok(result);
         }
@@ -81,7 +82,7 @@ namespace GymSystem.Api.Controllers
         [HttpGet("user/{userId}")]
         [Authorize(Roles = "Admin,Staff")]  // Restricted — members use GET my instead
         [OutputCache(PolicyName = "bookings")]
-        public async Task<IActionResult> GetByUser(string userId)
+        public async Task<IActionResult> GetByUser(string userId, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user is null)
@@ -101,7 +102,7 @@ namespace GymSystem.Api.Controllers
                     UserId = b.User.Id,
                     UserName = $"{b.User.FirstName} {b.User.LastName}"
                 })
-                .ToListAsync();
+                .ToPagedResultAsync(page, pageSize);
 
             return Ok(result);
         }
@@ -142,7 +143,7 @@ namespace GymSystem.Api.Controllers
 
         [HttpGet("my")]
         [Authorize(Roles = "Member")]
-        public async Task<IActionResult> GetMy()
+        public async Task<IActionResult> GetMy([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
@@ -160,7 +161,7 @@ namespace GymSystem.Api.Controllers
                     UserId = b.User.Id,
                     UserName = $"{b.User.FirstName} {b.User.LastName}"
                 })
-                .ToListAsync();
+                .ToPagedResultAsync(page, pageSize);
 
             return Ok(result);
         }

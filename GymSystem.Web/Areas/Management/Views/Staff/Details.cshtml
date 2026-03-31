@@ -4,44 +4,51 @@
     ViewData["Title"] = "Staff Details";
 }
 
-<div>
-    <h1>Staff Details</h1>
+<div class="page-header">
+    <h1 class="page-header-title">Staff Details</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
 
-    <div style="max-width: 600px;">
-        <div>
-            <h5>@Model.FirstName @Model.LastName</h5>
+<div class="detail-card">
+    <div class="card-header">
+        <h5>Staff Profile</h5>
+    </div>
+    <div class="detail-body">
+        <p class="detail-name">
+            @Model.FirstName @Model.LastName
             @foreach (var role in Model.Roles)
             {
-                <span>@role</span>
+                <span class="badge badge-role">@role</span>
             }
-        </div>
-        <div>
-            <dl>
-                <dt>Email</dt>
-                <dd>@Model.Email</dd>
+        </p>
+        <dl class="detail-dl">
+            <dt>Email</dt>
+            <dd>@Model.Email</dd>
 
-                <dt>Employee ID</dt>
-                <dd>@(Model.EmployeeId ?? "—")</dd>
+            <dt>Employee ID</dt>
+            <dd>@(Model.EmployeeId ?? "—")</dd>
 
-                <dt>Hire Date</dt>
-                <dd>@(Model.HireDate?.ToString("MMMM dd, yyyy") ?? "—")</dd>
+            <dt>Hire Date</dt>
+            <dd>@(Model.HireDate?.ToString("MMMM dd, yyyy") ?? "—")</dd>
 
-                <dt>Status</dt>
-                <dd>
-                    @if (Model.Active)
-                    {
-                        <span>Active</span>
-                    }
-                    else
-                    {
-                        <span>Inactive</span>
-                    }
-                </dd>
-            </dl>
-        </div>
-        <div>
-            <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
-            <a asp-action="Index">Back to List</a>
-        </div>
+            <dt>Status</dt>
+            <dd>
+                @if (Model.Active)
+                {
+                    <span class="badge badge-active">Active</span>
+                }
+                else
+                {
+                    <span class="badge badge-inactive">Inactive</span>
+                }
+            </dd>
+        </dl>
+    </div>
+    <div class="detail-actions">
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+        }
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
     </div>
 </div>

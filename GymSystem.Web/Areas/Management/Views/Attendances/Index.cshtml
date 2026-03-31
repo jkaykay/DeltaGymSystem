@@ -1,0 +1,84 @@
+﻿@model List<AttendanceDTO>
+
+@{
+    ViewData["Title"] = "Attendance Records";
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">📋 Attendance</h1>
+    <div class="page-actions">
+        <a asp-action="Active" class="btn btn-secondary">🟢 View Active</a>
+        <a asp-action="CheckIn" class="btn btn-primary">➕ Check In Member</a>
+        <span class="record-count">@Model.Count total</span>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["Success"]
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-error" role="alert">
+        @TempData["Error"]
+    </div>
+}
+
+<div class="dashboard-card">
+    <div class="card-header">
+        <h5>All Attendance Records</h5>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Member</th>
+                <th>Check In</th>
+                <th>Check Out</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var record in Model)
+            {
+                <tr>
+                    <td>@record.AttendanceId</td>
+                    <td>@record.MemberName</td>
+                    <td>@record.CheckIn.ToString("MMM dd, yyyy HH:mm")</td>
+                    <td>@(record.CheckOut.HasValue? record.CheckOut.Value.ToString("MMM dd, yyyy HH:mm") : "—")</td>
+                    <td>
+                        @if (record.InFlag)
+                        {
+                            <span class="badge badge-active">Checked In</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-inactive">Checked Out</span>
+                        }
+                    </td>
+                    <td>
+                        <div class="table-actions">
+                            <a asp-action="Details" asp-route-id="@record.AttendanceId" class="btn btn-secondary btn-sm">Details</a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <form asp-action="Delete" asp-route-id="@record.AttendanceId" method="post"
+                                      onsubmit="return confirm('Are you sure you want to delete this attendance record?');">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <p>No attendance records found.</p>
+        </div>
+    }
+</div>

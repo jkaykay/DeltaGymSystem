@@ -1,0 +1,30 @@
+﻿@model TierDTO
+
+@{
+    ViewData["Title"] = "Tier Details";
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">Tier Details</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
+
+<div class="detail-card">
+    <div class="card-header">
+        <h5>@Model.TierName</h5>
+    </div>
+    <div class="detail-body">
+        <p class="detail-name">@Model.TierName</p>
+        <dl class="detail-dl">
+            <dt>Monthly Price</dt>
+            <dd>@Model.Price.ToString("C")</dd>
+
+            <dt>Active Subscriptions</dt>
+            <dd>@Model.SubCount</dd>
+        </dl>
+    </div>
+    <div class="detail-actions">
+        <a asp-action="Edit" asp-route-id="@Model.TierName" class="btn btn-primary">Edit</a>
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
