@@ -31,29 +31,25 @@
       <li><a asp-area="Member" asp-controller="MyProfile" asp-action="Index">MyProfile</a></li>
       <li><a asp-area="" asp-controller="Support" asp-action="Index">Support</a></li>
     </ul>
-    <div class="nav-logout"><a href="#">Logout</a></div>
-  </nav>
-
-
-    <!-- Logout -->
-    <div class="modal fade" id="logoutModal" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Confirm Logout</h5> <!-- Logout confirmation title -->
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-            Are you sure you want to end your session?
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button> <!-- Cancel button and it returns back to the same place-->
-            <button type="button" class="btn btn-danger" onclick="window.location.href='login.html'">Logout</button> <!-- Confirm logout button  -->
-          </div>
-        </div>
-      </div>
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    <form asp-area="Member" asp-controller="Login" asp-action="Logout" method="post" class="nav-logout">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="logout-btn">
+            Logout
+        </button>
+    </form>
+}
+else
+{
+    <div class="nav-logout">
+        <a asp-area="Member" asp-controller="Login" asp-action="Index" >
+            Login
+        </a>
     </div>
+}
   </nav>
+
 
   <!-- HERO -->
   <section class="hero">
@@ -123,7 +119,7 @@
             <span class="spots"><span class="smiley">😊</span> 16/25</span>
           </div>
         </div>
-        <a href="booking.html" class="card-footer">JOIN CLASS</a>
+             <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="card-footer">JOIN CLASS</a>
       </div>
 
       <!-- Card 3 -->
@@ -140,7 +136,7 @@
             <span class="spots"><span class="smiley">😊</span> 12/20</span>
           </div>
         </div>
-        <a href="booking.html" class="card-footer">JOIN CLASS</a>
+             <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="card-footer">JOIN CLASS</a>
       </div>
 
     </div>
@@ -216,7 +212,8 @@
           <li>1 free class per week</li>
           <li>Basic fitness assessments</li>
         </ul>
-         <a href="subscribe.html" class="plan-btn">Get started</a>
+        <a asp-area="Member" asp-controller="Subscribe" asp-action="Index" class="plan-btn">Get started</a>
+
       </div>
 
       <div class="plan-card featured">

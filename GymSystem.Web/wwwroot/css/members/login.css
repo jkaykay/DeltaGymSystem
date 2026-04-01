@@ -1,17 +1,79 @@
-   :root {
-      --bg: #000000;
-      --primary-color: #c21c1c;
-   }
+  
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-   body {
+    :root {
+      --bg: #000000;
+      --card-bg: #e4e4e0;
+      --dark: #111111;
+      --accent: #c21c1c;
+      --accent-orange: #ff6b00;
+      --text: #000000;
+      --muted: #555;
+      --nav-h: 72px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
       background: var(--bg);
+      color: var(--text);
       overflow-x: hidden;
     }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      background: rgba(255, 255, 254, 0.92);
+      backdrop-filter: blur(12px);
+      --text :var(--bg);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(0,0,0,0.07);
+    }
+
+    .nav-logo {
+      width: 55px; height: 55px;
+      background: var(--dark);
+      border-radius: 15px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .nav-logo img { 
+      width: 48px; 
+      height: 48px; 
+      fill: white; 
+    border-radius: 10px;
+   }
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+      margin-right: 450px;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: 0.01em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
 
 /* Login and Register Container */
 .container-user {
     max-width: 550px;
-    margin: 100px auto 30px; /* Center the container horizontally, add top margin */
+    margin: 100px auto 30px; 
     background: white;
     padding: 80px;
     border-radius: 20px;
@@ -21,8 +83,8 @@
 }
 
 .container-user h2 {
-    color: var(--text-dark);  /* Use the theme's dark text color */
-    margin-bottom: 25px;  /* Add spacing below the heading */
+    color: var(--text-dark);  
+    margin-bottom: 25px;  
     font-weight: 700;
 }
 
@@ -33,14 +95,14 @@
     border: 2px solid #eee;
     border-radius: 10px;
     font-size: 16px;
-    transition: all 0.2s ease; /* Little animation when focusing */
+    transition: all 0.2s ease; 
     text-align: center;
 }
 
 .container-user input:focus {
-    border-color: var(--primary-color); /* Highlight input with main color */
+    border-color: var(--primary-color); 
     outline: none;
-    background: #fff; /* Make it look a bit brighter */
+    background: #fff; 
     text-align: center;
   
 }
@@ -49,16 +111,16 @@
     background:  #c21c1c;
     color: white;
     padding: 12px 30px;
-    border-radius: 10px; /*Rounded Buttons */
-    border: none; /* No borders */
+    border-radius: 10px; 
+    border: none; 
     font-weight: 600;
     width: 100%;
     margin-top: 10px;
-    transition: transform 0.3s; /* Smooth hover lift */
+    transition: transform 0.3s; 
 }
 
 .login-btn:hover, .registrer-btn:hover {
-    transform: translateY(-3px); /* Small "lift up" animation */
+    transform: translateY(-3px); 
     background: #fefeff;
     color:rgb(0, 0, 0);
     border: #000000 2px solid;
