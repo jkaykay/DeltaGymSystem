@@ -156,7 +156,7 @@ builder.Services.AddOutputCache(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-builder.Services.AddHttpClient<OpenRouterService>();
+builder.Services.AddHttpClient<IOpenRouterService, OpenRouterService>();
 
 var app = builder.Build();
 

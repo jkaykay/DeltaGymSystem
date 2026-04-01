@@ -10,20 +10,20 @@ using Microsoft.AspNetCore.OutputCaching;
 namespace GymSystem.Api.Controllers
 {
     [ApiController]
-    [Route("api/{controller}")]
+    [Route("api/[controller]")]
     [AllowAnonymous]
     public class LLMController : ControllerBase
     {
         private readonly GymDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IOutputCacheStore _outputCache;
-        private readonly OpenRouterService _openRouterService;
+        private readonly IOpenRouterService _openRouterService;
 
         public LLMController(
             GymDbContext context,
             UserManager<ApplicationUser> userManager,
             IOutputCacheStore outputCache,
-            OpenRouterService openRouterService)
+            IOpenRouterService openRouterService)
         {
             _context = context;
             _userManager = userManager;

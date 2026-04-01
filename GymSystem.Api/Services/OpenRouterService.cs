@@ -1,8 +1,9 @@
 ﻿using GymSystem.Shared.DTOs;
+using System.Text.Json.Serialization;
 
 namespace GymSystem.Api.Services
 {
-    public class OpenRouterService
+    public class OpenRouterService : IOpenRouterService
     {
         private readonly HttpClient _httpClient;
 
@@ -18,7 +19,7 @@ namespace GymSystem.Api.Services
             _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
         }
 
-        public async Task<string> GetCompletionAsync(string prompt)
+        public async Task<string> GetCompletionAsync(string prompt, CancellationToken cancellationToken = default)
         {
             var requestBody = new ChatRequest
             {
@@ -28,11 +29,46 @@ namespace GymSystem.Api.Services
                 }
             };
 
-            var response = await _httpClient.PostAsJsonAsync("chat/completions", requestBody);
-            response.EnsureSuccessStatusCode();
+            var response = await _httpClient.PostAsJsonAsync("chat/completions", requestBody, cancellationToken);
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
+                throw new HttpRequestException($"OpenRouter returned {response.StatusCode}: {errorBody}");
+            }
 
-            var result = await response.Content.ReadFromJsonAsync<ChatResponse>();
+            var result = await response.Content.ReadFromJsonAsync<ChatResponse>(cancellationToken);
             return result?.Choices.FirstOrDefault()?.Message.Content ?? "No response";
+        }
+
+        //OpenRouter Specific DTOs (Not needed by frontend)
+        public class ChatRequest
+        {
+            [JsonPropertyName("model")]
+            public string Model { get; set; } = "nvidia/nemotron-3-super-120b-a12b:free";
+
+            [JsonPropertyName("messages")]
+            public List<ChatMessage> Messages { get; set; } = new();
+        }
+
+        public record ChatMessage
+        {
+            [JsonPropertyName("role")]
+            public string Role { get; init; } = "user";
+
+            [JsonPropertyName("content")]
+            public string Content { get; init; } = string.Empty;
+        }
+
+        public class ChatResponse
+        {
+            [JsonPropertyName("choices")]
+            public List<Choice> Choices { get; set; } = new();
+        }
+
+        public record Choice
+        {
+            [JsonPropertyName("message")]
+            public ChatMessage Message { get; init; } = new();
         }
     }
 }
