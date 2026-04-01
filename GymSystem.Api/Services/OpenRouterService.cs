@@ -6,6 +6,7 @@ namespace GymSystem.Api.Services
     public class OpenRouterService : IOpenRouterService
     {
         private readonly HttpClient _httpClient;
+        private readonly string _model;
 
         public OpenRouterService(HttpClient httpClient, IConfiguration config)
         {
@@ -15,14 +16,16 @@ namespace GymSystem.Api.Services
                 ?? throw new InvalidOperationException("OpenRouter:ApiKey is not configured.");
 
             _httpClient.BaseAddress = new Uri(config["OpenRouter:BaseUrl"] ?? "https://openrouter.ai/api/v1/");
-
             _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+
+            _model = config["OpenRouter:Model"] ?? "nvidia/nemotron-3-super-120b-a12b:free";
         }
 
         public async Task<string> GetCompletionAsync(string prompt, CancellationToken cancellationToken = default)
         {
             var requestBody = new ChatRequest
             {
+                Model = _model,
                 Messages = new List<ChatMessage>
                 {
                     new() { Role = "user", Content = prompt }
@@ -44,7 +47,7 @@ namespace GymSystem.Api.Services
         public class ChatRequest
         {
             [JsonPropertyName("model")]
-            public string Model { get; set; } = "nvidia/nemotron-3-super-120b-a12b:free";
+            public string Model { get; set; } = string.Empty;
 
             [JsonPropertyName("messages")]
             public List<ChatMessage> Messages { get; set; } = new();

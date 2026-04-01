@@ -5,7 +5,7 @@ namespace GymSystem.Shared.DTOs
 {
     public class PromptRequest
     {
-        [Required, MinLength(1)]
+        [Required, MinLength(1), MaxLength(2500)]
         public string Prompt { get; set; } = string.Empty;
     }
 }
