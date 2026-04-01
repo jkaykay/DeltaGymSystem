@@ -1,14 +1,26 @@
 ﻿@model dynamic
-@* Expects Model with: Page, TotalPages, HasPrevious, HasNext *@
+@* Expects Model with: Page, TotalPages, HasPrevious, HasNext, PageSize *@
 
 @if (Model.TotalPages > 1)
 {
+    // Grab the current query string and rebuild it without "page" so we can control that ourselves
+    var query = Context.Request.Query;
+    var preservedParams = string.Join("&",
+        query.Where(q => !q.Key.Equals("page", StringComparison.OrdinalIgnoreCase))
+             .SelectMany(q => q.Value.Select(v => $"{Uri.EscapeDataString(q.Key)}={Uri.EscapeDataString(v ?? "")}")));
+
+    string BuildPageUrl(int page)
+    {
+        var parts = new List<string> { $"page={page}" };
+        if (!string.IsNullOrEmpty(preservedParams))
+            parts.Add(preservedParams);
+        return $"?{string.Join("&", parts)}";
+    }
+
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center mt-3">
             <li class="page-item @(Model.HasPrevious ? "" : "disabled")">
-                <a class="page-link"
-                       asp-route-page="@(Model.Page - 1)"
-                       asp-route-pageSize="@Model.PageSize">
+                <a class="page-link" href="@BuildPageUrl(Model.Page - 1)">
                     &laquo; Previous
                 </a>
             </li>
@@ -16,18 +28,14 @@
             @for (int i = 1; i <= Model.TotalPages; i++)
             {
                 <li class="page-item @(i == Model.Page ? "active" : "")">
-                    <a class="page-link"
-                           asp-route-page="@i"
-                           asp-route-pageSize="@Model.PageSize">
+                    <a class="page-link" href="@BuildPageUrl(i)">
                         @i
                     </a>
                 </li>
             }
 
             <li class="page-item @(Model.HasNext ? "" : "disabled")">
-                <a class="page-link"
-                       asp-route-page="@(Model.Page + 1)"
-                       asp-route-pageSize="@Model.PageSize">
+                <a class="page-link" href="@BuildPageUrl(Model.Page + 1)">
                     Next &raquo;
                 </a>
             </li>

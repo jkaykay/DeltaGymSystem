@@ -11,7 +11,10 @@ namespace GymSystem.Web.Services
 
         // Members
         Task<bool> CreateMemberAsync(CreateMemberViewModel model);
-        Task<PagedResult<UserDTO>> GetMembersAsync(int page = 1, int pageSize = 10);
+        Task<PagedResult<UserDTO>> GetMembersAsync(int page = 1, int pageSize = 10,
+    string? search = null, bool? active = null,
+    DateTime? joinedFrom = null, DateTime? joinedTo = null,
+    string? sortBy = null, string? sortDir = null);
         Task<UserDTO?> GetMemberAsync(string id);
         Task<bool> UpdateMemberAsync(string id, EditMemberViewModel model);
         Task<bool> ToggleMemberActiveAsync(string id);

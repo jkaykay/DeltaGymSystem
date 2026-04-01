@@ -17,9 +17,21 @@ public class MembersController : Controller
         _api = api;
     }
 
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10,
+    string? search = null, bool? active = null,
+    DateTime? joinedFrom = null, DateTime? joinedTo = null,
+    string? sortBy = null, string? sortDir = null)
     {
-        var result = await _api.GetMembersAsync(page, pageSize);
+        var result = await _api.GetMembersAsync(page, pageSize, search, active,
+            joinedFrom, joinedTo, sortBy, sortDir);
+
+        ViewData["Search"] = search;
+        ViewData["Active"] = active;
+        ViewData["JoinedFrom"] = joinedFrom;
+        ViewData["JoinedTo"] = joinedTo;
+        ViewData["SortBy"] = sortBy;
+        ViewData["SortDir"] = sortDir;
+
         return View(result);
     }
 

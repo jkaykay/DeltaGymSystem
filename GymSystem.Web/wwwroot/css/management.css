@@ -838,3 +838,24 @@ body {
 .hidden {
     display: none;
 }
+
+/* -- Search & Filter Bar -- */
+.search-bar {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.search-bar-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    align-items: end;
+}
+
+.search-bar-actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
