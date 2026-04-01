@@ -54,7 +54,7 @@ namespace GymSystem.Web.Areas.Member.Controllers
                 if (result.Success)
                 {
                     TempData["SuccessMessage"] = "Registration successful! Please login.";
-                    return RedirectToAction("Login", "Account", new { area = "Member" });
+                    return RedirectToAction("Index", "Login", new { area = "Member" });
                 }
 
                 // 4. Show API error
