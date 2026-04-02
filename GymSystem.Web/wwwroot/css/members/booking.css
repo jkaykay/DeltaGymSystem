@@ -80,6 +80,18 @@
     }
     .nav-logout a:hover { background: var(--dark); color: white; }
 
+     .logout-btn {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text);
+      text-decoration: none;
+      border: 2px solid var(--dark);
+      padding: 7px 20px;
+      border-radius: 8px;
+      transition: background-color 0.5s, color 0.2s;
+    }
+    .logout-btn:hover { background: var(--dark); color: white; }
+
     /* ── PAGE ── */
     .page {
       margin-top: var(--nav-h);
