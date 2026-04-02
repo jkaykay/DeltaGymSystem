@@ -21,6 +21,11 @@ namespace GymSystem.Web.Areas.Member.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+            if (User.Identity?.IsAuthenticated == true)
+            
+                return RedirectToAction("Index", "Dashboard", new { area = "Member" });
+            
+
             return View();
         }
 
@@ -31,7 +36,10 @@ namespace GymSystem.Web.Areas.Member.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            // 1. Validate ViewModel (includes ConfirmPassword)
+                if (User.Identity?.IsAuthenticated == true)            
+                return RedirectToAction("Index", "Dashboard", new { area = "Member" });
+            
+            //Validate ViewModel (includes ConfirmPassword)
             if (!ModelState.IsValid)
             {
                 return View("Index", model);
