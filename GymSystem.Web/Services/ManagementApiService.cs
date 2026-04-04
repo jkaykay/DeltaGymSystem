@@ -653,5 +653,42 @@ namespace GymSystem.Web.Services
             var response = await _http.DeleteAsync($"api/attendance/{id}");
             return response.IsSuccessStatusCode;
         }
+
+        // --- QR Scanner ---
+
+        public async Task<ScanResultViewModel> ScanQRCodeAsync(string token)
+        {
+            var response = await _http.PostAsJsonAsync("api/qrcode/scan", new { Token = token });
+
+            if (response.IsSuccessStatusCode)
+            {
+                var scan = await response.Content.ReadFromJsonAsync<ScanResponse>();
+                if (scan is null)
+                    return new ScanResultViewModel { Success = false, ErrorMessage = "Unexpected response from server." };
+
+                return new ScanResultViewModel
+                {
+                    Success = true,
+                    Action = scan.Action,
+                    MemberName = scan.MemberName,
+                    CheckIn = scan.CheckIn,
+                    CheckOut = scan.CheckOut
+                };
+            }
+
+            string? message = null;
+            try
+            {
+                var errorBody = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                errorBody?.TryGetValue("message", out message);
+            }
+            catch { }
+
+            return new ScanResultViewModel
+            {
+                Success = false,
+                ErrorMessage = message ?? "Failed to process QR code."
+            };
+        }
     }
 }
