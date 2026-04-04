@@ -6,6 +6,8 @@ namespace GymSystem.Web.Services
     {
         Task<LoginResponse?> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default);
 
-        Task<bool> UpdateProfileAsync(UpdateProfileRequest request, string token, CancellationToken cancellationToken = default);
+        Task<bool> LogoutAsync(string token, CancellationToken cancellation = default);
+        
+
     }
 }

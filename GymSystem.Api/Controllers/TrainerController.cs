@@ -308,4 +308,5 @@ public class TrainerController : ControllerBase
 
         return NoContent();
     }
+
 }

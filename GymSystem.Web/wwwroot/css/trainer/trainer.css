@@ -137,48 +137,6 @@
         margin-bottom: 14px;
     }
 
-.availability-card {
-    background: #f2f2f2;
-    color: black;
-    border-radius: 22px;
-    padding: 24px;
-    margin-top: 32px;
-}
-
-.availability-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-    .availability-header h2 {
-        margin: 0;
-    }
-
-.availability-preview {
-    margin-top: 10px;
-}
-
-.availability-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 14px 0;
-    border-bottom: 1px solid #ddd;
-}
-
-.availability-form {
-    display: none;
-    margin-top: 24px;
-    padding-top: 20px;
-    border-top: 1px solid #ccc;
-}
-
-    .availability-form h3 {
-        margin-top: 0;
-        margin-bottom: 20px;
-    }
-
 .form-row {
     display: flex;
     flex-direction: column;

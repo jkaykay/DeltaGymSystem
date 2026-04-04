@@ -13,6 +13,7 @@ builder.Services.AddTransient<TokenDelegatingHandler>();
 builder.Services.AddScoped<IManagementApiService, ManagementApiService>();
 builder.Services.AddScoped<IMemberApiService, MemberApiService>();
 builder.Services.AddScoped<IAuthApiService, AuthApiService>();
+builder.Services.AddScoped<ITrainerApiService, TrainerApiService>();
 
 // --- Typed HttpClient for API consumption ---
 builder.Services.AddHttpClient("GymApi", client =>
@@ -34,6 +35,7 @@ builder.Services.AddAuthentication("Cookies")
         options.Events.OnRedirectToLogin = ctx =>
         {
             var returnUrl = ctx.Request.Path + ctx.Request.QueryString;
+
             if (ctx.Request.Path.StartsWithSegments("/Management", StringComparison.OrdinalIgnoreCase))
             {
                 var redirect = $"/Management/Account/Login?returnUrl={Uri.EscapeDataString(returnUrl)}";
@@ -42,6 +44,11 @@ builder.Services.AddAuthentication("Cookies")
             else if (ctx.Request.Path.StartsWithSegments("/Member", StringComparison.OrdinalIgnoreCase))
             {
                 var redirect = $"/Member/Account/Login?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                ctx.Response.Redirect(redirect);
+            }
+            else if (ctx.Request.Path.StartsWithSegments("/Trainer", StringComparison.OrdinalIgnoreCase))
+            {
+                var redirect = $"/Trainer/Auth?returnUrl={Uri.EscapeDataString(returnUrl)}";
                 ctx.Response.Redirect(redirect);
             }
             else
@@ -65,6 +72,13 @@ builder.Services.AddAuthentication("Cookies")
                 var redirect = $"/Member/Account/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
                 ctx.Response.Redirect(redirect);
             }
+
+            else if (ctx.Request.Path.StartsWithSegments("/Trainer", StringComparison.OrdinalIgnoreCase))
+            {
+                var redirect = $"/Trainer/Auth?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                ctx.Response.Redirect(redirect);
+            }
+
             else
             {
                 var redirect = $"/Account/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
@@ -97,23 +111,10 @@ app.MapControllerRoute(
     pattern: "{area:exists}/{controller=Account}/{action=Login}/{id?}")
     .WithStaticAssets();
 
-
 app.MapControllerRoute(
     name: "areas",
-    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
-
-app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists}/{controller=Login}/{action=Index}/{id?}");
-
-app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists}/{controller=Profile}/{action=Index}/{id?}");
-
-app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists}/{controller=Schedule}/{action=Index}/{id?}");
-
+    pattern: "{area:exists}/{controller=Auth}/{action=Index}/{id?}");
+    
 
 // --- Default route (public-facing) ---
 app.MapControllerRoute(

@@ -1,7 +1,11 @@
-﻿@model GymSystem.Web.ViewModels.TrainerLoginViewModel
+﻿@model GymSystem.Web.Areas.Trainer.ViewModels.TrainerLoginViewModel
 
 @{
     ViewData["Title"] = "Login";
+}
+
+@{
+    Layout = "~/Areas/Trainer/Views/Shared/_TrainerLoginLayout.cshtml";
 }
 
 <main class="login-page">
@@ -9,7 +13,8 @@
         <h1 class="login-title" id="login-heading">Login</h1>
         <p class="login-subtitle">Sign in with your username or email and password to access your account.</p>
 
-        <form asp-area="Trainer" asp-controller="Login" asp-action="Index" method="post">
+        <form asp-area="Trainer" asp-controller="Auth" asp-action="Index" method="post">
+            @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group">

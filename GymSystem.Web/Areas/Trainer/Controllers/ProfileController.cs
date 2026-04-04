@@ -1,44 +1,75 @@
 ﻿using System.Security.Claims;
 using GymSystem.Shared.DTOs;
-using GymSystem.Web.Areas.Trainer.Models;
+using GymSystem.Web.Areas.Trainer.ViewModels;
 using GymSystem.Web.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Trainer.Controllers
 {
     [Area("Trainer")]
+    [Authorize(Roles = "Trainer")]
     public class ProfileController : Controller
     {
-        private readonly IAuthApiService _authApiService;
+        private readonly ITrainerApiService _trainerApiService;
 
-        public ProfileController(IAuthApiService authApiService)
+
+        public ProfileController(ITrainerApiService trainerApiService)
         {
-            _authApiService = authApiService;
+            _trainerApiService = trainerApiService;
         }
 
+        //load profile page
         [HttpGet]
-        public IActionResult Index(bool edit = false)
+        public async Task<IActionResult> Index(bool edit = false)
         {
-            var firstName = User.FindFirst("firstName")?.Value ?? "";
-            var lastName = User.FindFirst("lastName")?.Value ?? "";
-            var email = User.FindFirst("email")?.Value ?? "";
-            var userName = User.FindFirst("userName")?.Value ?? "";
-            var gymLocation = User.FindFirst("gymLocation")?.Value ?? "";
+            var token = await HttpContext.GetTokenAsync("access_token");
+
+            if (string.IsNullOrWhiteSpace(token))
+                return Challenge();
+
+            var trainer = await _trainerApiService.GetTrainerProfileAsync(token);
+
+            if (trainer == null)
+            {
+                return View(new TrainerProfileViewModel
+                { 
+                    RoleLabel = "Trainer",
+                    IsEditing = edit
+                });
+            }
+
+            var gymLocation = User.FindFirstValue("gymLocation") ?? "";
 
             var model = new TrainerProfileViewModel
             {
-                FullName = $"{firstName} {lastName}".Trim(),
+                FullName = $"{trainer.FirstName} {trainer.LastName}".Trim(),
                 RoleLabel = "Trainer",
-                UserName = userName,
-                Email = email,
+                UserName = trainer.UserName ?? "",
+                Email = trainer.Email ?? "",
                 GymLocation = gymLocation,
                 IsEditing = edit
+                
             };
 
             return View(model);
         }
 
+        //helper method if post action fails making sure the fields are not empty
+        private async Task FillProfileDisplayDataAsync(TrainerProfileViewModel model, string token)
+        {
+            var trainer = await _trainerApiService.GetTrainerProfileAsync(token);
+
+            model.FullName = $"{trainer?.FirstName} {trainer?.LastName}".Trim();
+            model.UserName = trainer?.UserName ?? "";
+            model.GymLocation = User.FindFirstValue("gymLocation") ?? "";
+            model.RoleLabel = "Trainer";
+            model.IsEditing = true;
+            
+        }
+
+        //update trainer profile after save changes
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(TrainerProfileViewModel model)
@@ -57,48 +88,21 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
                 return View(model);
             }
 
-            var request = new UpdateProfileRequest(model.Email);
+            var request = new UpdateTrainerProfileRequest(
+                Email: model.Email,
+                FirstName: null,
+                LastName: null
+                );
 
-            var success = await _authApiService.UpdateProfileAsync(request, token);
+            var success = await _trainerApiService.UpdateTrainerProfileAsync(request, token);
 
             if (!success)
             {
-                model.IsEditing = true;
+                await FillProfileDisplayDataAsync(model, token);
                 ModelState.AddModelError(string.Empty, "Could not save changes.");
                 return View(model);
             }
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, User.FindFirstValue(ClaimTypes.NameIdentifier) ?? ""),
-                new Claim("userName", User.FindFirst("userName")?.Value ?? ""),
-                new Claim("email", model.Email),
-                new Claim("firstName", User.FindFirst("firstName")?.Value ?? ""),
-                new Claim("lastName", User.FindFirst("lastName")?.Value ?? ""),
-                new Claim("gymLocation", User.FindFirst("gymLocation")?.Value ?? "")
-            };
-
-            foreach (var role in User.FindAll(ClaimTypes.Role))
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role.Value));
-            }
-
-            var identity = new ClaimsIdentity(claims, "Cookies");
-            var principal = new ClaimsPrincipal(identity);
-
-
-
-            var authProperties = new AuthenticationProperties();
-
-            authProperties.StoreTokens(new[] {
-
-                new AuthenticationToken{
-                    Name = "access_token",
-                    Value = token
-                }
-            });
-
-            await HttpContext.SignInAsync("Cookies", principal, authProperties);
 
             return RedirectToAction("Index");
         }

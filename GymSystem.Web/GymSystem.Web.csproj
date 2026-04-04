@@ -8,18 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Areas\Trainer\ViewModels\**" />
-    <Content Remove="Areas\Trainer\ViewModels\**" />
-    <EmbeddedResource Remove="Areas\Trainer\ViewModels\**" />
-    <None Remove="Areas\Trainer\ViewModels\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\GymSystem.Shared\GymSystem.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ViewModels\" />
   </ItemGroup>
 
 </Project>

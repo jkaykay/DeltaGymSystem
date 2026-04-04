@@ -165,44 +165,6 @@ namespace GymSystem.Api.Controllers
             return NoContent();
         }
 
-        [Authorize]
-        [HttpPut("profile")]
-        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request) 
-        {
-            //get user id
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            //safety check
-            if (string.IsNullOrWhiteSpace(userId))
-                return Unauthorized();
-            //get user
-            var user = await _userManager.FindByIdAsync(userId);
-            
-            //safety check
-            if (user == null)
-                return NotFound();
-
-            
-            
-            var existingEmail = await _userManager.FindByEmailAsync(request.Email);
-            
-            //check if the email already exists from another user
-            if (existingEmail is not null && existingEmail.Id != user.Id)
-                return Conflict("A user with this email alreadt exists");
-
-            //change the user's email to the new one
-            user.Email = request.Email;
-
-            //update the user in the datavase
-            var result = await _userManager.UpdateAsync(user);
-
-            //if update failedF
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
-
-            return Ok();
-        }
-
 
    
     }

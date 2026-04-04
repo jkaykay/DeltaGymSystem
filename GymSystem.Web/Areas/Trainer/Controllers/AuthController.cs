@@ -1,49 +1,48 @@
 ﻿using System.Security.Claims;
 using GymSystem.Shared.DTOs;
 using GymSystem.Web.Services;
-using GymSystem.Web.ViewModels;
+using GymSystem.Web.Areas.Trainer.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Trainer.Controllers
 {
     [Area("Trainer")]
-    public class LoginController : Controller
+    public class AuthController : Controller
     {
-        //this controller depends on this service
+        
         private readonly IAuthApiService _authApiService;
 
-        public LoginController(IAuthApiService authApiService)
+        public AuthController(IAuthApiService authApiService)
         {
             _authApiService = authApiService;
         }
-
-        //creates an empty login model and sends it to the view (show the login page)
+        
         [HttpGet]
         public IActionResult Index()
         {
             return View(new TrainerLoginViewModel());
         }
 
-        //post action, when form is submitted receive the model(what user typed), or optional page to go back to
+        //login method
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(TrainerLoginViewModel model, string? returnUrl = null)
         {
-            //validation check, redisplay the page 
+           
             if (!ModelState.IsValid)
                 return View(model);
 
-            //this converts the MVC model into shared DTO which API expects
+            
             var loginRequest = new LoginRequest(
                 model.EmailOrUserName,
                 model.Password
             );
 
-            //call the API if successful
+           
             var loginResponse = await _authApiService.LoginAsync(loginRequest);
 
-            //handle failed login ( if API rejects it)
+            
             if (loginResponse is null)
             {
                 ModelState.AddModelError(string.Empty, "Invalid email/username or password.");
@@ -84,7 +83,7 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
             {
                 new AuthenticationToken
                 {
-                    //mvc app store it under the name
+                    
                     Name = "access_token",
                     Value = loginResponse.Token
                 }
@@ -98,6 +97,25 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
                 return LocalRedirect(returnUrl);
 
             return RedirectToAction("Index", "Dashboard", new { area = "Trainer" });
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            var token = await HttpContext.GetTokenAsync("access_token");
+
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                await _authApiService.LogoutAsync(token);
+            }
+
+            HttpContext.Session.Clear();
+            await HttpContext.SignOutAsync("Cookies");
+
+            return RedirectToAction("Index", "Auth", new { area = "Trainer" });
+
         }
     }
 }

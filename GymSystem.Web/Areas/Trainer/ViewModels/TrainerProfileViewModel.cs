@@ -1,11 +1,17 @@
-﻿namespace GymSystem.Web.Areas.Trainer.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GymSystem.Web.Areas.Trainer.ViewModels
 {
     public class TrainerProfileViewModel
     {
         public string FullName { get; set; } = "";
         public string RoleLabel { get; set; } = "";
         public string UserName { get; set; } = "";
+
+        [Required]
+        [EmailAddress]
         public string Email { get; set; } = "";
+
         public string GymLocation { get; set; } = "";
         public bool IsEditing { get; set; }
     }
