@@ -29,7 +29,8 @@ namespace GymSystem.Web.Services
         public async Task<PagedResult<UserDTO>> GetMembersAsync(int page = 1, int pageSize = 10,
             string? search = null, bool? active = null,
             DateTime? joinedFrom = null, DateTime? joinedTo = null,
-            string? sortBy = null, string? sortDir = null){
+            string? sortBy = null, string? sortDir = null)
+        {
 
             var queryParams = new List<string>
             {
@@ -110,10 +111,31 @@ namespace GymSystem.Web.Services
 
         // --- Staff ---
 
-        public async Task<PagedResult<UserDTO>> GetStaffAsync(int page = 1, int pageSize = 10)
+        public async Task<PagedResult<UserDTO>> GetStaffAsync(int page = 1, int pageSize = 10,
+            string? search = null,
+            DateTime? hiredFrom = null, DateTime? hiredTo = null,
+            string? sortBy = null, string? sortDir = null)
         {
-            var result = await _http.GetFromJsonAsync<PagedResult<UserDTO>>(
-                $"api/staff?page={page}&pageSize={pageSize}");
+            var queryParams = new List<string>
+            {
+                $"page={page}",
+                $"pageSize={pageSize}"
+            };
+
+            if (!string.IsNullOrWhiteSpace(search))
+                queryParams.Add($"search={Uri.EscapeDataString(search)}");
+            if (hiredFrom.HasValue)
+                queryParams.Add($"hiredFrom={hiredFrom.Value:yyyy-MM-dd}");
+            if (hiredTo.HasValue)
+                queryParams.Add($"hiredTo={hiredTo.Value:yyyy-MM-dd}");
+            if (!string.IsNullOrWhiteSpace(sortBy))
+                queryParams.Add($"sortBy={Uri.EscapeDataString(sortBy)}");
+            if (!string.IsNullOrWhiteSpace(sortDir))
+                queryParams.Add($"sortDir={Uri.EscapeDataString(sortDir)}");
+
+            var url = $"api/staff?{string.Join("&", queryParams)}";
+
+            var result = await _http.GetFromJsonAsync<PagedResult<UserDTO>>(url);
             return result ?? new PagedResult<UserDTO>();
         }
 
@@ -299,10 +321,31 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<CountResponse>() ?? new CountResponse();
         }
 
-        public async Task<PagedResult<UserDTO>> GetTrainersAsync(int page = 1, int pageSize = 10)
+        public async Task<PagedResult<UserDTO>> GetTrainersAsync(int page = 1, int pageSize = 10,
+    string? search = null,
+    DateTime? hiredFrom = null, DateTime? hiredTo = null,
+    string? sortBy = null, string? sortDir = null)
         {
-            var result = await _http.GetFromJsonAsync<PagedResult<UserDTO>>(
-                $"api/trainer?page={page}&pageSize={pageSize}");
+            var queryParams = new List<string>
+            {
+                $"page={page}",
+                $"pageSize={pageSize}"
+            };
+
+            if (!string.IsNullOrWhiteSpace(search))
+                queryParams.Add($"search={Uri.EscapeDataString(search)}");
+            if (hiredFrom.HasValue)
+                queryParams.Add($"hiredFrom={hiredFrom.Value:yyyy-MM-dd}");
+            if (hiredTo.HasValue)
+                queryParams.Add($"hiredTo={hiredTo.Value:yyyy-MM-dd}");
+            if (!string.IsNullOrWhiteSpace(sortBy))
+                queryParams.Add($"sortBy={Uri.EscapeDataString(sortBy)}");
+            if (!string.IsNullOrWhiteSpace(sortDir))
+                queryParams.Add($"sortDir={Uri.EscapeDataString(sortDir)}");
+
+            var url = $"api/trainer?{string.Join("&", queryParams)}";
+
+            var result = await _http.GetFromJsonAsync<PagedResult<UserDTO>>(url);
             return result ?? new PagedResult<UserDTO>();
         }
 

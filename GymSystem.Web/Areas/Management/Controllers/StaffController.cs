@@ -17,9 +17,20 @@ public class StaffController : Controller
         _api = api;
     }
 
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10,
+    string? search = null,
+    DateTime? hiredFrom = null, DateTime? hiredTo = null,
+    string? sortBy = null, string? sortDir = null)
     {
-        var result = await _api.GetStaffAsync(page, pageSize);
+        var result = await _api.GetStaffAsync(page, pageSize, search,
+            hiredFrom, hiredTo, sortBy, sortDir);
+
+        ViewData["Search"] = search;
+        ViewData["HiredFrom"] = hiredFrom;
+        ViewData["HiredTo"] = hiredTo;
+        ViewData["SortBy"] = sortBy;
+        ViewData["SortDir"] = sortDir;
+
         return View(result);
     }
 

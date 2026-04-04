@@ -25,7 +25,10 @@ namespace GymSystem.Web.Services
         Task<List<UserDTO>> GetAllMembersAsync(); // for dropdowns
 
         // Staff
-        Task<PagedResult<UserDTO>> GetStaffAsync(int page = 1, int pageSize = 10);
+        Task<PagedResult<UserDTO>> GetStaffAsync(int page = 1, int pageSize = 10,
+            string? search = null,
+            DateTime? hiredFrom = null, DateTime? hiredTo = null,
+            string? sortBy = null, string? sortDir = null);
         Task<UserDTO?> GetStaffMemberAsync(string id);
         Task<bool> CreateStaffAsync(CreateStaffViewModel model);
         Task<bool> UpdateStaffAsync(string id, EditStaffViewModel model);
@@ -33,7 +36,10 @@ namespace GymSystem.Web.Services
         Task<CountResponse> GetTotalStaffAsync();
 
         // Trainers
-        Task<PagedResult<UserDTO>> GetTrainersAsync(int page = 1, int pageSize = 10);
+        Task<PagedResult<UserDTO>> GetTrainersAsync(int page = 1, int pageSize = 10,
+            string? search = null,
+            DateTime? hiredFrom = null, DateTime? hiredTo = null,
+            string? sortBy = null, string? sortDir = null);
         Task<UserDTO?> GetTrainerAsync(string id);
         Task<bool> CreateTrainerAsync(CreateTrainerViewModel model);
         Task<bool> UpdateTrainerAsync(string id, EditTrainerViewModel model);
