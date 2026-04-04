@@ -16,9 +16,18 @@ public class RoomsController : Controller
         _api = api;
     }
 
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10,
+        int? branchId = null, int? roomNumber = null,
+        string? sortBy = null, string? sortDir = null)
     {
-        var rooms = await _api.GetRoomsAsync(page, pageSize);
+        var rooms = await _api.GetRoomsAsync(page, pageSize, branchId, roomNumber, sortBy, sortDir);
+
+        ViewData["BranchId"] = branchId;
+        ViewData["RoomNumber"] = roomNumber;
+        ViewData["SortBy"] = sortBy;
+        ViewData["SortDir"] = sortDir;
+        ViewBag.Branches = await _api.GetAllBranchesAsync();
+
         return View(rooms);
     }
 

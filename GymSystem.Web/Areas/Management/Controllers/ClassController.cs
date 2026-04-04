@@ -16,9 +16,16 @@ public class ClassesController : Controller
         _api = api;
     }
 
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10,
+        string? search = null,
+        string? sortBy = null, string? sortDir = null)
     {
-        var result = await _api.GetClassesAsync(page, pageSize);
+        var result = await _api.GetClassesAsync(page, pageSize, search, sortBy, sortDir);
+
+        ViewData["Search"] = search;
+        ViewData["SortBy"] = sortBy;
+        ViewData["SortDir"] = sortDir;
+
         return View(result);
     }
 

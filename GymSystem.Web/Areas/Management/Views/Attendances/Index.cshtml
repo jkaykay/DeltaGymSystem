@@ -1,7 +1,14 @@
-﻿@model List<AttendanceDTO>
+﻿@model PagedResult<AttendanceDTO>
 
 @{
     ViewData["Title"] = "Attendance Records";
+
+    var search = ViewData["Search"] as string;
+    var inFlag = ViewData["InFlag"] as bool?;
+    var dateFrom = ViewData["DateFrom"] as DateTime?;
+    var dateTo = ViewData["DateTo"] as DateTime?;
+    var sortBy = ViewData["SortBy"] as string;
+    var sortDir = ViewData["SortDir"] as string;
 }
 
 <div class="page-header">
@@ -9,7 +16,7 @@
     <div class="page-actions">
         <a asp-action="Active" class="btn btn-secondary">🟢 View Active</a>
         <a asp-action="CheckIn" class="btn btn-primary">➕ Check In Member</a>
-        <span class="record-count">@Model.Count total</span>
+        <span class="record-count">@Model.TotalCount total</span>
     </div>
 </div>
 
@@ -25,6 +32,64 @@
         @TempData["Error"]
     </div>
 }
+
+<div class="dashboard-card" style="margin-bottom: 16px;">
+    <div class="card-header">
+        <h5>Search &amp; Filter</h5>
+    </div>
+    <form method="get" asp-action="Index" class="search-bar">
+        <div class="search-bar-row">
+            <div class="form-group">
+                <label for="search">Search</label>
+                <input type="text" id="search" name="search" class="form-control"
+                       placeholder="Member name, email…" value="@search" />
+            </div>
+            <div class="form-group">
+                <label for="inFlag">Status</label>
+                <select id="inFlag" name="inFlag" class="form-control">
+                    <option value="">All</option>
+                    <option value="true" selected="@(inFlag == true)">Checked In</option>
+                    <option value="false" selected="@(inFlag == false)">Checked Out</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="dateFrom">From</label>
+                <input type="date" id="dateFrom" name="dateFrom" class="form-control"
+                       value="@dateFrom?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="form-group">
+                <label for="dateTo">To</label>
+                <input type="date" id="dateTo" name="dateTo" class="form-control"
+                       value="@dateTo?.ToString("yyyy-MM-dd")" />
+            </div>
+        </div>
+        <div class="search-bar-row">
+            <div class="form-group">
+                <label for="sortBy">Sort By</label>
+                <select id="sortBy" name="sortBy" class="form-control">
+                    <option value="">Check In</option>
+                    <option value="member" selected="@(sortBy == "member")">Member</option>
+                    <option value="checkout" selected="@(sortBy == "checkout")">Check Out</option>
+                    <option value="status" selected="@(sortBy == "status")">Status</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sortDir">Direction</label>
+                <select id="sortDir" name="sortDir" class="form-control">
+                    <option value="asc" selected="@(sortDir == "asc")">Ascending</option>
+                    <option value="desc" selected="@(sortDir == "desc")">Descending</option>
+                </select>
+            </div>
+            <div class="form-group search-bar-actions">
+                <label>&nbsp;</label>
+                <div class="table-actions">
+                    <button type="submit" class="btn btn-primary">🔍 Search</button>
+                    <a asp-action="Index" class="btn btn-secondary">✕ Clear</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
 
 <div class="dashboard-card">
     <div class="card-header">
@@ -42,7 +107,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var record in Model)
+            @foreach (var record in Model.Items)
             {
                 <tr>
                     <td>@record.AttendanceId</td>
@@ -75,10 +140,13 @@
             }
         </tbody>
     </table>
-    @if (!Model.Any())
+    @if (!Model.Items.Any())
     {
         <div class="empty-state">
             <p>No attendance records found.</p>
         </div>
     }
+    <div class="pagination-wrapper">
+        <partial name="_Pagination" model="Model" />
+    </div>
 </div>

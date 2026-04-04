@@ -3,6 +3,16 @@
 
 @{
     ViewData["Title"] = "Manage Subscriptions";
+
+    var search = ViewData["Search"] as string;
+    var state = ViewData["State"] as int?;
+    var tierName = ViewData["TierName"] as string;
+    var startFrom = ViewData["StartFrom"] as DateTime?;
+    var startTo = ViewData["StartTo"] as DateTime?;
+    var sortBy = ViewData["SortBy"] as string;
+    var sortDir = ViewData["SortDir"] as string;
+
+    var tiers = ViewBag.Tiers as List<TierDTO> ?? new List<TierDTO>();
 }
 
 <div class="page-header">
@@ -25,6 +35,77 @@
         @TempData["Error"]
     </div>
 }
+
+<div class="dashboard-card" style="margin-bottom: 16px;">
+    <div class="card-header">
+        <h5>Search &amp; Filter</h5>
+    </div>
+    <form method="get" asp-action="Index" class="search-bar">
+        <div class="search-bar-row">
+            <div class="form-group">
+                <label for="search">Search</label>
+                <input type="text" id="search" name="search" class="form-control"
+                       placeholder="Member name, tier…" value="@search" />
+            </div>
+            <div class="form-group">
+                <label for="state">State</label>
+                <select id="state" name="state" class="form-control">
+                    <option value="">All</option>
+                    <option value="0" selected="@(state == 0)">Pending</option>
+                    <option value="1" selected="@(state == 1)">Active</option>
+                    <option value="2" selected="@(state == 2)">Queued</option>
+                    <option value="3" selected="@(state == 3)">Expired</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tierName">Tier</label>
+                <select id="tierName" name="tierName" class="form-control">
+                    <option value="">All Tiers</option>
+                    @foreach (var tier in tiers)
+                    {
+                        <option value="@tier.TierName" selected="@(tierName == tier.TierName)">@tier.TierName</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="search-bar-row">
+            <div class="form-group">
+                <label for="startFrom">Start From</label>
+                <input type="date" id="startFrom" name="startFrom" class="form-control"
+                       value="@startFrom?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="form-group">
+                <label for="startTo">Start To</label>
+                <input type="date" id="startTo" name="startTo" class="form-control"
+                       value="@startTo?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="form-group">
+                <label for="sortBy">Sort By</label>
+                <select id="sortBy" name="sortBy" class="form-control">
+                    <option value="">Start Date</option>
+                    <option value="memberName" selected="@(sortBy == "memberName")">Member</option>
+                    <option value="tierName" selected="@(sortBy == "tierName")">Tier</option>
+                    <option value="state" selected="@(sortBy == "state")">State</option>
+                    <option value="endDate" selected="@(sortBy == "endDate")">End Date</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sortDir">Direction</label>
+                <select id="sortDir" name="sortDir" class="form-control">
+                    <option value="asc" selected="@(sortDir == "asc")">Ascending</option>
+                    <option value="desc" selected="@(sortDir == "desc")">Descending</option>
+                </select>
+            </div>
+            <div class="form-group search-bar-actions">
+                <label>&nbsp;</label>
+                <div class="table-actions">
+                    <button type="submit" class="btn btn-primary">🔍 Search</button>
+                    <a asp-action="Index" class="btn btn-secondary">✕ Clear</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
 
 <div class="dashboard-card">
     <div class="card-header">
