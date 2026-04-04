@@ -31,7 +31,7 @@
       <li><a asp-area="" asp-controller="Memberships" asp-action="Index">Memberships</a></li>
       <li><a asp-area="Member" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
       <li><a asp-area="Member" asp-controller="MyProfile" asp-action="Index">MyProfile</a></li>
-      <li><a asp-area="" asp-controller="Support" asp-action="Index">Support</a></li>
+      <li><a asp-area="" asp-controller="About" asp-action="Index">About</a></li>
     </ul>
     @if (User.Identity != null && User.Identity.IsAuthenticated)
 {
@@ -169,7 +169,7 @@ else
         <div class="class-name">Cardio</div>
         <div class="class-tagline">Burn your FAT</div>
         <p class="class-desc">By joining you can view all the cardio class session times and availability. Get access to all scheduled sessions and book your spot instantly.</p>
-        <a asp-controller="Booking" asp-action="Index" class="join-btn">Join</a>
+        <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="join-btn">Join</a>
       </div>
       <div class="class-bg-panel bg-red"></div>
     </div>
@@ -181,7 +181,7 @@ else
         <div class="class-name">Strength Training</div>
         <div class="class-tagline">Build your strength</div>
         <p class="class-desc">By joining you can view all the strength class session times and availability. Get access to all scheduled sessions and book your spot instantly.</p>
-        <button class="join-btn" onclick="window.location.href='booking.html'">Join</button>
+        <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="join-btn">Join</a>
       </div>
     </div>
 
@@ -191,7 +191,7 @@ else
         <div class="class-name">HIIT</div>
         <div class="class-tagline">Build your strength and burn your Fat</div>
         <p class="class-desc">By joining you can view all the HIIT class session times and availability. Get access to all scheduled sessions and book your spot instantly.</p>
-        <button class="join-btn" onclick="window.location.href='booking.html'">Join</button>
+        <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="join-btn">Join</a>
       </div>
       <div class="class-bg-panel bg-red"></div>
     </div>
@@ -203,7 +203,7 @@ else
         <div class="class-name">Yoga</div>
         <div class="class-tagline">This is what your body needs</div>
         <p class="class-desc">By joining you can view all the yoga class session times and availability. Get access to all scheduled sessions and book your spot instantly.</p>
-        <button class="join-btn" onclick="window.location.href='booking.html'">Join</button>
+        <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="join-btn">Join</a>
       </div>
     </div>
 
@@ -213,7 +213,7 @@ else
         <div class="class-name">Boxing Training</div>
         <div class="class-tagline">Build your power</div>
         <p class="class-desc">By joining you can view all the boxing class session times and availability. Get access to all scheduled sessions and book your spot instantly.</p>
-        <button class="join-btn" onclick="window.location.href='booking.html'">Join</button>
+        <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="join-btn">Join</a>
       </div>
       <div class="class-bg-panel bg-red"></div>
     </div>

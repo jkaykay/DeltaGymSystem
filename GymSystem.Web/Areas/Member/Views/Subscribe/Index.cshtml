@@ -20,7 +20,7 @@
 </head>
 <body>
 
-  <!-- NAV  BAR-->
+
  <!-- NAV  BAR-->
   <nav>
    <div class="nav-logo">
@@ -32,7 +32,7 @@
       <li><a asp-area="" asp-controller="Memberships" asp-action="Index">Memberships</a></li>
       <li><a asp-area="Member" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
       <li><a asp-area="Member" asp-controller="MyProfile" asp-action="Index">MyProfile</a></li>
-      <li><a asp-area="" asp-controller="Support" asp-action="Index">Support</a></li>
+      <li><a asp-area="" asp-controller="About" asp-action="Index">About</a></li>
     </ul>
     @if (User.Identity != null && User.Identity.IsAuthenticated)
 {
@@ -53,7 +53,7 @@ else
 }
   </nav>
 
-  
+
   <!-- PAGE -->
   <div class="page">
     <div class="checkout-card">
@@ -132,8 +132,13 @@ else
         </div>
         <h3>You're all set!</h3>
         <p>Your membership is now active. Welcome to DeltaGyms — let's get to work!</p>
-        <div class="modal-ref" id="payment-ref">REF: DG-PAY-000000</div>
-        <button class="modal-btn" onclick="goToProfile()">GO TO MY PROFILE</button>
+       
+        <form asp-area="Member" asp-controller="MyProfile" asp-action="Index" method="get">
+          <button type="submit" class="modal-btn">
+            GO TO MY PROFILE
+          </button>
+        </form>
+
       </div>
     </div>
   </div>
@@ -162,8 +167,6 @@ else
 
     // Confirm payment
     function confirmPayment() {
-      const ref = 'DG-PAY-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-      document.getElementById('payment-ref').textContent = 'REF: ' + ref;
       document.getElementById('overlay').classList.add('show');
     }
 

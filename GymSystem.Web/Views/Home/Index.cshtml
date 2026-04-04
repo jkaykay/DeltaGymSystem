@@ -29,7 +29,7 @@
       <li><a asp-area="" asp-controller="Memberships" asp-action="Index">Memberships</a></li>
       <li><a asp-area="Member" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
       <li><a asp-area="Member" asp-controller="MyProfile" asp-action="Index">MyProfile</a></li>
-      <li><a asp-area="" asp-controller="Support" asp-action="Index">Support</a></li>
+      <li><a asp-area="" asp-controller="About" asp-action="Index">About</a></li>
     </ul>
     @if (User.Identity != null && User.Identity.IsAuthenticated)
 {
@@ -83,7 +83,7 @@ else
   <section class="section reveal container py-5">
     <div class="section-header">
       <h2 class="section-title">Train with the best</h2>
-      <a href="classes.html" class="view-all">View All &gt;&gt;&gt;</a>
+      <a asp-area="" asp-controller="Classes" asp-action="Index" class="view-all">View All &gt;&gt;&gt;</a>
     </div>
     <div class="cards-grid">
 
@@ -146,7 +146,7 @@ else
   <section class="section reveal">
     <div class="section-header">
       <h2 class="section-title">Meet the Trainers</h2>
-      <a href="classes.html#class-type" class="view-all">View All &gt;&gt;&gt;</a>
+      <a asp-area="" asp-controller="Classes" asp-action="Index" asp-fragment="class-type" class="view-all"> View All &gt;&gt;&gt; </a>
     </div>
     <div class="trainers-grid">
       <div class="trainer-card">
@@ -222,12 +222,14 @@ else
           <span class="dollar">$</span><span class="amount">39.99</span><span class="period"> / mo</span>
         </div>
         <ul class="plan-features">
-          <li>24/7 GYM access</li>
+          <li>Anytime GYM access</li>
           <li>Unlimited classes</li>
           <li>Personal Locker</li>
           <li>Sauna and steam room free</li>
         </ul>
-        <a href="subscribe.html" class="plan-btn">Get started</a>
+
+        <a asp-area="Member" asp-controller="Subscribe" asp-action="Index" class="plan-btn">Get started</a>
+
       </div>
 
     </div>
@@ -257,9 +259,9 @@ else
       <div class="footer-box">
         <div class="footer-col-title">About the "GYM"</div>
         <ul class="footer-links">
-          <li><a href="#">About us</a></li>
-          <li><a href="#">Contact us</a></li>
-          <li><a href="#">Gym Tour</a></li>
+          <li><a asp-area="" asp-controller="About" asp-action="Index" asp-fragment="hero-title">Gym Info</a></li>
+          <li><a asp-area="" asp-controller="About" asp-action="Index" asp-fragment="contact-section">Contact Us</a></li>
+          <li><a href="#">Gym Equipments</a></li>
           <li><a href="#">Gym Opening hours</a></li>
           <li><a href="#">Membership rules</a></li>
         </ul>
@@ -269,10 +271,10 @@ else
 
     <div class="footer-bottom">
       <div class="footer-logo-wrap">
-      <img src="images/logo.png" alt="Delta Gyms Logo" class="nav-logo-img"/>
+      <img src="~/images/logo.png" alt="Delta Gyms Logo" class="nav-logo-img"/>
     </div>
       <span class="footer-brand">DELTAGYMS</span>
-      <p class="footer-copy">2026 &nbsp; DELTAGYMS all rights reserved</p>
+      <p class="footer-copy">2026 DELTAGYMS all rights reserved</p>
     </div>
   </footer>
 

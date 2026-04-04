@@ -241,6 +241,8 @@
       font-family: 'Barlow', sans-serif;
       font-weight: 700;
       font-size: 15px;
+      text-decoration: none;
+      display: inline-block;
       cursor: pointer;
       transition: background-color 0.2s, transform 0.15s;
     }

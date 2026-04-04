@@ -31,7 +31,7 @@
       <li><a asp-area="" asp-controller="Memberships" asp-action="Index">Memberships</a></li>
       <li><a asp-area="Member" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
       <li><a asp-area="Member" asp-controller="MyProfile" asp-action="Index">MyProfile</a></li>
-      <li><a asp-area="" asp-controller="Support" asp-action="Index">Support</a></li>
+      <li><a asp-area="" asp-controller="About" asp-action="Index">About</a></li>
     </ul>
     @if (User.Identity != null && User.Identity.IsAuthenticated)
 {
@@ -76,8 +76,7 @@ else
             <li>1 free class per week</li>
             <li>Basic fitness assessments</li>
           </ul>
-          <a href="subscribe.html" class="plan-btn">Get started</a>
-          <!-- <button class="plan-btn" onclick="window.location.href='subscribe.html'">Get started</button> -->
+          <a asp-area="Member" asp-controller="Subscribe" asp-action="Index" class="plan-btn">Get started</a>
         </div>
 
         <div class="plan-card featured">
@@ -87,13 +86,12 @@ else
             <span class="dollar">$</span><span class="amount">39.99</span><span class="period"> / mo</span>
           </div>
           <ul class="plan-features">
-            <li>24/7 GYM access</li>
+            <li>Anytime GYM access</li>
             <li>Unlimited classes</li>
             <li>Personal Locker</li>
             <li>Sauna and steam room free</li>
           </ul>
-          <a href="subscribe.html" class="plan-btn">Get started</a>
-          <!-- <button class="plan-btn" onclick="window.location.href='subscribe.html'">Get started</button> -->
+          <a asp-area="Member" asp-controller="Subscribe" asp-action="Index" class="plan-btn">Get started</a>
         </div>
 
       </div>

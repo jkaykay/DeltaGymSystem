@@ -32,10 +32,6 @@
       -webkit-backdrop-filter: blur(12px);
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 0 40px;
-      z-index: 1000;
-      border-bottom: 1px solid rgba(0,0,0,0.07);
     }
 
     .nav-logo {
@@ -44,20 +40,24 @@
       border-radius: 15px;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
+      margin-left: 35px;
     }
 
     .nav-logo img { 
       width: 48px; 
       height: 48px; 
       fill: white; 
-    border-radius: 10px;
+      border-radius: 10px;
+    
    }
 
     .nav-links {
       display: flex;
       gap: 36px;
+      margin: 0 auto;
+      text-decoration: none;
       list-style: none;
-      margin-right: 450px;
+      padding: 0;
     }
     .nav-links a {
       text-decoration: none;

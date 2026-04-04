@@ -29,7 +29,7 @@
       <li><a asp-area="" asp-controller="Memberships" asp-action="Index">Memberships</a></li>
       <li><a asp-area="Member" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
       <li><a asp-area="Member" asp-controller="MyProfile" asp-action="Index">MyProfile</a></li>
-      <li><a asp-area="" asp-controller="Support" asp-action="Index">Support</a></li>
+      <li><a asp-area="" asp-controller="About" asp-action="Index">About</a></li>
     </ul>
     @if (User.Identity != null && User.Identity.IsAuthenticated)
 {
@@ -188,8 +188,10 @@ else
         </svg>
       </div>
       <h2>You're Booked!</h2>
-      <p>Your class has been confirmed. A confirmation has been sent to your email. See you on the mat!</p>
-      <button class="modal-btn" onclick="goToDashboard()">Go to Dashboard</button>
+      <p>Your class has been confirmed. A confirmation has been sent to you. See you on the studio</p>
+      <form asp-area="Member" asp-controller="Dashboard" asp-action="Index" method="get">
+        <button type="submit" class="modal-btn">Go to Dashboard</button>
+      </form>
     </div>
   </div>
 
