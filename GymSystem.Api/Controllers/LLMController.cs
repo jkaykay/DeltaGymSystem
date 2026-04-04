@@ -11,36 +11,26 @@ namespace GymSystem.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [AllowAnonymous]
+    [Authorize]
     public class LLMController : ControllerBase
     {
-        private readonly GymDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IOutputCacheStore _outputCache;
         private readonly IOpenRouterService _openRouterService;
 
-        public LLMController(
-            GymDbContext context,
-            UserManager<ApplicationUser> userManager,
-            IOutputCacheStore outputCache,
-            IOpenRouterService openRouterService)
+        public LLMController(IOpenRouterService openRouterService)
         {
-            _context = context;
-            _userManager = userManager;
-            _outputCache = outputCache;
             _openRouterService = openRouterService;
         }
 
         /// <summary>POST api/llm/chat — sends a prompt to the LLM and returns the response.</summary>
         [HttpPost("chat")]
-        public async Task<IActionResult> Chat([FromBody] PromptRequest request)
+        public async Task<IActionResult> Chat([FromBody] PromptRequest request, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             try
             {
-                var reply = await _openRouterService.GetCompletionAsync(request.Prompt);
+                var reply = await _openRouterService.GetCompletionAsync(request.Prompt, cancellationToken);
                 return Ok(new { response = reply });
             }
             catch (HttpRequestException ex)

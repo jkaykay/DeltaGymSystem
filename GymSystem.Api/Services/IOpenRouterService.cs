@@ -2,6 +2,6 @@
 {
     public interface IOpenRouterService
     {
-        Task<string> GetCompletionAsync(string prompt, CancellationToken cancellationToken);
+        Task<string> GetCompletionAsync(string prompt, CancellationToken cancellationToken = default);
     }
 }
