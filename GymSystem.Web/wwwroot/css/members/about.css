@@ -71,7 +71,7 @@
     .nav-logout a {
       font-weight: 700;
       font-size: 15px;
-      color: var(--text);
+      color: var(--dark);
       text-decoration: none;
       border: 2px solid var(--dark);
       padding: 7px 20px;
@@ -104,13 +104,22 @@
       overflow: hidden;
     }
 
-    .hero-red-block {
+    .hero-ash-block {
       position: absolute;
       top: 0; right: 0;
       width: 38%;
       height: 100%;
       background: #c2b6b6;
-      clip-path: polygon(18% 0%, 100% 0%, 100% 100%, 0% 100%);
+      clip-path: polygon(19% 4.5%, 100% 0%, 100% 100%, 0% 100%);
+      animation: moveRotate 5s ease infinite;
+    }
+
+    @keyframes moveRotate {
+        to {
+          transform: translate(21vw) rotate(360deg)
+          scale(3);
+        }
+        
     }
 
     .hero-content {

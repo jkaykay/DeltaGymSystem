@@ -99,6 +99,12 @@
       padding: 60px 60px 50px;
       position: relative;
       overflow: hidden;
+      animation: HeroFadeIn 2.1s ease forwards;
+    }
+
+    @keyframes HeroFadeIn {
+      from { opacity: 0; transform: translateY(35px); }
+      to { opacity: 2; transform: none; }
     }
 
     .hero::before {
