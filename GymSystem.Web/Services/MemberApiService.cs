@@ -82,7 +82,6 @@ public class MemberApiService : IMemberApiService
 {
     var response = await _http.GetAsync("api/member/me");
 
-
     if (!response.IsSuccessStatusCode)
     {
         var body = await response.Content.ReadAsStringAsync();
