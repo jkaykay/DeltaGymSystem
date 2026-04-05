@@ -32,9 +32,36 @@ namespace GymSystem.Api.Controllers
         [HttpGet]
         [Authorize(Roles = "Admin,Staff")]
         [OutputCache(PolicyName = "bookings")]
-        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetAll([FromQuery] BookingSearchRequest request)
         {
-            var result = await _context.Bookings
+            var query = _context.Bookings.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                var term = request.Search.Trim().ToLower();
+                query = query.Where(b =>
+                    b.User.FirstName.ToLower().Contains(term) ||
+                    b.User.LastName.ToLower().Contains(term) ||
+                    b.Session.Class.Subject.ToLower().Contains(term));
+            }
+
+            if (request.DateFrom.HasValue)
+                query = query.Where(b => b.Session.Start >= request.DateFrom.Value);
+
+            if (request.DateTo.HasValue)
+                query = query.Where(b => b.Session.Start <= request.DateTo.Value);
+
+            var descending = string.Equals(request.SortDir, "desc", StringComparison.OrdinalIgnoreCase);
+
+            query = request.SortBy?.ToLower() switch
+            {
+                "member"  => descending ? query.OrderByDescending(b => b.User.LastName)       : query.OrderBy(b => b.User.LastName),
+                "subject" => descending ? query.OrderByDescending(b => b.Session.Class.Subject) : query.OrderBy(b => b.Session.Class.Subject),
+                "session" => descending ? query.OrderByDescending(b => b.Session.Start)       : query.OrderBy(b => b.Session.Start),
+                _         => descending ? query.OrderByDescending(b => b.BookDate)            : query.OrderBy(b => b.BookDate),
+            };
+
+            var result = await query
                 .Select(b => new BookingDTO
                 {
                     BookingId = b.BookingId,
@@ -47,7 +74,7 @@ namespace GymSystem.Api.Controllers
                     UserId = b.User.Id,
                     UserName = $"{b.User.FirstName} {b.User.LastName}"
                 })
-                .ToPagedResultAsync(page, pageSize);
+                .ToPagedResultAsync(request.Page, request.PageSize);
 
             return Ok(result);
         }

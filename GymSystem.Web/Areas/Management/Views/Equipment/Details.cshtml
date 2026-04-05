@@ -1,0 +1,39 @@
+@model EquipmentDTO
+
+@{
+    ViewData["Title"] = "Equipment Details";
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">Equipment Details</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
+
+<div class="detail-card">
+    <div class="card-header">
+        <h5>Equipment #@Model.EquipmentId</h5>
+    </div>
+    <div class="detail-body">
+        <p class="detail-name">Equipment @Model.EquipmentId — Room @Model.RoomNumber</p>
+        <dl class="detail-dl">
+            <dt>Description</dt>
+            <dd>@(Model.Description ?? "—")</dd>
+
+            <dt>Date Acquired</dt>
+            <dd>@Model.InDate.ToString("MMM dd, yyyy")</dd>
+
+            <dt>Status</dt>
+            <dd>@(Model.Operational ? "✅ Operational" : "❌ Out of Service")</dd>
+
+            <dt>Room</dt>
+            <dd>Room @Model.RoomNumber</dd>
+        </dl>
+    </div>
+    <div class="detail-actions">
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.EquipmentId" class="btn btn-primary">Edit</a>
+        }
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>

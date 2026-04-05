@@ -2,6 +2,10 @@
 
 @{
     ViewData["Title"] = "Manage Branches";
+
+    var search = ViewData["Search"] as string;
+    var sortBy = ViewData["SortBy"] as string;
+    var sortDir = ViewData["SortDir"] as string;
 }
 
 <div class="page-header">
@@ -27,6 +31,45 @@
         @TempData["Error"]
     </div>
 }
+
+<div class="dashboard-card" style="margin-bottom: 16px;">
+    <div class="card-header">
+        <h5>Search &amp; Filter</h5>
+    </div>
+    <form method="get" asp-action="Index" class="search-bar">
+        <div class="search-bar-row">
+            <div class="form-group">
+                <label for="search">Search</label>
+                <input type="text" id="search" name="search" class="form-control"
+                       placeholder="Address, city, province, postcode…" value="@search" />
+            </div>
+            <div class="form-group">
+                <label for="sortBy">Sort By</label>
+                <select id="sortBy" name="sortBy" class="form-control">
+                    <option value="">City</option>
+                    <option value="address" selected="@(sortBy == "address")">Address</option>
+                    <option value="province" selected="@(sortBy == "province")">Province</option>
+                    <option value="postcode" selected="@(sortBy == "postcode")">Post Code</option>
+                    <option value="opendate" selected="@(sortBy == "opendate")">Open Date</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sortDir">Direction</label>
+                <select id="sortDir" name="sortDir" class="form-control">
+                    <option value="asc" selected="@(sortDir == "asc")">Ascending</option>
+                    <option value="desc" selected="@(sortDir == "desc")">Descending</option>
+                </select>
+            </div>
+            <div class="form-group search-bar-actions">
+                <label>&nbsp;</label>
+                <div class="table-actions">
+                    <button type="submit" class="btn btn-primary">🔍 Search</button>
+                    <a asp-action="Index" class="btn btn-secondary">✕ Clear</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
 
 <div class="dashboard-card">
     <div class="card-header">

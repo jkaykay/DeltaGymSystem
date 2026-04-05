@@ -17,9 +17,23 @@ public class SubscriptionsController : Controller
         _api = api;
     }
 
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10,
+        string? search = null, int? state = null, string? tierName = null,
+        DateTime? startFrom = null, DateTime? startTo = null,
+        string? sortBy = null, string? sortDir = null)
     {
-        var result = await _api.GetSubscriptionsAsync(page, pageSize);
+        var result = await _api.GetSubscriptionsAsync(page, pageSize, search, state, tierName,
+            startFrom, startTo, sortBy, sortDir);
+
+        ViewData["Search"] = search;
+        ViewData["State"] = state;
+        ViewData["TierName"] = tierName;
+        ViewData["StartFrom"] = startFrom;
+        ViewData["StartTo"] = startTo;
+        ViewData["SortBy"] = sortBy;
+        ViewData["SortDir"] = sortDir;
+        ViewBag.Tiers = await _api.GetAllTiersAsync();
+
         return View(result);
     }
 

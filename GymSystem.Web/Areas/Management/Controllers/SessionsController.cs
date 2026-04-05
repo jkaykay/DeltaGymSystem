@@ -16,9 +16,23 @@ public class SessionsController : Controller
         _api = api;
     }
 
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10,
+        string? search = null,
+        DateTime? dateFrom = null, DateTime? dateTo = null,
+        int? roomId = null,
+        string? sortBy = null, string? sortDir = null)
     {
-        var result = await _api.GetSessionsAsync(page, pageSize);
+        var result = await _api.GetSessionsAsync(page, pageSize, search,
+            dateFrom, dateTo, roomId, sortBy, sortDir);
+
+        ViewData["Search"] = search;
+        ViewData["DateFrom"] = dateFrom;
+        ViewData["DateTo"] = dateTo;
+        ViewData["RoomId"] = roomId;
+        ViewData["SortBy"] = sortBy;
+        ViewData["SortDir"] = sortDir;
+        ViewBag.Rooms = await _api.GetAllRoomsAsync();
+
         return View(result);
     }
 

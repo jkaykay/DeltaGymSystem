@@ -17,9 +17,20 @@ public class StaffController : Controller
         _api = api;
     }
 
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10,
+    string? search = null,
+    DateTime? hiredFrom = null, DateTime? hiredTo = null,
+    string? sortBy = null, string? sortDir = null)
     {
-        var result = await _api.GetStaffAsync(page, pageSize);
+        var result = await _api.GetStaffAsync(page, pageSize, search,
+            hiredFrom, hiredTo, sortBy, sortDir);
+
+        ViewData["Search"] = search;
+        ViewData["HiredFrom"] = hiredFrom;
+        ViewData["HiredTo"] = hiredTo;
+        ViewData["SortBy"] = sortBy;
+        ViewData["SortDir"] = sortDir;
+
         return View(result);
     }
 
@@ -67,12 +78,16 @@ public class StaffController : Controller
         if (staff is null)
             return NotFound();
 
+        ViewBag.Branches = await _api.GetAllBranchesAsync();
+
         var vm = new EditStaffViewModel
         {
             Id = staff.Id,
             Email = staff.Email,
             FirstName = staff.FirstName,
-            LastName = staff.LastName
+            LastName = staff.LastName,
+            EmployeeId = staff.EmployeeId,
+            BranchId = staff.BranchId
         };
 
         return View(vm);
@@ -84,13 +99,17 @@ public class StaffController : Controller
     public async Task<IActionResult> Edit(EditStaffViewModel model)
     {
         if (!ModelState.IsValid)
+        {
+            ViewBag.Branches = await _api.GetAllBranchesAsync();
             return View(model);
+        }
 
         var success = await _api.UpdateStaffAsync(model.Id, model);
 
         if (!success)
         {
             ModelState.AddModelError(string.Empty, "Failed to update staff member.");
+            ViewBag.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
 

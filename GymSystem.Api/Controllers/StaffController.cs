@@ -40,9 +40,34 @@ public class StaffController : ControllerBase
     [HttpGet]
     [Authorize(Roles = "Admin,Staff")]
     [OutputCache(PolicyName = "staff")]
-    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetAll([FromQuery] StaffSearchRequest request)
     {
-        var pagedStaff = await StaffQuery()
+        var query = StaffQuery();
+
+        // --- General search across multiple fields ---
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var term = request.Search.Trim().ToLower();
+            query = query.Where(u =>
+                u.FirstName.ToLower().Contains(term) ||
+                u.LastName.ToLower().Contains(term) ||
+                u.Email!.ToLower().Contains(term) ||
+                u.UserName!.ToLower().Contains(term) ||
+                (u.EmployeeId != null && u.EmployeeId.ToLower().Contains(term)));
+        }
+
+        // --- Specific filters ---
+        if (request.HiredFrom.HasValue)
+            query = query.Where(u => u.HireDate >= request.HiredFrom.Value);
+
+        if (request.HiredTo.HasValue)
+            query = query.Where(u => u.HireDate <= request.HiredTo.Value);
+
+        // --- Sorting ---
+        query = ApplySorting(query, request.SortBy, request.SortDir);
+
+        // --- Projection + Pagination ---
+        var pagedStaff = await query
             .Select(u => new
             {
                 u.Id,
@@ -62,9 +87,8 @@ public class StaffController : ControllerBase
                         (ur, r) => r.Name!)
                     .ToList()
             })
-            .ToPagedResultAsync(page, pageSize);
+            .ToPagedResultAsync(request.Page, request.PageSize);
 
-        // Map anonymous type to UserDTO after paging
         var result = new PagedResult<UserDTO>
         {
             Page = pagedStaff.Page,
@@ -206,7 +230,7 @@ public class StaffController : ControllerBase
         if (!roles.Contains("Staff") && !roles.Contains("Admin"))
             return NotFound("User is not a staff member.");
 
-         if (request.Email is not null)
+        if (request.Email is not null)
         {
             var existing = await _userManager.FindByEmailAsync(request.Email);
             if (existing is not null && existing.Id != user.Id)
@@ -303,5 +327,20 @@ public class StaffController : ControllerBase
         await _outputCache.EvictByTagAsync("staff", default);
 
         return NoContent();
+    }
+
+    private static IQueryable<ApplicationUser> ApplySorting(
+    IQueryable<ApplicationUser> query, string? sortBy, string? sortDir)
+    {
+        var descending = string.Equals(sortDir, "desc", StringComparison.OrdinalIgnoreCase);
+
+        return sortBy?.ToLower() switch
+        {
+            "firstname" => descending ? query.OrderByDescending(u => u.FirstName) : query.OrderBy(u => u.FirstName),
+            "lastname" => descending ? query.OrderByDescending(u => u.LastName) : query.OrderBy(u => u.LastName),
+            "email" => descending ? query.OrderByDescending(u => u.Email) : query.OrderBy(u => u.Email),
+            "employeeid" => descending ? query.OrderByDescending(u => u.EmployeeId) : query.OrderBy(u => u.EmployeeId),
+            _ => descending ? query.OrderByDescending(u => u.HireDate) : query.OrderBy(u => u.HireDate),
+        };
     }
 }

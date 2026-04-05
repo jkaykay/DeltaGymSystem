@@ -25,9 +25,32 @@ public class BranchController : ControllerBase
 
     [HttpGet]
     [OutputCache(PolicyName = "branches")]
-    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetAll([FromQuery] BranchSearchRequest request)
     {
-        var result = await _context.Branches
+        var query = _context.Branches.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var term = request.Search.Trim().ToLower();
+            query = query.Where(b =>
+                b.Address.ToLower().Contains(term) ||
+                b.City.ToLower().Contains(term) ||
+                b.Province.ToLower().Contains(term) ||
+                b.PostCode.ToLower().Contains(term));
+        }
+
+        var descending = string.Equals(request.SortDir, "desc", StringComparison.OrdinalIgnoreCase);
+
+        query = request.SortBy?.ToLower() switch
+        {
+            "address"  => descending ? query.OrderByDescending(b => b.Address)  : query.OrderBy(b => b.Address),
+            "province" => descending ? query.OrderByDescending(b => b.Province) : query.OrderBy(b => b.Province),
+            "postcode" => descending ? query.OrderByDescending(b => b.PostCode) : query.OrderBy(b => b.PostCode),
+            "opendate" => descending ? query.OrderByDescending(b => b.OpenDate) : query.OrderBy(b => b.OpenDate),
+            _          => descending ? query.OrderByDescending(b => b.City)     : query.OrderBy(b => b.City),
+        };
+
+        var result = await query
             .Select(b => new BranchDTO
             {
                 BranchId = b.BranchId,
@@ -37,7 +60,7 @@ public class BranchController : ControllerBase
                 PostCode = b.PostCode,
                 OpenDate = b.OpenDate
             })
-            .ToPagedResultAsync(page, pageSize);
+            .ToPagedResultAsync(request.Page, request.PageSize);
 
         return Ok(result);
     }

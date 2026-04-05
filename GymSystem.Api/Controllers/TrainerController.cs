@@ -13,7 +13,7 @@ namespace GymSystem.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]                          // ← was [Authorize(Roles = "Admin,Staff")]; caused the bug
+[Authorize]
 public class TrainerController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -47,9 +47,34 @@ public class TrainerController : ControllerBase
     [HttpGet]
     [Authorize(Roles = "Admin,Staff")]
     [OutputCache(PolicyName = "trainers")]
-    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetAll([FromQuery] TrainerSearchRequest request)
     {
-        var result = await TrainersQuery()
+        var query = TrainersQuery();
+
+        // --- General search across multiple fields ---
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var term = request.Search.Trim().ToLower();
+            query = query.Where(m =>
+                m.FirstName.ToLower().Contains(term) ||
+                m.LastName.ToLower().Contains(term) ||
+                m.Email!.ToLower().Contains(term) ||
+                m.UserName!.ToLower().Contains(term) ||
+                (m.EmployeeId != null && m.EmployeeId.ToLower().Contains(term)));
+        }
+
+        // --- Specific filters ---
+        if (request.HiredFrom.HasValue)
+            query = query.Where(m => m.HireDate >= request.HiredFrom.Value);
+
+        if (request.HiredTo.HasValue)
+            query = query.Where(m => m.HireDate <= request.HiredTo.Value);
+
+        // --- Sorting ---
+        query = ApplySorting(query, request.SortBy, request.SortDir);
+
+        // --- Projection + Pagination ---
+        var result = await query
             .Select(m => new UserDTO
             {
                 Id = m.Id,
@@ -60,9 +85,16 @@ public class TrainerController : ControllerBase
                 HireDate = m.HireDate,
                 EmployeeId = m.EmployeeId,
                 Active = m.Active,
-                BranchId = m.BranchId
+                BranchId = m.BranchId,
+                Roles = _context.UserRoles
+                    .Where(ur => ur.UserId == m.Id)
+                    .Join(_context.Roles,
+                        ur => ur.RoleId,
+                        r => r.Id,
+                        (ur, r) => r.Name!)
+                    .ToList()
             })
-            .ToPagedResultAsync(page, pageSize);
+            .ToPagedResultAsync(request.Page, request.PageSize);
 
         return Ok(result);
     }
@@ -308,5 +340,18 @@ public class TrainerController : ControllerBase
 
         return NoContent();
     }
+    private static IQueryable<ApplicationUser> ApplySorting(
+    IQueryable<ApplicationUser> query, string? sortBy, string? sortDir)
+    {
+        var descending = string.Equals(sortDir, "desc", StringComparison.OrdinalIgnoreCase);
 
+        return sortBy?.ToLower() switch
+        {
+            "firstname" => descending ? query.OrderByDescending(u => u.FirstName) : query.OrderBy(u => u.FirstName),
+            "lastname" => descending ? query.OrderByDescending(u => u.LastName) : query.OrderBy(u => u.LastName),
+            "email" => descending ? query.OrderByDescending(u => u.Email) : query.OrderBy(u => u.Email),
+            "employeeid" => descending ? query.OrderByDescending(u => u.EmployeeId) : query.OrderBy(u => u.EmployeeId),
+            _ => descending ? query.OrderByDescending(u => u.HireDate) : query.OrderBy(u => u.HireDate),
+        };
+    }
 }

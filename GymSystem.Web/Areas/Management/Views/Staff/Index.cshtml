@@ -2,6 +2,12 @@
 
 @{
     ViewData["Title"] = "Manage Staff";
+
+    var search = ViewData["Search"] as string;
+    var hiredFrom = ViewData["HiredFrom"] as DateTime?;
+    var hiredTo = ViewData["HiredTo"] as DateTime?;
+    var sortBy = ViewData["SortBy"] as string;
+    var sortDir = ViewData["SortDir"] as string;
 }
 
 <div class="page-header">
@@ -28,6 +34,57 @@
     </div>
 }
 
+<div class="dashboard-card" style="margin-bottom: 16px;">
+    <div class="card-header">
+        <h5>Search &amp; Filter</h5>
+    </div>
+    <form method="get" asp-action="Index" class="search-bar">
+        <div class="search-bar-row">
+            <div class="form-group">
+                <label for="search">Search</label>
+                <input type="text" id="search" name="search" class="form-control"
+                       placeholder="Name, email, employee ID…" value="@search" />
+            </div>
+            <div class="form-group">
+                <label for="hiredFrom">Hired From</label>
+                <input type="date" id="hiredFrom" name="hiredFrom" class="form-control"
+                       value="@hiredFrom?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="form-group">
+                <label for="hiredTo">Hired To</label>
+                <input type="date" id="hiredTo" name="hiredTo" class="form-control"
+                       value="@hiredTo?.ToString("yyyy-MM-dd")" />
+            </div>
+        </div>
+        <div class="search-bar-row">
+            <div class="form-group">
+                <label for="sortBy">Sort By</label>
+                <select id="sortBy" name="sortBy" class="form-control">
+                    <option value="">Hire Date</option>
+                    <option value="firstName" selected="@(sortBy == "firstName")">First Name</option>
+                    <option value="lastName" selected="@(sortBy == "lastName")">Last Name</option>
+                    <option value="email" selected="@(sortBy == "email")">Email</option>
+                    <option value="employeeId" selected="@(sortBy == "employeeId")">Employee ID</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sortDir">Direction</label>
+                <select id="sortDir" name="sortDir" class="form-control">
+                    <option value="asc" selected="@(sortDir == "asc")">Ascending</option>
+                    <option value="desc" selected="@(sortDir == "desc")">Descending</option>
+                </select>
+            </div>
+            <div class="form-group search-bar-actions">
+                <label>&nbsp;</label>
+                <div class="table-actions">
+                    <button type="submit" class="btn btn-primary">🔍 Search</button>
+                    <a asp-action="Index" class="btn btn-secondary">✕ Clear</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
 <div class="dashboard-card">
     <div class="card-header">
         <h5>Staff &amp; Administrators</h5>
@@ -40,7 +97,6 @@
                 <th>Employee ID</th>
                 <th>Hire Date</th>
                 <th>Role</th>
-                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -60,16 +116,6 @@
                         @if (!staff.Roles.Any())
                         {
                             <span class="badge badge-inactive">—</span>
-                        }
-                    </td>
-                    <td>
-                        @if (staff.Active)
-                        {
-                            <span class="badge badge-active">Active</span>
-                        }
-                        else
-                        {
-                            <span class="badge badge-inactive">Inactive</span>
                         }
                     </td>
                     <td>
