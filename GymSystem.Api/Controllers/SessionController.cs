@@ -23,9 +23,40 @@ namespace GymSystem.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetAll([FromQuery] SessionSearchRequest request)
         {
-            var result = await _context.Sessions
+            var query = _context.Sessions.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                var term = request.Search.Trim().ToLower();
+                query = query.Where(s =>
+                    s.Class.Subject.ToLower().Contains(term) ||
+                    s.Class.User.FirstName.ToLower().Contains(term) ||
+                    s.Class.User.LastName.ToLower().Contains(term));
+            }
+
+            if (request.DateFrom.HasValue)
+                query = query.Where(s => s.Start >= request.DateFrom.Value);
+
+            if (request.DateTo.HasValue)
+                query = query.Where(s => s.Start <= request.DateTo.Value);
+
+            if (request.RoomId.HasValue)
+                query = query.Where(s => s.RoomId == request.RoomId.Value);
+
+            var descending = string.Equals(request.SortDir, "desc", StringComparison.OrdinalIgnoreCase);
+
+            query = request.SortBy?.ToLower() switch
+            {
+                "subject"    => descending ? query.OrderByDescending(s => s.Class.Subject)         : query.OrderBy(s => s.Class.Subject),
+                "instructor" => descending ? query.OrderByDescending(s => s.Class.User.LastName)    : query.OrderBy(s => s.Class.User.LastName),
+                "room"       => descending ? query.OrderByDescending(s => s.Room.RoomNumber)        : query.OrderBy(s => s.Room.RoomNumber),
+                "capacity"   => descending ? query.OrderByDescending(s => s.MaxCapacity)            : query.OrderBy(s => s.MaxCapacity),
+                _            => descending ? query.OrderByDescending(s => s.Start)                  : query.OrderBy(s => s.Start),
+            };
+
+            var result = await query
                 .Select(s => new SessionDTO
                 {
                     SessionId = s.SessionId,
@@ -40,7 +71,7 @@ namespace GymSystem.Api.Controllers
                     InstructorId = s.Class.User.Id,
                     InstructorName = $"{s.Class.User.FirstName} {s.Class.User.LastName}"
                 })
-                .ToPagedResultAsync(page, pageSize);
+                .ToPagedResultAsync(request.Page, request.PageSize);
 
             return Ok(result);
         }

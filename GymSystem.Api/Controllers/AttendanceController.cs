@@ -1,4 +1,5 @@
 ﻿using GymSystem.Api.Data;
+using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
@@ -29,9 +30,39 @@ public class AttendanceController : ControllerBase
     [HttpGet]
     [Authorize(Roles = "Staff,Admin")]
     [OutputCache(PolicyName = "attendance")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] AttendanceSearchRequest request)
     {
-        var result = await _context.Attendances
+        var query = _context.Attendances.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var term = request.Search.Trim().ToLower();
+            query = query.Where(a =>
+                a.User.FirstName.ToLower().Contains(term) ||
+                a.User.LastName.ToLower().Contains(term) ||
+                a.User.Email!.ToLower().Contains(term));
+        }
+
+        if (request.InFlag.HasValue)
+            query = query.Where(a => a.InFlag == request.InFlag.Value);
+
+        if (request.DateFrom.HasValue)
+            query = query.Where(a => a.CheckIn >= request.DateFrom.Value);
+
+        if (request.DateTo.HasValue)
+            query = query.Where(a => a.CheckIn <= request.DateTo.Value);
+
+        var descending = string.Equals(request.SortDir, "desc", StringComparison.OrdinalIgnoreCase);
+
+        query = request.SortBy?.ToLower() switch
+        {
+            "member"   => descending ? query.OrderByDescending(a => a.User.LastName) : query.OrderBy(a => a.User.LastName),
+            "checkout" => descending ? query.OrderByDescending(a => a.CheckOut)      : query.OrderBy(a => a.CheckOut),
+            "status"   => descending ? query.OrderByDescending(a => a.InFlag)        : query.OrderBy(a => a.InFlag),
+            _          => descending ? query.OrderByDescending(a => a.CheckIn)       : query.OrderBy(a => a.CheckIn),
+        };
+
+        var result = await query
             .Select(a => new AttendanceDTO
             {
                 AttendanceId = a.AttendanceId,
@@ -41,7 +72,7 @@ public class AttendanceController : ControllerBase
                 MemberName = $"{a.User.FirstName} {a.User.LastName}",
                 InFlag = a.InFlag
             })
-            .ToListAsync();
+            .ToPagedResultAsync(request.Page, request.PageSize);
 
         return Ok(result);
     }

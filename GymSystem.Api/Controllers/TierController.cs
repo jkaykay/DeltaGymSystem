@@ -25,16 +25,33 @@ public class TierController : ControllerBase
 
     [HttpGet]
     [OutputCache(PolicyName = "tiers")]
-    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetAll([FromQuery] TierSearchRequest request)
     {
-        var result = await _context.Tiers
+        var query = _context.Tiers.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var term = request.Search.Trim().ToLower();
+            query = query.Where(t => t.TierName.ToLower().Contains(term));
+        }
+
+        var descending = string.Equals(request.SortDir, "desc", StringComparison.OrdinalIgnoreCase);
+
+        query = request.SortBy?.ToLower() switch
+        {
+            "price"         => descending ? query.OrderByDescending(t => t.Price)              : query.OrderBy(t => t.Price),
+            "subscriptions" => descending ? query.OrderByDescending(t => t.Subscriptions.Count): query.OrderBy(t => t.Subscriptions.Count),
+            _               => descending ? query.OrderByDescending(t => t.TierName)           : query.OrderBy(t => t.TierName),
+        };
+
+        var result = await query
             .Select(t => new TierDTO
             {
                 TierName = t.TierName,
                 Price = t.Price,
                 SubCount = t.Subscriptions.Count
             })
-            .ToPagedResultAsync(page, pageSize);
+            .ToPagedResultAsync(request.Page, request.PageSize);
 
         return Ok(result);
     }

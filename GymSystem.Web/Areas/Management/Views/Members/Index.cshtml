@@ -2,6 +2,13 @@
 
 @{
     ViewData["Title"] = "Manage Members";
+
+    var search = ViewData["Search"] as string;
+    var active = ViewData["Active"] as bool?;
+    var joinedFrom = ViewData["JoinedFrom"] as DateTime?;
+    var joinedTo = ViewData["JoinedTo"] as DateTime?;
+    var sortBy = ViewData["SortBy"] as string;
+    var sortDir = ViewData["SortDir"] as string;
 }
 
 <div class="page-header">
@@ -18,6 +25,64 @@
         @TempData["Success"]
     </div>
 }
+
+<div class="dashboard-card" style="margin-bottom: 16px;">
+    <div class="card-header">
+        <h5>Search &amp; Filter</h5>
+    </div>
+    <form method="get" asp-action="Index" class="search-bar">
+        <div class="search-bar-row">
+            <div class="form-group">
+                <label for="search">Search</label>
+                <input type="text" id="search" name="search" class="form-control"
+                       placeholder="Name, email, username…" value="@search" />
+            </div>
+            <div class="form-group">
+                <label for="active">Status</label>
+                <select id="active" name="active" class="form-control">
+                    <option value="">All</option>
+                    <option value="true" selected="@(active == true)">Active</option>
+                    <option value="false" selected="@(active == false)">Inactive</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="joinedFrom">Joined From</label>
+                <input type="date" id="joinedFrom" name="joinedFrom" class="form-control"
+                       value="@joinedFrom?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="form-group">
+                <label for="joinedTo">Joined To</label>
+                <input type="date" id="joinedTo" name="joinedTo" class="form-control"
+                       value="@joinedTo?.ToString("yyyy-MM-dd")" />
+            </div>
+        </div>
+        <div class="search-bar-row">
+            <div class="form-group">
+                <label for="sortBy">Sort By</label>
+                <select id="sortBy" name="sortBy" class="form-control">
+                    <option value="">Join Date</option>
+                    <option value="firstName" selected="@(sortBy == "firstName")">First Name</option>
+                    <option value="lastName" selected="@(sortBy == "lastName")">Last Name</option>
+                    <option value="email" selected="@(sortBy == "email")">Email</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sortDir">Direction</label>
+                <select id="sortDir" name="sortDir" class="form-control">
+                    <option value="asc" selected="@(sortDir == "asc")">Ascending</option>
+                    <option value="desc" selected="@(sortDir == "desc")">Descending</option>
+                </select>
+            </div>
+            <div class="form-group search-bar-actions">
+                <label>&nbsp;</label>
+                <div class="table-actions">
+                    <button type="submit" class="btn btn-primary">🔍 Search</button>
+                    <a asp-action="Index" class="btn btn-secondary">✕ Clear</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
 
 <div class="dashboard-card">
     <div class="card-header">

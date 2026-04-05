@@ -16,9 +16,16 @@ public class BranchesController : Controller
         _api = api;
     }
 
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10,
+        string? search = null,
+        string? sortBy = null, string? sortDir = null)
     {
-        var branches = await _api.GetBranchesAsync(page, pageSize);
+        var branches = await _api.GetBranchesAsync(page, pageSize, search, sortBy, sortDir);
+
+        ViewData["Search"] = search;
+        ViewData["SortBy"] = sortBy;
+        ViewData["SortDir"] = sortDir;
+
         return View(branches);
     }
 
