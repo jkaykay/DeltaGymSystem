@@ -209,6 +209,42 @@
 }
 
 
+    /* ── BUTTON ROW ── */
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .save-btn,
+    .cancel-btn {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 28px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .save-btn:hover,
+    .cancel-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    .save-btn:active,
+    .cancel-btn:active { transform: translateY(0); }
+
+    .save-btn {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .cancel-btn {
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid var(--muted);
+    }
+
     /* ── SCROLL REVEAL ── */
     .reveal {
       opacity: 0;

@@ -1,5 +1,4 @@
-﻿using GymSystem.Web.Areas.Member.ViewModels;
-using GymSystem.Shared.DTOs;
+﻿using GymSystem.Shared.DTOs;
 
 namespace GymSystem.Web.Services;
 
@@ -10,8 +9,8 @@ public interface IMemberApiService
     Task<(bool Success, string? Error)> RegisterAsync(RegisterRequest request);
 
     // Profile
-    Task<ProfileDto?> GetMyProfileAsync();
-    Task<(bool Success, string? Error)> UpdateProfileAsync(ProfileViewModel model);
+    Task<UserDTO?> GetMyProfileAsync();
+    Task<(bool Success, string? Error)> UpdateProfileAsync(string memberId, UpdateMemberRequest request);
 
     // QR
     Task<QRCodeResponse?> GetMyQRAsync(string memberId);

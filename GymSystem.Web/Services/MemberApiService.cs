@@ -1,5 +1,4 @@
-﻿using GymSystem.Web.Areas.Member.ViewModels;
-using GymSystem.Shared.DTOs;
+﻿using GymSystem.Shared.DTOs;
 
 namespace GymSystem.Web.Services;
 
@@ -43,33 +42,19 @@ public class MemberApiService : IMemberApiService
 
     // --- Profile ---
 
-    public async Task<ProfileDto?> GetMyProfileAsync()
+    public async Task<UserDTO?> GetMyProfileAsync()
     {
-        var response = await _http.GetAsync("api/member/profile");
+        var response = await _http.GetAsync("api/auth/me");
 
         if (!response.IsSuccessStatusCode)
             return null;
 
-        return await response.Content.ReadFromJsonAsync<ProfileDto>();
+        return await response.Content.ReadFromJsonAsync<UserDTO>();
     }
 
-    public async Task<(bool Success, string? Error)> UpdateProfileAsync(ProfileViewModel model)
+    public async Task<(bool Success, string? Error)> UpdateProfileAsync(string memberId, UpdateMemberRequest request)
     {
-        var names = model.FullName?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
-
-        var firstName = names.Length > 0 ? names[0] : null;
-        var lastName = names.Length > 1 ? names[1] : null;
-
-        var request = new UpdateMemberRequest(
-            Email: model.Email,
-            FirstName: firstName,
-            LastName: lastName,
-            Telephone: model.Telephone,
-            EmergencyContact: model.EmergencyContact,
-            Weight: model.Weight
-        );
-
-        var response = await _http.PutAsJsonAsync("api/member/update", request);
+        var response = await _http.PutAsJsonAsync($"api/member/{memberId}", request);
 
         if (!response.IsSuccessStatusCode)
         {

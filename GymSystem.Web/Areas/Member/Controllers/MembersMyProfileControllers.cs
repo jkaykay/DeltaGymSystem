@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using GymSystem.Web.Areas.Member.ViewModels;
 using GymSystem.Web.Services;
+using GymSystem.Shared.DTOs;
+using System.Security.Claims;
 
 namespace GymSystem.Web.Areas.Member.Controllers
 {
@@ -27,16 +29,14 @@ namespace GymSystem.Web.Areas.Member.Controllers
                     return RedirectToAction("Index", "Login", new { area = "Member" });
 
                 var model = new ProfileViewModel
-                  {
+                {
+                    Id = profile.Id,
                     UserName = profile.UserName,
-                    FullName = profile.FirstName + " " + profile.LastName,
                     Email = profile.Email,
-                    Telephone = profile.Telephone,
-                    EmergencyContact = profile.EmergencyContact,
-                    Weight = profile.Weight,
-                    MembershipName = profile.MembershipName,
-                    MembershipPrice = profile.MembershipPrice,
-                    MemberCode = profile.MemberCode
+                    FirstName = profile.FirstName,
+                    LastName = profile.LastName,
+                    JoinDate = profile.JoinDate,
+                    Active = profile.Active
                 };
 
                 return View(model);
@@ -58,7 +58,17 @@ namespace GymSystem.Web.Areas.Member.Controllers
                 if (!ModelState.IsValid)
                     return View("Index", model);
 
-                var result = await _memberApiService.UpdateProfileAsync(model);
+                var memberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(memberId))
+                    return RedirectToAction("Index", "Login", new { area = "Member" });
+
+                var request = new UpdateMemberRequest(
+                    Email: model.Email,
+                    FirstName: model.FirstName,
+                    LastName: model.LastName
+                );
+
+                var result = await _memberApiService.UpdateProfileAsync(memberId, request);
                 if (!result.Success)
                 {
                     ModelState.AddModelError("", result.Error ?? "Update failed.");
