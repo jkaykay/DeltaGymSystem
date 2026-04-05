@@ -1,17 +1,12 @@
-﻿using GymSystem.Api.Data;
-using GymSystem.Api.Models;
-using GymSystem.Api.Services;
+﻿using GymSystem.Api.Services;
 using GymSystem.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OutputCaching;
 
 namespace GymSystem.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class LLMController : ControllerBase
     {
         private readonly IOpenRouterService _openRouterService;
@@ -23,6 +18,7 @@ namespace GymSystem.Api.Controllers
 
         /// <summary>POST api/llm/chat — sends a prompt to the LLM and returns the response.</summary>
         [HttpPost("chat")]
+        [AllowAnonymous]
         public async Task<IActionResult> Chat([FromBody] PromptRequest request, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
