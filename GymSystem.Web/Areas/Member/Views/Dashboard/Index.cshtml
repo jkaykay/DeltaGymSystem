@@ -1,3 +1,4 @@
+@model GymSystem.Web.Areas.Member.ViewModels.DashboardViewModel
 @{
     ViewData["Title"] = "Dashboard";
 }
@@ -12,147 +13,115 @@
 
     <!-- Welcome -->
     <div class="welcome reveal">
-      <h1>WELCOME BACK "USERNAME"</h1>
+      <h1>WELCOME BACK "@Model.Username"</h1>
       <p>Here's your fitness overview</p>
     </div>
 
     <!-- Stats -->
     <div class="stats-row reveal">
-      <div class="stat-block">
-        <label>Upcoming Classes</label>
-        <div class="stat-box">
-          <span class="val">Value</span>
-          <span class="stat-icon">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-          </span>
-        </div>
-      </div>
-
-      <div class="stat-block">
-        <label>Total Bookings</label>
-        <div class="stat-box">
-          <span class="val">Value</span>
-          <span class="stat-icon">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-          </span>
-        </div>
-      </div>
-
-      <div class="stat-block">
-        <label>Classes Attended</label>
-        <div class="stat-box">
-          <span class="val">Value</span>
-        </div>
+      <div class="stat-block upcoming-block">
+        <label>Upcoming Bookings <span class="attendance-count">@Model.TotalBookings bookings</span></label>
+        @if (Model.UpcomingBookings.Any())
+        {
+          <div class="upcoming-list">
+            @foreach (var booking in Model.UpcomingBookings)
+            {
+              <div class="upcoming-item">
+                <span class="upcoming-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                </span>
+                <div class="upcoming-info">
+                  <div class="upcoming-name">@booking.Subject</div>
+                  <div class="upcoming-time">@booking.SessionStart.ToLocalTime().ToString("ddd dd MMM, HH:mm") &ndash; @booking.SessionEnd.ToLocalTime().ToString("HH:mm")</div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+        else
+        {
+          <div class="stat-box">
+            <span class="val">No upcoming bookings</span>
+          </div>
+        }
+        <a asp-area="Member" asp-controller="Dashboard" asp-action="BookingHistory" class="view-more-link">View All &raquo;</a>
       </div>
     </div>
 
     <!-- Bottom Grid -->
     <div class="bottom-grid">
 
-      <!-- Log History -->
+      <!-- Visit History -->
       <div class="reveal">
-        <h2 class="section-title">Log History</h2>
+        <h2 class="section-title">Visit History <span class="attendance-count">@Model.TotalAttendances visits</span></h2>
         <div class="log-card">
-          <p class="log-month">Month is Showing here</p>
-          <hr class="log-divider"/>
-          <div class="log-list">
-
-            <div class="log-item">
-              <span class="log-star">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                </svg>
-              </span>
-              <div class="log-info">
-                <div class="log-name">Friday afternoon workout</div>
-                <div class="log-time">From 14.19 – 16.16</div>
-              </div>
+          @if (Model.LogHistory.Any())
+          {
+            <p class="log-month">@Model.LogHistory.First().CheckIn.ToString("MMMM yyyy")</p>
+            <hr class="log-divider"/>
+            <div class="log-list">
+              @foreach (var log in Model.LogHistory)
+              {
+                <div class="log-item">
+                  <span class="log-star">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                  </span>
+                  <div class="log-info">
+                    <div class="log-name">@log.CheckIn.ToLocalTime().ToString("dd MMM") &ndash; @log.CheckIn.ToString("dddd") &ndash; @if (log.CheckOut.HasValue)
+{<text>@((log.CheckOut.Value - log.CheckIn).TotalHours.ToString("0.#")) hrs</text>}
+else
+{<text>In progress</text>}</div>
+                    <div class="log-time">
+                      @log.CheckIn.ToLocalTime().ToString("HH:mm")
+                      @if (log.CheckOut.HasValue)
+                      {
+                        <text> – @log.CheckOut.Value.ToLocalTime().ToString("HH:mm")</text>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
             </div>
-
-            <div class="log-item">
-              <span class="log-star">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                </svg>
-              </span>
-              <div class="log-info">
-                <div class="log-name">Sunday morning workout</div>
-                <div class="log-time">From 08.19 – 10.50</div>
-              </div>
-            </div>
-
-            <div class="log-item">
-              <span class="log-star">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                </svg>
-              </span>
-              <div class="log-info">
-                <div class="log-name">Monday evening workout</div>
-                <div class="log-time">From 22.23 – 23.52</div>
-              </div>
-            </div>
-
-          </div>
+          }
+          else
+          {
+            <p class="log-month">No visits yet</p>
+          }
         </div>
+        <a asp-area="Member" asp-controller="Dashboard" asp-action="AttendanceHistory" class="view-more-link">View More &raquo;</a>
       </div>
 
       <!-- Payment History -->
       <div class="reveal">
         <h2 class="section-title">Payment History</h2>
         <div class="payment-list">
-
-          <div class="payment-item">
-            <span class="payment-month">March</span>
-            <span class="payment-dash">-</span>
-            <span class="payment-amount">$$$</span>
-          </div>
-
-          <div class="payment-item">
-            <span class="payment-month">April</span>
-            <span class="payment-dash">-</span>
-            <span class="payment-amount">$$$</span>
-          </div>
-
+          @if (Model.PaymentHistory.Any())
+          {
+            @foreach (var payment in Model.PaymentHistory)
+            {
+              <div class="payment-item">
+                <span class="payment-month">@payment.PaymentDate.ToString("MMMM yyyy")</span>
+                <span class="payment-dash">-</span>
+                <span class="payment-amount">$@payment.Amount.ToString("F2")</span>
+              </div>
+            }
+          }
+          else
+          {
+            <div class="payment-item">
+              <span class="payment-month">No payments yet</span>
+            </div>
+          }
         </div>
       </div>
 
     </div>
   </div>
-
-  <script>
-    // Nav shadow on scroll
-    const nav = document.querySelector('nav');
-    window.addEventListener('scroll', () => {
-      nav.style.boxShadow = window.scrollY > 10
-        ? '0 4px 24px rgba(0,0,0,0.08)'
-        : 'none';
-    });
-
-    // Scroll reveal — stagger each item
-    const items = document.querySelectorAll('.reveal');
-    items.forEach((el, i) => {
-      el.style.transitionDelay = `${i * 80}ms`;
-    });
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-          observer.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.08 });
-    items.forEach(el => observer.observe(el));
-  </script>
 

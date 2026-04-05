@@ -24,6 +24,7 @@ public class TierController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     [OutputCache(PolicyName = "tiers")]
     public async Task<IActionResult> GetAll([FromQuery] TierSearchRequest request)
     {

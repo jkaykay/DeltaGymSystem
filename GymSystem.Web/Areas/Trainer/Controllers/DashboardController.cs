@@ -9,7 +9,7 @@ using GymSystem.Shared.DTOs;
 
 namespace GymSystem.Web.Areas.Trainer.Controllers
 {
-    [Authorize(Roles = "Trainer")]
+    [Authorize(Roles = "Trainer,Admin")]
     [Area("Trainer")]
     public class DashboardController : Controller
     {

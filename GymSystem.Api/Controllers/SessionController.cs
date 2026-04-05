@@ -23,6 +23,7 @@ namespace GymSystem.Api.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll([FromQuery] SessionSearchRequest request)
         {
             var query = _context.Sessions.AsQueryable();

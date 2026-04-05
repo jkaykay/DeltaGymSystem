@@ -3,11 +3,13 @@ using GymSystem.Shared.DTOs;
 using GymSystem.Web.Services;
 using GymSystem.Web.Areas.Trainer.ViewModels;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Trainer.Controllers
 {
     [Area("Trainer")]
+    [AllowAnonymous]
     public class AuthController : Controller
     {
         
@@ -21,6 +23,17 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                if (User.IsInRole("Trainer") || User.IsInRole("Admin"))
+                    return RedirectToAction("Index", "Dashboard", new { area = "Trainer" });
+
+                if (User.IsInRole("Member"))
+                    return RedirectToAction("Index", "Dashboard", new { area = "Member" });
+
+                return RedirectToAction("Index", "Home", new { area = "" });
+            }
+
             return View(new TrainerLoginViewModel());
         }
 
@@ -117,5 +130,7 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
             return RedirectToAction("Index", "Auth", new { area = "Trainer" });
 
         }
+
+        public IActionResult AccessDenied() => View();
     }
 }

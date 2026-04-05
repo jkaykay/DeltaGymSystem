@@ -31,45 +31,73 @@
 
     <div>
       <div class="user-name">@Model.UserName</div>
-      <div class="membership-badge">@Model.MembershipName</div>
 
-      <div class="membership-price">
-        <span class="dollar">$</span>
-        <span class="amount">@Model.MembershipPrice</span>
-      </div>
+      <div class="full-name-label">@Model.FirstName @Model.LastName</div>
 
-      <div class="full-name-label">@Model.FullName</div>
+      @if (Model.JoinDate.HasValue)
+      {
+        <div class="membership-badge">Member since @Model.JoinDate.Value.ToString("MMM yyyy")</div>
+      }
+
+      <button type="button" class="qr-btn" onclick="document.getElementById('qrModal').style.display='flex'">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="8" height="8" rx="1"/>
+          <rect x="14" y="2" width="8" height="8" rx="1"/>
+          <rect x="2" y="14" width="8" height="8" rx="1"/>
+          <rect x="14" y="14" width="4" height="4" rx="0.5"/>
+          <line x1="22" y1="14" x2="22" y2="22"/>
+          <line x1="14" y1="22" x2="22" y2="22"/>
+        </svg>
+        My QR Code
+      </button>
     </div>
+  </div>
 
-    <div class="member-code-card">
-      <div class="member-code-title">MEMBER CODE</div>
-      <div class="member-code-body">
-
-        <div class="qr-wrap">
-          <!-- keep your SVG -->
-        </div>
-
-        <div class="member-code-info">
-          <div class="code-value">@Model.MemberCode</div>
-          <div class="code-hint">Show at front desk if needed</div>
-        </div>
-      </div>
+  <!-- QR Code Modal -->
+  <div id="qrModal" class="qr-modal-overlay" onclick="if(event.target===this)this.style.display='none'">
+    <div class="qr-modal">
+      <button class="qr-modal-close" onclick="document.getElementById('qrModal').style.display='none'">&times;</button>
+      <h2>My QR Code</h2>
+      @if (!string.IsNullOrEmpty(Model.QrCodeBase64))
+      {
+        <img src="data:image/png;base64,@Model.QrCodeBase64" alt="My QR Code" class="qr-modal-img"/>
+        @if (Model.QrExpiresAt.HasValue)
+        {
+          <p class="qr-expires">Refreshes @Model.QrExpiresAt.Value.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</p>
+        }
+      }
+      else
+      {
+        <p class="qr-unavailable">QR code is not available at this time.</p>
+      }
     </div>
   </div>
 
   <!-- FORM START -->
   <form asp-area="Member" asp-controller="MyProfile" asp-action="Update" method="post">
     @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="UserName" />
+    <input type="hidden" asp-for="JoinDate" />
+    <input type="hidden" asp-for="Active" />
 
     <div class="fields-section">
 
       <div class="fields-row">
         <div class="field-group">
-          <span class="field-label">Telephone</span>
-          <input asp-for="Telephone" class="field-box" readonly />
-          <span asp-validation-for="Telephone" class="error"></span>
+          <span class="field-label">First Name</span>
+          <input asp-for="FirstName" class="field-box" readonly />
+          <span asp-validation-for="FirstName" class="error"></span>
         </div>
 
+        <div class="field-group">
+          <span class="field-label">Last Name</span>
+          <input asp-for="LastName" class="field-box" readonly />
+          <span asp-validation-for="LastName" class="error"></span>
+        </div>
+      </div>
+
+      <div class="fields-row">
         <div class="field-group">
           <span class="field-label">Email</span>
           <input asp-for="Email" class="field-box" readonly />
@@ -77,24 +105,11 @@
         </div>
       </div>
 
-      <div class="fields-row">
-        <div class="field-group">
-          <span class="field-label">Emergency Contact</span>
-          <input asp-for="EmergencyContact" class="field-box" readonly />
-          <span asp-validation-for="EmergencyContact" class="error"></span>
-        </div>
-
-        <div class="field-group">
-          <span class="field-label">Current Weight</span>
-          <input asp-for="Weight" class="field-box" readonly />
-          <span asp-validation-for="Weight" class="error"></span>
-        </div>
+      <!-- ACTION BUTTONS -->
+      <div class="btn-row" style="display:none;">
+        <button type="submit" class="save-btn">Save Changes</button>
+        <button type="button" class="cancel-btn" onclick="cancelEdit()">Cancel</button>
       </div>
-
-      <!-- SAVE BUTTON -->
-      <button type="submit" class="save-btn" style="display:none;">
-        Save Changes
-      </button>
 
     </div>
   </form>
@@ -105,9 +120,20 @@
 <script>
 function enableEdit() {
     const inputs = document.querySelectorAll('.field-box');
-    inputs.forEach(input => input.removeAttribute('readonly'));
+    inputs.forEach(input => {
+        input.dataset.original = input.value;
+        input.removeAttribute('readonly');
+    });
+    document.querySelector('.btn-row').style.display = 'flex';
+}
 
-    document.querySelector('.save-btn').style.display = 'inline-block';
+function cancelEdit() {
+    const inputs = document.querySelectorAll('.field-box');
+    inputs.forEach(input => {
+        input.value = input.dataset.original;
+        input.setAttribute('readonly', '');
+    });
+    document.querySelector('.btn-row').style.display = 'none';
 }
 </script>
 
