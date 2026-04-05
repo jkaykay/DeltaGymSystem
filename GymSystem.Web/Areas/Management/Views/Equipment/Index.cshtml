@@ -2,6 +2,16 @@
 
 @{
     ViewData["Title"] = "Manage Equipment";
+
+    var search = ViewData["Search"] as string;
+    var operational = ViewData["Operational"] as bool?;
+    var roomId = ViewData["RoomId"] as int?;
+    var dateFrom = ViewData["DateFrom"] as DateTime?;
+    var dateTo = ViewData["DateTo"] as DateTime?;
+    var sortBy = ViewData["SortBy"] as string;
+    var sortDir = ViewData["SortDir"] as string;
+
+    var rooms = ViewBag.Rooms as List<RoomDTO> ?? new List<RoomDTO>();
 }
 
 <div class="page-header">
@@ -27,6 +37,74 @@
         @TempData["Error"]
     </div>
 }
+
+<div class="dashboard-card" style="margin-bottom: 16px;">
+    <div class="card-header">
+        <h5>Search &amp; Filter</h5>
+    </div>
+    <form method="get" asp-action="Index" class="search-bar">
+        <div class="search-bar-row">
+            <div class="form-group">
+                <label for="search">Search</label>
+                <input type="text" id="search" name="search" class="form-control"
+                       placeholder="Description…" value="@search" />
+            </div>
+            <div class="form-group">
+                <label for="operational">Status</label>
+                <select id="operational" name="operational" class="form-control">
+                    <option value="">All</option>
+                    <option value="true" selected="@(operational == true)">Operational</option>
+                    <option value="false" selected="@(operational == false)">Out of Service</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="roomId">Room</label>
+                <select id="roomId" name="roomId" class="form-control">
+                    <option value="">All Rooms</option>
+                    @foreach (var room in rooms)
+                    {
+                        <option value="@room.RoomId" selected="@(roomId == room.RoomId)">Room @room.RoomNumber</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="search-bar-row">
+            <div class="form-group">
+                <label for="dateFrom">Acquired From</label>
+                <input type="date" id="dateFrom" name="dateFrom" class="form-control"
+                       value="@dateFrom?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="form-group">
+                <label for="dateTo">Acquired To</label>
+                <input type="date" id="dateTo" name="dateTo" class="form-control"
+                       value="@dateTo?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="form-group">
+                <label for="sortBy">Sort By</label>
+                <select id="sortBy" name="sortBy" class="form-control">
+                    <option value="">Date Acquired</option>
+                    <option value="description" selected="@(sortBy == "description")">Description</option>
+                    <option value="status" selected="@(sortBy == "status")">Status</option>
+                    <option value="room" selected="@(sortBy == "room")">Room</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sortDir">Direction</label>
+                <select id="sortDir" name="sortDir" class="form-control">
+                    <option value="asc" selected="@(sortDir == "asc")">Ascending</option>
+                    <option value="desc" selected="@(sortDir == "desc")">Descending</option>
+                </select>
+            </div>
+            <div class="form-group search-bar-actions">
+                <label>&nbsp;</label>
+                <div class="table-actions">
+                    <button type="submit" class="btn btn-primary">🔍 Search</button>
+                    <a asp-action="Index" class="btn btn-secondary">✕ Clear</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
 
 <div class="dashboard-card">
     <div class="card-header">

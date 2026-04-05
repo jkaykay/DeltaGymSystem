@@ -16,9 +16,23 @@ public class EquipmentController : Controller
         _api = api;
     }
 
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10,
+        string? search = null, bool? operational = null, int? roomId = null,
+        DateTime? dateFrom = null, DateTime? dateTo = null,
+        string? sortBy = null, string? sortDir = null)
     {
-        var equipment = await _api.GetEquipmentAsync(page, pageSize);
+        var equipment = await _api.GetEquipmentAsync(page, pageSize, search, operational,
+            roomId, dateFrom, dateTo, sortBy, sortDir);
+
+        ViewData["Search"] = search;
+        ViewData["Operational"] = operational;
+        ViewData["RoomId"] = roomId;
+        ViewData["DateFrom"] = dateFrom;
+        ViewData["DateTo"] = dateTo;
+        ViewData["SortBy"] = sortBy;
+        ViewData["SortDir"] = sortDir;
+        ViewBag.Rooms = await _api.GetAllRoomsAsync();
+
         return View(equipment);
     }
 

@@ -768,10 +768,20 @@ namespace GymSystem.Web.Services
 
         // --- Equipment ---
 
-        public async Task<PagedResult<EquipmentDTO>> GetEquipmentAsync(int page = 1, int pageSize = 10)
+        public async Task<PagedResult<EquipmentDTO>> GetEquipmentAsync(int page = 1, int pageSize = 10,
+            string? search = null, bool? operational = null, int? roomId = null,
+            DateTime? dateFrom = null, DateTime? dateTo = null,
+            string? sortBy = null, string? sortDir = null)
         {
-            var result = await _http.GetFromJsonAsync<PagedResult<EquipmentDTO>>(
-                $"api/equipment?page={page}&pageSize={pageSize}");
+            var queryParams = new List<string> { $"page={page}", $"pageSize={pageSize}" };
+            if (!string.IsNullOrWhiteSpace(search)) queryParams.Add($"search={Uri.EscapeDataString(search)}");
+            if (operational.HasValue) queryParams.Add($"operational={operational.Value}");
+            if (roomId.HasValue) queryParams.Add($"roomId={roomId.Value}");
+            if (dateFrom.HasValue) queryParams.Add($"dateFrom={dateFrom.Value:yyyy-MM-dd}");
+            if (dateTo.HasValue) queryParams.Add($"dateTo={dateTo.Value:yyyy-MM-dd}");
+            if (!string.IsNullOrWhiteSpace(sortBy)) queryParams.Add($"sortBy={Uri.EscapeDataString(sortBy)}");
+            if (!string.IsNullOrWhiteSpace(sortDir)) queryParams.Add($"sortDir={Uri.EscapeDataString(sortDir)}");
+            var result = await _http.GetFromJsonAsync<PagedResult<EquipmentDTO>>($"api/equipment?{string.Join("&", queryParams)}");
             return result ?? new PagedResult<EquipmentDTO>();
         }
 
@@ -823,10 +833,18 @@ namespace GymSystem.Web.Services
 
         // --- Schedules ---
 
-        public async Task<PagedResult<ScheduleDTO>> GetSchedulesAsync(int page = 1, int pageSize = 10)
+        public async Task<PagedResult<ScheduleDTO>> GetSchedulesAsync(int page = 1, int pageSize = 10,
+            string? search = null,
+            DateTime? dateFrom = null, DateTime? dateTo = null,
+            string? sortBy = null, string? sortDir = null)
         {
-            var result = await _http.GetFromJsonAsync<PagedResult<ScheduleDTO>>(
-                $"api/schedule?page={page}&pageSize={pageSize}");
+            var queryParams = new List<string> { $"page={page}", $"pageSize={pageSize}" };
+            if (!string.IsNullOrWhiteSpace(search)) queryParams.Add($"search={Uri.EscapeDataString(search)}");
+            if (dateFrom.HasValue) queryParams.Add($"dateFrom={dateFrom.Value:yyyy-MM-dd}");
+            if (dateTo.HasValue) queryParams.Add($"dateTo={dateTo.Value:yyyy-MM-dd}");
+            if (!string.IsNullOrWhiteSpace(sortBy)) queryParams.Add($"sortBy={Uri.EscapeDataString(sortBy)}");
+            if (!string.IsNullOrWhiteSpace(sortDir)) queryParams.Add($"sortDir={Uri.EscapeDataString(sortDir)}");
+            var result = await _http.GetFromJsonAsync<PagedResult<ScheduleDTO>>($"api/schedule?{string.Join("&", queryParams)}");
             return result ?? new PagedResult<ScheduleDTO>();
         }
 

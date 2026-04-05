@@ -25,9 +25,35 @@ namespace GymSystem.Api.Controllers
 
         [HttpGet]
         [OutputCache(PolicyName = "schedules")]
-        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetAll([FromQuery] ScheduleSearchRequest request)
         {
-            var result = await _context.Schedules
+            var query = _context.Schedules.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                var term = request.Search.Trim().ToLower();
+                query = query.Where(s =>
+                    s.User.FirstName.ToLower().Contains(term) ||
+                    s.User.LastName.ToLower().Contains(term) ||
+                    s.User.Email!.ToLower().Contains(term));
+            }
+
+            if (request.DateFrom.HasValue)
+                query = query.Where(s => s.Start >= request.DateFrom.Value);
+
+            if (request.DateTo.HasValue)
+                query = query.Where(s => s.Start <= request.DateTo.Value);
+
+            var descending = string.Equals(request.SortDir, "desc", StringComparison.OrdinalIgnoreCase);
+
+            query = request.SortBy?.ToLower() switch
+            {
+                "employee" => descending ? query.OrderByDescending(s => s.User.LastName) : query.OrderBy(s => s.User.LastName),
+                "end"      => descending ? query.OrderByDescending(s => s.End)           : query.OrderBy(s => s.End),
+                _          => descending ? query.OrderByDescending(s => s.Start)          : query.OrderBy(s => s.Start),
+            };
+
+            var result = await query
                 .Select(s => new ScheduleDTO
                 {
                     ScheduleId = s.ScheduleId,
@@ -36,7 +62,7 @@ namespace GymSystem.Api.Controllers
                     UserId = s.UserId,
                     UserName = $"{s.User.FirstName} {s.User.LastName}"
                 })
-                .ToPagedResultAsync(page, pageSize);
+                .ToPagedResultAsync(request.Page, request.PageSize);
 
             return Ok(result);
         }

@@ -136,7 +136,10 @@ namespace GymSystem.Web.Services
         Task<bool> DeleteBookingAsync(int id);
 
         // Equipment
-        Task<PagedResult<EquipmentDTO>> GetEquipmentAsync(int page = 1, int pageSize = 10);
+        Task<PagedResult<EquipmentDTO>> GetEquipmentAsync(int page = 1, int pageSize = 10,
+            string? search = null, bool? operational = null, int? roomId = null,
+            DateTime? dateFrom = null, DateTime? dateTo = null,
+            string? sortBy = null, string? sortDir = null);
         Task<EquipmentDTO?> GetEquipmentItemAsync(int id);
         Task<bool> CreateEquipmentAsync(CreateEquipmentViewModel model);
         Task<bool> UpdateEquipmentAsync(int id, EditEquipmentViewModel model);
@@ -144,7 +147,10 @@ namespace GymSystem.Web.Services
         Task<List<EquipmentDTO>> GetAllEquipmentAsync();
 
         // Schedules
-        Task<PagedResult<ScheduleDTO>> GetSchedulesAsync(int page = 1, int pageSize = 10);
+        Task<PagedResult<ScheduleDTO>> GetSchedulesAsync(int page = 1, int pageSize = 10,
+            string? search = null,
+            DateTime? dateFrom = null, DateTime? dateTo = null,
+            string? sortBy = null, string? sortDir = null);
         Task<ScheduleDTO?> GetScheduleAsync(int id);
         Task<bool> CreateScheduleAsync(CreateScheduleViewModel model);
         Task<bool> UpdateScheduleAsync(int id, EditScheduleViewModel model);

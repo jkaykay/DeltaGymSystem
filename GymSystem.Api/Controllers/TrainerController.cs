@@ -340,7 +340,6 @@ public class TrainerController : ControllerBase
 
         return NoContent();
     }
-
     private static IQueryable<ApplicationUser> ApplySorting(
     IQueryable<ApplicationUser> query, string? sortBy, string? sortDir)
     {

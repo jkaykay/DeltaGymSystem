@@ -25,9 +25,40 @@ namespace GymSystem.Api.Controllers
 
         [HttpGet]
         [OutputCache(PolicyName = "equipment")]
-        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetAll([FromQuery] EquipmentSearchRequest request)
         {
-            var result = await _context.Equipments
+            var query = _context.Equipments.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                var term = request.Search.Trim().ToLower();
+                query = query.Where(e =>
+                    (e.Description != null && e.Description.ToLower().Contains(term)));
+            }
+
+            if (request.Operational.HasValue)
+                query = query.Where(e => e.Operational == request.Operational.Value);
+
+            if (request.RoomId.HasValue)
+                query = query.Where(e => e.RoomId == request.RoomId.Value);
+
+            if (request.DateFrom.HasValue)
+                query = query.Where(e => e.InDate >= request.DateFrom.Value);
+
+            if (request.DateTo.HasValue)
+                query = query.Where(e => e.InDate <= request.DateTo.Value);
+
+            var descending = string.Equals(request.SortDir, "desc", StringComparison.OrdinalIgnoreCase);
+
+            query = request.SortBy?.ToLower() switch
+            {
+                "description" => descending ? query.OrderByDescending(e => e.Description) : query.OrderBy(e => e.Description),
+                "status"      => descending ? query.OrderByDescending(e => e.Operational)  : query.OrderBy(e => e.Operational),
+                "room"        => descending ? query.OrderByDescending(e => e.Room.RoomNumber) : query.OrderBy(e => e.Room.RoomNumber),
+                _             => descending ? query.OrderByDescending(e => e.InDate)       : query.OrderBy(e => e.InDate),
+            };
+
+            var result = await query
                 .Select(e => new EquipmentDTO
                 {
                     EquipmentId = e.EquipmentId,
@@ -37,7 +68,7 @@ namespace GymSystem.Api.Controllers
                     RoomId = e.RoomId,
                     RoomNumber = e.Room.RoomNumber
                 })
-                .ToPagedResultAsync(page, pageSize);
+                .ToPagedResultAsync(request.Page, request.PageSize);
 
             return Ok(result);
         }
