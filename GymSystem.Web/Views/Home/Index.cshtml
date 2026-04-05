@@ -1,5 +1,9 @@
-﻿@{
+﻿@using GymSystem.Shared.DTOs
+@{
     ViewData["Title"] = "Home";
+    var sessions = ViewBag.Sessions as List<SessionDTO> ?? new List<SessionDTO>();
+    var tiers = ViewBag.Tiers as List<TierDTO> ?? new List<TierDTO>();
+    var trainerNames = sessions.Select(s => s.InstructorName).Distinct().ToList();
 }
 
 @section Styles {
@@ -42,59 +46,32 @@
       <a asp-area="" asp-controller="Classes" asp-action="Index" class="view-all">View All &gt;&gt;&gt;</a>
     </div>
     <div class="cards-grid">
-
-      <!-- Card 1 -->
-      <div class="class-card">
-        <div class="card-img-wrap">
-         <img src="images/Strength.jpg" alt="Delta Gyms classes" class="nav-logo-img"/>
-          <span class="card-tag tag-strength">Strength</span>
-        </div>
-        <div class="card-body">
-          <div class="card-name">Power Lift</div>
-          <div class="card-trainer">Marcus Lewis</div>
-          <div class="card-meta">
-            <span>60 min</span>
-            <span class="spots"><span class="smiley">😊</span> 19/20</span>
+      @if (sessions.Any())
+      {
+        @foreach (var session in sessions)
+        {
+          var duration = (int)(session.End - session.Start).TotalMinutes;
+          <div class="class-card">
+            <div class="card-img-wrap">
+              <img src="images/Strength.jpg" alt="@session.Subject" class="nav-logo-img"/>
+              <span class="card-tag tag-strength">@session.Subject</span>
+            </div>
+            <div class="card-body">
+              <div class="card-name">@session.Subject</div>
+              <div class="card-trainer">@session.InstructorName</div>
+              <div class="card-meta">
+                <span>@duration min</span>
+                <span class="spots"><span class="smiley">😊</span> @session.BookingCount/@session.MaxCapacity</span>
+              </div>
+            </div>
+            <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="card-footer">JOIN CLASS</a>
           </div>
-        </div>
-             <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="card-footer">JOIN CLASS</a>
-
-      </div>
-
-      <!-- Card 2 -->
-      <div class="class-card">
-        <div class="card-img-wrap">
-          <img src="images/Power Lifting.jpg" alt="Delta Gyms classes" class="nav-logo-img"/>
-          <span class="card-tag tag-hiit">HIIT</span>
-        </div>
-        <div class="card-body">
-          <div class="card-name">HIIT Blast</div>
-          <div class="card-trainer">Samy John</div>
-          <div class="card-meta">
-            <span>45 min</span>
-            <span class="spots"><span class="smiley">😊</span> 16/25</span>
-          </div>
-        </div>
-             <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="card-footer">JOIN CLASS</a>
-      </div>
-
-      <!-- Card 3 -->
-      <div class="class-card">
-        <div class="card-img-wrap">
-          <img src="images/Yoga.jpg" alt="Delta Gyms classes" class="nav-logo-img" preserveAspectRatio="xMidYMid meet"/>
-          <span class="card-tag tag-yoga">Yoga</span>
-        </div>
-        <div class="card-body">
-          <div class="card-name">Morning Flow</div>
-          <div class="card-trainer">Priya Sharma</div>
-          <div class="card-meta">
-            <span>50 min</span>
-            <span class="spots"><span class="smiley">😊</span> 12/20</span>
-          </div>
-        </div>
-             <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="card-footer">JOIN CLASS</a>
-      </div>
-
+        }
+      }
+      else
+      {
+        <p>No upcoming sessions at the moment. Check back soon!</p>
+      }
     </div>
   </section>
 
@@ -105,50 +82,33 @@
       <a asp-area="" asp-controller="Classes" asp-action="Index" asp-fragment="class-type" class="view-all"> View All &gt;&gt;&gt; </a>
     </div>
     <div class="trainers-grid">
-      <div class="trainer-card">
-        <svg class="trainer-img" viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg">
-          <rect width="220" height="180" fill="#2a2a2a"/>
-          <circle cx="110" cy="70" r="35" fill="#444"/>
-          <ellipse cx="110" cy="180" rx="55" ry="40" fill="#444"/>
-        </svg>
-        <div class="trainer-info">
-          <div class="trainer-name">Marcus Lewis</div><i class="bi bi-check-circle-fill verified-icon" title="Verified Trainer"></i>
-          <div class="trainer-spec">Strength & Powerlifting</div>
-        </div>
-      </div>
-      <div class="trainer-card">
-        <svg class="trainer-img" viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg">
-          <rect width="220" height="180" fill="#2a1a00"/>
-          <circle cx="110" cy="70" r="35" fill="#554422"/>
-          <ellipse cx="110" cy="180" rx="55" ry="40" fill="#554422"/>
-        </svg>
-        <div class="trainer-info">
-          <div class="trainer-name">Samy John</div><i class="bi bi-check-circle-fill verified-icon" title="Verified Trainer"></i>
-          <div class="trainer-spec">HIIT & Conditioning</div>
-        </div>
-      </div>
-      <div class="trainer-card">
-        <svg class="trainer-img" viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg">
-          <rect width="220" height="180" fill="#001a0e"/>
-          <circle cx="110" cy="70" r="35" fill="#224433"/>
-          <ellipse cx="110" cy="180" rx="55" ry="40" fill="#224433"/>
-        </svg>
-        <div class="trainer-info">
-          <div class="trainer-name">Priya Sharma</div><i class="bi bi-check-circle-fill verified-icon" title="Verified Trainer"></i>
-          <div class="trainer-spec">Yoga & Mindfulness</div>
-        </div>
-      </div>
-      <div class="trainer-card">
-        <svg class="trainer-img" viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg">
-          <rect width="220" height="180" fill="#0a001a"/>
-          <circle cx="110" cy="70" r="35" fill="#332244"/>
-          <ellipse cx="110" cy="180" rx="55" ry="40" fill="#332244"/>
-        </svg>
-        <div class="trainer-info">
-          <div class="trainer-name">Jake Rivera</div><i class="bi bi-check-circle-fill verified-icon" title="Verified Trainer"></i>
-          <div class="trainer-spec">Cardio & Endurance</div>
-        </div>
-      </div>
+      @if (trainerNames.Any())
+      {
+        var colors = new[] { "#2a2a2a", "#2a1a00", "#001a0e", "#0a001a" };
+        var accents = new[] { "#444", "#554422", "#224433", "#332244" };
+        var i = 0;
+        @foreach (var name in trainerNames)
+        {
+          var bg = colors[i % colors.Length];
+          var accent = accents[i % accents.Length];
+          <div class="trainer-card">
+            <svg class="trainer-img" viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg">
+              <rect width="220" height="180" fill="@bg"/>
+              <circle cx="110" cy="70" r="35" fill="@accent"/>
+              <ellipse cx="110" cy="180" rx="55" ry="40" fill="@accent"/>
+            </svg>
+            <div class="trainer-info">
+              <div class="trainer-name">@name</div><i class="bi bi-check-circle-fill verified-icon" title="Verified Trainer"></i>
+              <div class="trainer-spec">Personal Trainer</div>
+            </div>
+          </div>
+          i++;
+        }
+      }
+      else
+      {
+        <p>Trainer information coming soon.</p>
+      }
     </div>
   </section>
 
@@ -156,38 +116,30 @@
   <section class="membership-section reveal">
     <h2 class="membership-title">MEMBERSHIP PLANS</h2>
     <div class="plans-grid">
-
-      <div class="plan-card">
-        <div class="plan-name">Basic</div>
-        <div class="plan-price">
-          <span class="dollar">$</span><span class="amount">19.99</span><span class="period"> / mo</span>
-        </div>
-        <ul class="plan-features">
-          <li>Access to GYM (Not in Peak)</li>
-          <li>Locker room access</li>
-          <li>1 free class per week</li>
-          <li>Basic fitness assessments</li>
-        </ul>
-        <a asp-area="Member" asp-controller="Subscribe" asp-action="Index" class="plan-btn">Get started</a>
-
-      </div>
-
-      <div class="plan-card featured">
-        <div class="plan-name">Pro</div>
-        <div class="plan-price">
-          <span class="dollar">$</span><span class="amount">39.99</span><span class="period"> / mo</span>
-        </div>
-        <ul class="plan-features">
-          <li>Anytime GYM access</li>
-          <li>Unlimited classes</li>
-          <li>Personal Locker</li>
-          <li>Sauna and steam room free</li>
-        </ul>
-
-        <a asp-area="Member" asp-controller="Subscribe" asp-action="Index" class="plan-btn">Get started</a>
-
-      </div>
-
+      @if (tiers.Any())
+      {
+        var featured = tiers.OrderByDescending(t => t.Price).First();
+        @foreach (var tier in tiers)
+        {
+          var isFeatured = tier.TierName == featured.TierName;
+          <div class="plan-card @(isFeatured ? "featured" : "")">
+            <div class="plan-name">@tier.TierName</div>
+            <div class="plan-price">
+              <span class="dollar">$</span><span class="amount">@tier.Price.ToString("F2")</span><span class="period"> / mo</span>
+            </div>
+            <ul class="plan-features">
+              <li>Full gym access</li>
+              <li>Locker room access</li>
+              <li>@tier.SubCount active subscribers</li>
+            </ul>
+            <a asp-area="Member" asp-controller="Subscribe" asp-action="Index" asp-route-tier="@tier.TierName" class="plan-btn">Get started</a>
+          </div>
+        }
+      }
+      else
+      {
+        <p>Membership plans coming soon.</p>
+      }
     </div>
   </section>
 

@@ -1,3 +1,4 @@
+@model GymSystem.Web.Areas.Member.ViewModels.SubscribeViewModel
 @{
     ViewData["Title"] = "Subscribe";
 }
@@ -28,15 +29,22 @@
       <!-- Body -->
       <div class="card-body">
 
+        @if (TempData["ErrorMessage"] is string errorMsg)
+        {
+          <div style="background: #ff4444; color: white; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem;">
+            @errorMsg
+          </div>
+        }
+
         <div class="summary-block">
           <div class="summary-row">
             <span class="s-label">Member Name</span>
-            <span class="s-value" id="member-name">USERNAME</span>
+            <span class="s-value">@Model.MemberName</span>
           </div>
           <div class="summary-row">
             <span class="s-label">Plan</span>
             <span class="s-value">
-              <span class="membership-badge" id="plan-badge">PRO</span>
+              <span class="membership-badge">@Model.TierName.ToUpper()</span>
             </span>
           </div>
           <div class="summary-row">
@@ -45,7 +53,7 @@
           </div>
           <div class="summary-row">
             <span class="s-label">Amount</span>
-            <span class="s-value price" id="plan-price">$39.99</span>
+            <span class="s-value price">$@Model.Price.ToString("F2")</span>
           </div>
         </div>
 
@@ -53,12 +61,17 @@
 
         <div class="total-row">
           <span class="t-label">Total Due Today</span>
-          <span class="t-amount" id="total-amount">$39.99</span>
+          <span class="t-amount">$@Model.Price.ToString("F2")</span>
         </div>
 
-        <button class="confirm-btn" onclick="confirmPayment()">
-          CONFIRM PAYMENT
-        </button>
+        <form asp-area="Member" asp-controller="Subscribe" asp-action="ConfirmPayment" method="post">
+          @Html.AntiForgeryToken()
+          <input type="hidden" name="tierName" value="@Model.TierName" />
+          <input type="hidden" name="amount" value="@Model.Price" />
+          <button type="submit" class="confirm-btn">
+            CONFIRM PAYMENT
+          </button>
+        </form>
 
         <div class="secure-note">
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -86,7 +99,7 @@
         </div>
         <h3>You're all set!</h3>
         <p>Your membership is now active. Welcome to DeltaGyms — let's get to work!</p>
-       
+
         <form asp-area="Member" asp-controller="MyProfile" asp-action="Index" method="get">
           <button type="submit" class="modal-btn">
             GO TO MY PROFILE
@@ -97,29 +110,11 @@
     </div>
   </div>
 
-  <script>
-    // Read plan from URL params so you can pass ?plan=basic or ?plan=pro
-    // e.g. href="checkout.html?plan=basic" from memberships page
-    const params = new URLSearchParams(window.location.search);
-    const plan = params.get('plan') || 'pro';
-
-    const plans = {
-      basic: { label: 'BASIC', price: '$19.99' },
-      pro:   { label: 'PRO',   price: '$39.99' }
-    };
-
-    const selected = plans[plan] || plans.pro;
-    document.getElementById('plan-badge').textContent   = selected.label;
-    document.getElementById('plan-price').textContent   = selected.price;
-    document.getElementById('total-amount').textContent = selected.price;
-
-    // Confirm payment
-    function confirmPayment() {
-      document.getElementById('overlay').classList.add('show');
-    }
-
-    // Redirect to profile
-    function goToProfile() {
-      window.location.href = 'myprofile.html';
-    }
-  </script>
+  @if (TempData["SuccessMessage"] != null)
+  {
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('overlay').classList.add('show');
+      });
+    </script>
+  }

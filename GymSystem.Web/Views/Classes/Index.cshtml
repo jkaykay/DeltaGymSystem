@@ -1,5 +1,10 @@
+@using GymSystem.Shared.DTOs
 @{
     ViewData["Title"] = "Classes";
+    var classes = ViewBag.Classes as List<ClassDTO> ?? new List<ClassDTO>();
+    var trainerNames = classes.Select(c => c.TrainerName).Distinct().ToList();
+
+    var icons = new[] { "bi-heart-fill", "bi-bar-chart-line", "bi-lightning-fill", "bi-person", "bi-shield", "bi-fire", "bi-trophy", "bi-stars" };
 }
 
 @section Styles {
@@ -12,20 +17,20 @@
     <h1 class="page-title reveal">Classes and Personal Trainers</h1>
 
     <div id="carouselExampleIndicators" class="carousel slide reveal" data-bs-ride="carousel">
-  <div class="carousel-indicators" > 
+  <div class="carousel-indicators" >
     <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
     <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
     <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
   </div>
   <div class="carousel-inner" style="border-radius: 13px; width: 100%; height: 580px; margin: 20px;">
     <div class="carousel-item active ">
-      <img src="images/people-working-out-indoors-together-with-dumbbells.jpg" class="d-block w-100" alt="Cardio class image">
+      <img src="images/people-working-out-indoors-together-with-dumbbells.jpg" class="d-block w-100" alt="Gym class image">
     </div>
     <div class="carousel-item" >
-      <img src="images/pilates-group-working-out-gym.jpg" class="d-block w-100" alt="Strength Training class image">
+      <img src="images/pilates-group-working-out-gym.jpg" class="d-block w-100" alt="Gym class image">
     </div>
     <div class="carousel-item">
-      <img src="images/athletic-people-training-boxing-competition.jpg" class="d-block w-100" alt="Yoga class image">
+      <img src="images/athletic-people-training-boxing-competition.jpg" class="d-block w-100" alt="Gym class image">
     </div>
   </div>
   <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
@@ -45,132 +50,85 @@
     </div>
 
     <div class="class-type-row reveal">
-      <div class="class-pill active" onclick="scrollToClass('cardio')">
-        <div class="class-pill-icon">
-         <i class="bi bi-heart-fill"></i>
-        </div>
-        <span class="class-pill-label" >Cardio</span>
-      </div>
-      <div class="class-pill" onclick="scrollToClass('strength')">
-  <div class="class-pill-icon">
-    <i class="bi bi-bar-chart-line"></i>
-  </div>
-  <span class="class-pill-label">Strength Training</span>
-</div>
-      <div class="class-pill" onclick="scrollToClass('hiit')">
-        <div class="class-pill-icon">
-          <i class="bi bi-lightning-fill"></i>
-        </div>
-        <span class="class-pill-label">HIIT</span>
-      </div>
-      <div class="class-pill" onclick="scrollToClass('yoga')">
-        <div class="class-pill-icon">
-          <i class="bi bi-person"></i>
-        </div>
-        <span class="class-pill-label">Yoga</span>
-      </div>
-      <div class="class-pill" onclick="scrollToClass('boxing')">
-        <div class="class-pill-icon">
-          <i class="bi bi-shield"></i>
-        </div>
-        <span class="class-pill-label">Boxing</span>
-      </div>
+      @if (classes.Any())
+      {
+        var pillIndex = 0;
+        @foreach (var cls in classes)
+        {
+          var slug = cls.Subject.ToLower().Replace(" ", "-");
+          var icon = icons[pillIndex % icons.Length];
+          var activeClass = pillIndex == 0 ? "active" : "";
+          <div class="class-pill @activeClass" onclick="scrollToClass('@slug')">
+            <div class="class-pill-icon">
+              <i class="bi @icon"></i>
+            </div>
+            <span class="class-pill-label">@cls.Subject</span>
+          </div>
+          pillIndex++;
+        }
+      }
+      else
+      {
+        <p style="color: #ccc;">No classes available at the moment.</p>
+      }
     </div>
 
     <!-- Personal Training -->
     <div id="personal-training" class="section-label reveal">Personal Training</div>
 
 <div class="personal-training-row reveal">
-<div class="pt-pill text-center">
-  <img src="images/Char1.jpg" class="rounded-circle mb-2" width="80" height="80">
-  <div class="fw-bold">John Carter</div>
-</div>
-
-<div class="pt-pill text-center">
-  <img src="images/Char2.jpg" class="rounded-circle mb-2" width="80" height="80">
-  <div class="fw-bold">Somapalaa</div>
-</div>
-
-<div class="pt-pill text-center">
-  <img src="images/Char3.jpg" class="rounded-circle mb-2" width="80" height="80">
-  <div class="fw-bold">Mahinda Mahathaya</div>
-</div>
-
-<div class="pt-pill text-center">
-  <img src="images/Char4.jpg" class="rounded-circle mb-2" width="80" height="80">
-  <div class="fw-bold">Sirisena</div>
-</div>
-
-<div class="pt-pill text-center">
-  <img src="images/Char5.jpg" class="rounded-circle mb-2" width="80" height="80">
-  <div class="fw-bold">Wikramasingha</div>
-</div>
-
-<div class="pt-pill text-center">
-  <img src="images/Char6.jpg" class="rounded-circle mb-2" width="80" height="80">
-  <div class="fw-bold">Mama thama ado</div>
-</div>
+@if (trainerNames.Any())
+{
+  @foreach (var name in trainerNames)
+  {
+    <div class="pt-pill text-center">
+      <img src="images/Char1.jpg" class="rounded-circle mb-2" width="80" height="80" alt="@name">
+      <div class="fw-bold">@name</div>
+    </div>
+  }
+}
+else
+{
+  <p>No trainers available at the moment.</p>
+}
  </div>
   </div>
 
   <!-- FULL WIDTH CLASS ROWS -->
   <div class="classes-list">
+    @if (classes.Any())
+    {
+      var rowIndex = 0;
+      @foreach (var cls in classes)
+      {
+        var slug = cls.Subject.ToLower().Replace(" ", "-");
+        var isLeft = rowIndex % 2 == 0;
+        var layoutClass = isLeft ? "info-left" : "info-right";
+        var bgClass = isLeft ? "bg-red" : "bg-black";
 
-    <!-- Cardio: info left, red right -->
-     
-    <div class="class-row info-left reveal" id="cardio">
-      <div class="class-info-panel">
-        <div class="class-name">Cardio</div>
-        <div class="class-tagline">Burn your FAT</div>
-        <p class="class-desc">By joining you can view all the cardio class session times and availability. Get access to all scheduled sessions and book your spot instantly.</p>
-        <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="join-btn">Join</a>
-      </div>
-      <div class="class-bg-panel bg-red"></div>
-    </div>
+        <div class="class-row @layoutClass reveal" id="@slug">
+          <div class="class-info-panel">
+            <div class="class-name">@cls.Subject</div>
+            <div class="class-tagline">Trainer: @cls.TrainerName</div>
+            <p class="class-desc">
+              This class currently has @cls.SessionCount scheduled session@(cls.SessionCount != 1 ? "s" : "").
+              Join now to view all session times, availability, and book your spot instantly.
+            </p>
+            <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="join-btn">Book a Session</a>
+          </div>
+          <div class="class-bg-panel @bgClass"></div>
+        </div>
 
-    <!-- Strength Training: black left, info right -->
-    <div class="class-row info-right reveal" id="strength">
-      <div class="class-bg-panel bg-black"></div>
-      <div class="class-info-panel">
-        <div class="class-name">Strength Training</div>
-        <div class="class-tagline">Build your strength</div>
-        <p class="class-desc">By joining you can view all the strength class session times and availability. Get access to all scheduled sessions and book your spot instantly.</p>
-        <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="join-btn">Join</a>
+        rowIndex++;
+      }
+    }
+    else
+    {
+      <div style="text-align:center;padding:60px;color:#ccc;">
+        <h2>No classes available</h2>
+        <p>Check back soon — new classes are being added regularly.</p>
       </div>
-    </div>
-
-    <!-- HIIT: info left, red right -->
-    <div class="class-row info-left reveal" id="hiit">
-      <div class="class-info-panel">
-        <div class="class-name">HIIT</div>
-        <div class="class-tagline">Build your strength and burn your Fat</div>
-        <p class="class-desc">By joining you can view all the HIIT class session times and availability. Get access to all scheduled sessions and book your spot instantly.</p>
-        <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="join-btn">Join</a>
-      </div>
-      <div class="class-bg-panel bg-red"></div>
-    </div>
-
-    <!-- Yoga: black left, info right -->
-    <div class="class-row info-right reveal" id="yoga">
-      <div class="class-bg-panel bg-black"></div>
-      <div class="class-info-panel">
-        <div class="class-name">Yoga</div>
-        <div class="class-tagline">This is what your body needs</div>
-        <p class="class-desc">By joining you can view all the yoga class session times and availability. Get access to all scheduled sessions and book your spot instantly.</p>
-        <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="join-btn">Join</a>
-      </div>
-    </div>
-
-    <!-- Boxing: info left, red right -->
-    <div class="class-row info-left reveal" id="boxing">
-      <div class="class-info-panel">
-        <div class="class-name">Boxing Training</div>
-        <div class="class-tagline">Build your power</div>
-        <p class="class-desc">By joining you can view all the boxing class session times and availability. Get access to all scheduled sessions and book your spot instantly.</p>
-        <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="join-btn">Join</a>
-      </div>
-      <div class="class-bg-panel bg-red"></div>
-    </div>
+    }
 
     <!-- Scroll to Top Button -->
     <button class="scroll-top-btn" id="scrollTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">

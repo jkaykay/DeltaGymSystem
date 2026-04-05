@@ -27,6 +27,7 @@ namespace GymSystem.Api.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [OutputCache(PolicyName = "classes")]
         public async Task<IActionResult> GetAll([FromQuery] ClassSearchRequest request)
         {
@@ -65,6 +66,7 @@ namespace GymSystem.Api.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         [OutputCache(PolicyName = "classes")]
         public async Task<IActionResult> GetById(int id)
         {

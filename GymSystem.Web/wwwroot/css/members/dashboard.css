@@ -215,4 +215,20 @@
       transition: opacity 0.45s ease, transform 0.45s ease;
     }
     .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── VIEW MORE LINK ── */
+    .view-more-link {
+      display: block;
+      text-align: center;
+      margin-top: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .view-more-link:hover {
+      opacity: 0.75;
+      text-decoration: underline;
+    }
   

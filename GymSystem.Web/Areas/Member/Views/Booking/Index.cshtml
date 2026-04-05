@@ -1,3 +1,4 @@
+@model GymSystem.Web.Areas.Member.ViewModels.BookingViewModel
 @{
     ViewData["Title"] = "Booking";
 }
@@ -5,7 +6,6 @@
 @section Styles {
   <link rel="stylesheet" href="~/css/members/booking.css" asp-append-version="true"/>
 }
-
 
   <!-- PAGE -->
   <div class="page">
@@ -16,8 +16,8 @@
     <!-- Hero Banner -->
     <div class="class-hero reveal">
       <div class="class-hero-content">
-        <span class="class-type-tag">CARDIO</span>
-        <h1>Power Cardio</h1>
+        <span class="class-type-tag">CLASSES</span>
+        <h1>Book a Session</h1>
       </div>
     </div>
 
@@ -28,61 +28,53 @@
 
         <!-- Description -->
         <div class="info-card reveal">
-          <div class="card-title">About this Class</div>
+          <div class="card-title">Available Sessions</div>
           <p class="class-description">
-            Power Cardio is a high-energy class designed to get your heart pumping and calories burning fast. 
-            This session combines interval training, bodyweight movements and cardio drills to help you 
-            build endurance and burn fat effectively. Suitable for all fitness levels — modifications are 
-            always available. Come ready to sweat!
+            Browse upcoming sessions below and pick one to book your spot.
+            Each session shows the class subject, instructor, room, time, and available spots.
           </p>
-        </div>
-
-        <!-- Trainer -->
-        <div class="trainer-card reveal">
-          <div class="trainer-avatar" style="color: #ffffff;">
-             <i class="bi bi-person"></i>
-          </div>
-          <div class="trainer-details">
-            <div class="trainer-name">Marcus Lewis</div>
-            <div class="trainer-role">Cardio &amp; Strength Specialist</div>
-            <div class="trainer-bio">10 years of experience coaching group fitness. Certified personal trainer and nutrition advisor.</div>
-          </div>
         </div>
 
         <!-- Time Slots -->
         <div class="slots-card reveal">
           <div class="card-title">Pick a Time Slot</div>
           <div class="slots-grid">
-            <div class="slot" onclick="selectSlot(this, 'Monday, 25 Mar', '06:00 – 07:00', 18, 20)">
-              <div class="slot-time">06:00 AM</div>
-              <div class="slot-date">Mon 25 Mar</div>
-              <div class="slot-spots">18/20 spots</div>
-            </div>
-            <div class="slot" onclick="selectSlot(this, 'Monday, 25 Mar', '09:00 – 10:00', 10, 20)">
-              <div class="slot-time">09:00 AM</div>
-              <div class="slot-date">Mon 25 Mar</div>
-              <div class="slot-spots low">10/20 spots</div>
-            </div>
-            <div class="slot full">
-              <div class="slot-time">12:00 PM</div>
-              <div class="slot-date">Mon 25 Mar</div>
-              <div class="slot-spots low">Full</div>
-            </div>
-            <div class="slot" onclick="selectSlot(this, 'Tuesday, 26 Mar', '06:00 – 07:00', 15, 20)">
-              <div class="slot-time">06:00 AM</div>
-              <div class="slot-date">Tue 26 Mar</div>
-              <div class="slot-spots">15/20 spots</div>
-            </div>
-            <div class="slot" onclick="selectSlot(this, 'Tuesday, 26 Mar', '18:00 – 19:00', 5, 20)">
-              <div class="slot-time">06:00 PM</div>
-              <div class="slot-date">Tue 26 Mar</div>
-              <div class="slot-spots low">5/20 spots</div>
-            </div>
-            <div class="slot" onclick="selectSlot(this, 'Wednesday, 27 Mar', '07:00 – 08:00', 19, 20)">
-              <div class="slot-time">07:00 AM</div>
-              <div class="slot-date">Wed 27 Mar</div>
-              <div class="slot-spots">19/20 spots</div>
-            </div>
+            @if (Model.Sessions.Any())
+            {
+              @foreach (var session in Model.Sessions)
+              {
+                var booked = Model.MyBookings.Any(b => b.SessionId == session.SessionId);
+                var full = session.AvailableSpots <= 0;
+                var cssClass = full ? "slot full" : "slot";
+                <div class="@cssClass"
+                     @if (!full && !booked)
+                     {
+                       <text>onclick="selectSlot(this, '@session.Start.ToLocalTime().ToString("dddd, dd MMM")', '@session.Start.ToLocalTime().ToString("HH:mm") – @session.End.ToLocalTime().ToString("HH:mm")', @session.BookingCount, @session.MaxCapacity, @session.SessionId, '@session.Subject', '@session.InstructorName', @((session.End - session.Start).TotalMinutes), '@session.RoomNumber')"</text>
+                     }>
+                  <div class="slot-time">@session.Start.ToLocalTime().ToString("hh:mm tt")</div>
+                  <div class="slot-date">@session.Start.ToLocalTime().ToString("ddd dd MMM")</div>
+                  <div class="slot-spots @(session.AvailableSpots <= 5 ? "low" : "")">
+                    @if (booked)
+                    {
+                      <text>✓ Booked</text>
+                    }
+                    else if (full)
+                    {
+                      <text>Full</text>
+                    }
+                    else
+                    {
+                      @($"{session.BookingCount}/{session.MaxCapacity} spots")
+                    }
+                  </div>
+                  <div style="font-size: 0.75rem; opacity: 0.7;">@session.Subject — @session.InstructorName</div>
+                </div>
+              }
+            }
+            else
+            {
+              <p>No upcoming sessions available.</p>
+            }
           </div>
         </div>
 
@@ -94,25 +86,24 @@
 
         <div class="summary-row">
           <span class="label">Class</span>
-          <span class="value">Power Cardio</span>
+          <span class="value" id="summary-class">— Select a slot</span>
         </div>
         <div class="summary-row">
           <span class="label">Trainer</span>
-          <span class="value">Marcus Lewis</span>
+          <span class="value" id="summary-trainer">—</span>
         </div>
         <div class="summary-row">
           <span class="label">Duration</span>
-          <span class="value">60 minutes</span>
+          <span class="value" id="summary-duration">—</span>
         </div>
-          <div class="summary-row">
-          <span class="label">Location / Room </span>
-          <span class="value">Studio A</span>
+        <div class="summary-row">
+          <span class="label">Location / Room</span>
+          <span class="value" id="summary-room">—</span>
         </div>
         <div class="summary-row">
           <span class="label">Date &amp; Time</span>
           <span class="value" id="selected-slot">— Select a slot</span>
         </div>
-      
 
         <hr class="summary-divider"/>
 
@@ -126,13 +117,38 @@
           </div>
         </div>
 
-        <button class="confirm-btn" id="confirm-btn" disabled onclick="confirmBooking()">
-          Select a time slot
-        </button>
+        <form asp-area="Member" asp-controller="Booking" asp-action="Book" method="post" id="booking-form">
+          @Html.AntiForgeryToken()
+          <input type="hidden" name="sessionId" id="session-id-input" value="" />
+          <button type="submit" class="confirm-btn" id="confirm-btn" disabled>
+            Select a time slot
+          </button>
+        </form>
         <p class="confirm-note">A confirmation will be sent and you'll be redirected to your Dashboard.</p>
       </div>
 
     </div>
+
+    @if (Model.MyBookings.Any())
+    {
+      <div class="info-card reveal" style="margin-top: 2rem;">
+        <div class="card-title">My Current Bookings</div>
+        @foreach (var booking in Model.MyBookings.OrderBy(b => b.SessionStart))
+        {
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <div>
+              <strong>@booking.Subject</strong> — Room @booking.RoomNumber<br/>
+              <small>@booking.SessionStart.ToLocalTime().ToString("ddd dd MMM, HH:mm") – @booking.SessionEnd.ToLocalTime().ToString("HH:mm")</small>
+            </div>
+            <form asp-area="Member" asp-controller="Booking" asp-action="Cancel" method="post">
+              @Html.AntiForgeryToken()
+              <input type="hidden" name="bookingId" value="@booking.BookingId" />
+              <button type="submit" class="plan-btn" style="background: #ff4444; border: none; padding: 0.4rem 1rem; border-radius: 6px; color: white; cursor: pointer;">Cancel</button>
+            </form>
+          </div>
+        }
+      </div>
+    }
   </div>
 
   <!-- CONFIRMATION OVERLAY -->
@@ -144,7 +160,7 @@
         </svg>
       </div>
       <h2>You're Booked!</h2>
-      <p>Your class has been confirmed. A confirmation has been sent to you. See you on the studio</p>
+      <p>Your class has been confirmed. See you on the studio!</p>
       <form asp-area="Member" asp-controller="Dashboard" asp-action="Index" method="get">
         <button type="submit" class="modal-btn">Go to Dashboard</button>
       </form>
@@ -152,35 +168,37 @@
   </div>
 
   <script>
-    // Slot selection
-    let selectedSlotData = null;
+    let selectedSessionId = null;
 
-    function selectSlot(el, date, time, filled, total) {
+    function selectSlot(el, date, time, filled, total, sessionId, subject, trainer, duration, room) {
       document.querySelectorAll('.slot').forEach(s => s.classList.remove('selected'));
       el.classList.add('selected');
 
-      selectedSlotData = { date, time, filled, total };
+      selectedSessionId = sessionId;
+      document.getElementById('session-id-input').value = sessionId;
 
-      // Update summary
       document.getElementById('selected-slot').textContent = `${date}, ${time}`;
+      document.getElementById('summary-class').textContent = subject;
+      document.getElementById('summary-trainer').textContent = trainer;
+      document.getElementById('summary-duration').textContent = `${Math.round(duration)} minutes`;
+      document.getElementById('summary-room').textContent = `Room ${room}`;
 
-      // Update spots bar
       const remaining = total - filled;
       const pct = (filled / total) * 100;
       document.getElementById('spots-text').textContent = `${remaining} / ${total}`;
       document.getElementById('spots-bar-fill').style.width = pct + '%';
 
-      // Enable confirm button
       const btn = document.getElementById('confirm-btn');
       btn.disabled = false;
       btn.textContent = 'Confirm Booking';
     }
 
-    // Confirm booking
-    function confirmBooking() {
-      if (!selectedSlotData) return;
-
-      // Show overlay
-      document.getElementById('overlay').classList.add('show');
+    @if (TempData["SuccessMessage"] != null)
+    {
+      <text>
+      document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('overlay').classList.add('show');
+      });
+      </text>
     }
   </script>
