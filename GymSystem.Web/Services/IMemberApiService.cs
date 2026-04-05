@@ -22,4 +22,9 @@ public interface IMemberApiService
     Task<List<PaymentItem>> GetPaymentHistoryAsync(string memberId);
 
     Task<QRCodeResponse?> GetMyQRAsync(string memberId);
+
+  
+    Task<ProfileDto?> GetMyProfileAsync();
+
+Task<(bool Success, string? Error)> UpdateProfileAsync(ProfileViewModel model);
 }
