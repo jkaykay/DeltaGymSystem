@@ -16,9 +16,21 @@ public class AttendancesController : Controller
         _api = api;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10,
+        string? search = null, bool? inFlag = null,
+        DateTime? dateFrom = null, DateTime? dateTo = null,
+        string? sortBy = null, string? sortDir = null)
     {
-        var result = await _api.GetAttendancesAsync();
+        var result = await _api.GetAttendancesAsync(page, pageSize, search, inFlag,
+            dateFrom, dateTo, sortBy, sortDir);
+
+        ViewData["Search"] = search;
+        ViewData["InFlag"] = inFlag;
+        ViewData["DateFrom"] = dateFrom;
+        ViewData["DateTo"] = dateTo;
+        ViewData["SortBy"] = sortBy;
+        ViewData["SortDir"] = sortDir;
+
         return View(result);
     }
 

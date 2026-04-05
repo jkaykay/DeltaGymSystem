@@ -1,5 +1,35 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model GymSystem.Web.Areas.Trainer.ViewModels.TrainerDashboardViewModel
+
 @{
+    ViewData["Title"] = "Dashboard";
 }
+<section class="schedule-card dashboard-schedule">
+    <div class="section-header">
+        <h2>Today's Schedule</h2>
+        <a asp-area="Trainer" asp-controller="Schedule" asp-action="Index" class="schedule-btn">
+            View Full Schedule
+        </a>
+    </div>
+
+    @if (Model.TodaySessions != null && Model.TodaySessions.Any())
+    {
+        @foreach (var session in Model.TodaySessions)
+        {
+            <div class="schedule-row">
+                <span>@session.Subject</span>
+                <span>@session.Start.ToString("hh:mm tt")</span>
+
+            </div>               
+        }
+    }
+    else
+    {
+        <div class="schedule-row">
+            <span>No Sessions For Today</span>
+        </div>    
+    
+    }
+
+</section>
+
+

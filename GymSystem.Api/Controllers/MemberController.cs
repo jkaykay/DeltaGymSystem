@@ -41,9 +41,36 @@ public class MemberController : ControllerBase
     [HttpGet]
     [Authorize(Roles = "Admin,Staff")]
     [OutputCache(PolicyName = "members")]
-    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetAll([FromQuery] MemberSearchRequest request)
     {
-        var result = await MembersQuery()
+        var query = MembersQuery();
+
+        // --- General search across multiple fields ---
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var term = request.Search.Trim().ToLower();
+            query = query.Where(m =>
+                m.FirstName.ToLower().Contains(term) ||
+                m.LastName.ToLower().Contains(term) ||
+                m.Email!.ToLower().Contains(term) ||
+                m.UserName!.ToLower().Contains(term));
+        }
+
+        // --- Specific filters ---
+        if (request.Active.HasValue)
+            query = query.Where(m => m.Active == request.Active.Value);
+
+        if (request.JoinedFrom.HasValue)
+            query = query.Where(m => m.JoinDate >= request.JoinedFrom.Value);
+
+        if (request.JoinedTo.HasValue)
+            query = query.Where(m => m.JoinDate <= request.JoinedTo.Value);
+
+        // --- Sorting ---
+        query = ApplySorting(query, request.SortBy, request.SortDir);
+
+        // --- Projection + Pagination ---
+        var result = await query
             .Select(m => new UserDTO
             {
                 Id = m.Id,
@@ -54,7 +81,7 @@ public class MemberController : ControllerBase
                 JoinDate = m.JoinDate,
                 Active = m.Active
             })
-            .ToPagedResultAsync(page, pageSize);
+            .ToPagedResultAsync(request.Page, request.PageSize);
 
         return Ok(result);
     }
@@ -189,8 +216,8 @@ public class MemberController : ControllerBase
         if (request.LastName is not null) user.LastName = request.LastName;
 
         // Only Admin/Staff can change active status
-        if (request.Active.HasValue && IsAdminOrStaff())
-            user.Active = request.Active.Value;
+        if (request.IsActive.HasValue && IsAdminOrStaff())
+            user.Active = request.IsActive.Value;
 
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
@@ -220,6 +247,22 @@ public class MemberController : ControllerBase
         await _outputCache.EvictByTagAsync("members", default);
 
         return NoContent();
+    }
+
+    private static IQueryable<ApplicationUser> ApplySorting(
+        IQueryable<ApplicationUser> query, string? sortBy, string? sortDir)
+    {
+        var descending = string.Equals(sortDir, "desc", StringComparison.OrdinalIgnoreCase);
+
+        return sortBy?.ToLower() switch
+        {
+            "firstname" => descending ? query.OrderByDescending(m => m.FirstName) : query.OrderBy(m => m.FirstName),
+            "lastname" => descending ? query.OrderByDescending(m => m.LastName) : query.OrderBy(m => m.LastName),
+            "email" => descending ? query.OrderByDescending(m => m.Email) : query.OrderBy(m => m.Email),
+            "username" => descending ? query.OrderByDescending(m => m.UserName) : query.OrderBy(m => m.UserName),
+            "active" => descending ? query.OrderByDescending(m => m.Active) : query.OrderBy(m => m.Active),
+            _ => descending ? query.OrderByDescending(m => m.JoinDate) : query.OrderBy(m => m.JoinDate),
+        };
     }
 
     private bool IsSelf(string id) =>

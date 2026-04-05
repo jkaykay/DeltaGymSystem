@@ -1,0 +1,96 @@
+@model CreateScheduleViewModel
+@using GymSystem.Shared.DTOs
+
+@{
+    ViewData["Title"] = "Create Schedule";
+    var branches = ViewBag.Branches as List<BranchDTO> ?? new List<BranchDTO>();
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">➕ Create New Schedule</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
+
+<div class="form-card">
+    <div class="card-header">
+        <h5>Schedule Information</h5>
+    </div>
+    <form asp-action="Create" method="post">
+        <div class="form-body">
+            <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+            <div class="form-group">
+                <label asp-for="BranchId"></label>
+                <select asp-for="BranchId" class="form-control" id="branchSelect">
+                    <option value="">— Select a Branch —</option>
+                    @foreach (var branch in branches)
+                    {
+                        <option value="@branch.BranchId">@branch.City — @branch.Address</option>
+                    }
+                </select>
+                <span asp-validation-for="BranchId" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="UserId"></label>
+                <select asp-for="UserId" class="form-control" id="employeeSelect" disabled>
+                    <option value="">— Select a Branch first —</option>
+                </select>
+                <span asp-validation-for="UserId" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Start"></label>
+                    <input asp-for="Start" class="form-control" type="datetime-local" />
+                    <span asp-validation-for="Start" class="field-validation-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="End"></label>
+                    <input asp-for="End" class="form-control" type="datetime-local" />
+                    <span asp-validation-for="End" class="field-validation-error"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Create Schedule</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('branchSelect').addEventListener('change', async function () {
+            const employeeSelect = document.getElementById('employeeSelect');
+            const branchId = this.value;
+
+            employeeSelect.innerHTML = '';
+
+            if (!branchId) {
+                employeeSelect.disabled = true;
+                employeeSelect.innerHTML = '<option value="">— Select a Branch first —</option>';
+                return;
+            }
+
+            const response = await fetch(`@Url.Action("EmployeesByBranch", "Schedules", new { area = "Management" })?branchId=${branchId}`);
+            const employees = await response.json();
+
+            if (employees.length === 0) {
+                employeeSelect.disabled = true;
+                employeeSelect.innerHTML = '<option value="">— No employees in this branch —</option>';
+                return;
+            }
+
+            employeeSelect.disabled = false;
+            employeeSelect.innerHTML = '<option value="">— Select an Employee —</option>';
+            employees.forEach(function (emp) {
+                const option = document.createElement('option');
+                option.value = emp.id;
+                option.textContent = emp.name;
+                employeeSelect.appendChild(option);
+            });
+        });
+    </script>
+}

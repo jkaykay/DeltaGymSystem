@@ -4,16 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Management</title>
-    <link rel="stylesheet" href="~/styles/management.css" />
+    <link rel="stylesheet" href="~/css/management.css" asp-append-version="true" />
 </head>
-<body>
-    <nav>
-        <!-- Management sidebar / nav -->
-        <a asp-area="Management" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
-    </nav>
-    <main>
-        @RenderBody()
-    </main>
+<body class="login-body">
+    @RenderBody()
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

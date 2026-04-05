@@ -1,0 +1,158 @@
+﻿@{
+    ViewData["Title"] = "QR Scanner";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Management</title>
+    <link rel="stylesheet" href="~/css/management.css" />
+</head>
+<body>
+    <nav class="topbar">
+        <div class="topbar-brand">
+            <a asp-area="Management" asp-controller="Dashboard" asp-action="Index">
+                Delta Gym Admin
+            </a>
+        </div>
+    </nav>
+    <main class="admin-content" style="margin-left: 0; margin-top:50px;">
+        <div class="page-header">
+            <h1 class="page-header-title">📷 QR Scanner</h1>
+            <div class="page-actions">
+                <a asp-area="Management" asp-controller="Attendances" asp-action="Active" class="btn btn-secondary">🟢 View Active Sessions</a>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h5>Scan Member QR Code</h5>
+            </div>
+            <div class="scanner-wrapper">
+                <p class="scanner-hint">Point the camera at a member's QR code to check them in or out.</p>
+
+                @Html.AntiForgeryToken()
+
+                <div id="qr-reader"></div>
+
+                <div id="scan-result-panel" class="scan-result-panel hidden">
+                    <div id="scan-result-icon"></div>
+                    <div id="scan-result-label"></div>
+                    <div id="scan-result-name" class="scan-result-name"></div>
+                    <div id="scan-result-time" class="scan-result-time"></div>
+                </div>
+
+                <div id="camera-error" class="alert alert-error hidden">
+                    📵 Camera access was denied. Please allow camera permissions and reload the page.
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script>
+        const scanUrl = '@Url.Action("Scan", "QRScanner", new { area = "Management" })';
+        const antiforgeryToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+        const html5QrCode = new Html5Qrcode("qr-reader");
+        const scanConfig = { fps: 10, qrbox: { width: 260, height: 260 } };
+
+        let isProcessing = false;
+
+        // -- Start scanner --
+        html5QrCode.start(
+        { facingMode: "environment" },
+        scanConfig,
+        onScanSuccess,
+        () => {
+        let element = document.getElementById('camera-error');
+
+        if (!element.classList.contains('hidden')) {
+        element.classList.add('hidden');
+        }
+        }
+        ).catch(() => {
+        document.getElementById('camera-error').classList.remove('hidden');
+        });
+
+        // Stop camera when leaving the page
+        window.addEventListener('pagehide', () => {
+        try { html5QrCode.stop(); } catch { }
+        });
+
+        // -- Scan success handler --
+        async function onScanSuccess(decodedText) {
+        if (isProcessing) return;
+        isProcessing = true;
+
+        html5QrCode.pause(true);
+        showLoading();
+
+        try {
+        const response = await fetch(scanUrl, {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json',
+        'RequestVerificationToken': antiforgeryToken
+        },
+        body: JSON.stringify({ token: decodedText })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+        showSuccess(result);
+        } else {
+        showError(result.errorMessage || 'QR code invalid or expired.');
+        }
+        } catch {
+        showError('Network error. Please check your connection and try again.');
+        }
+
+        setTimeout(resetScanner, 4000);
+        }
+
+        // -- UI helpers --
+        function showLoading() {
+        const panel = document.getElementById('scan-result-panel');
+        panel.className = 'scan-result-panel scan-result-loading';
+        document.getElementById('scan-result-icon').textContent = '⏳';
+        document.getElementById('scan-result-label').textContent = 'Processing…';
+        document.getElementById('scan-result-name').textContent = '';
+        document.getElementById('scan-result-time').textContent = '';
+        }
+
+        function showSuccess(result) {
+        const isCheckIn = result.action === 'checkin';
+        const panel = document.getElementById('scan-result-panel');
+        panel.className = `scan-result-panel ${isCheckIn ? 'scan-result-checkin' : 'scan-result-checkout'}`;
+
+        document.getElementById('scan-result-icon').textContent = isCheckIn ? '✅' : '👋';
+        document.getElementById('scan-result-label').textContent = isCheckIn ? 'Checked In' : 'Checked Out';
+        document.getElementById('scan-result-name').textContent = result.memberName ?? '';
+
+        const ts = isCheckIn ? result.checkIn : result.checkOut;
+        document.getElementById('scan-result-time').textContent = ts
+        ? new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        : '';
+        }
+
+        function showError(message) {
+        const panel = document.getElementById('scan-result-panel');
+        panel.className = 'scan-result-panel scan-result-error';
+        document.getElementById('scan-result-icon').textContent = '❌';
+        document.getElementById('scan-result-label').textContent = message;
+        document.getElementById('scan-result-name').textContent = '';
+        document.getElementById('scan-result-time').textContent = '';
+        }
+
+        function resetScanner() {
+        document.getElementById('scan-result-panel').className = 'scan-result-panel hidden';
+        html5QrCode.resume();
+        isProcessing = false;
+        }
+    </script>
+</body>
+</html>

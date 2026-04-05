@@ -1,13 +1,322 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    Layout = null;
 }
 
-<div id="banner-block">
-    <div id="info-banner">
-        <!-- <img />-->
+@{
+    ViewData["Title"] = "Home";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DeltaGyms-Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"> // For icons from bootstrap
+  <link rel="stylesheet" href="~/css/members/styleindex.css" asp-append-version="true"/>
+</head>
+<body>
+
+  <!-- NAV  BAR-->
+  <nav>
+   <div class="nav-logo">
+      <img src="~/images/logo.png" alt="Delta Gyms Logo" class="nav-logo-img"/>
     </div>
-</div>
-<div class="page-block">
-    <h1>Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+    <ul class="nav-links">
+      <li><a asp-area="" asp-controller="Home" asp-action="Index" class="active">Home</a></li>
+      <li><a asp-area="" asp-controller="Classes" asp-action="Index">Classes</a></li>
+      <li><a asp-area="" asp-controller="Memberships" asp-action="Index">Memberships</a></li>
+      <li><a asp-area="Member" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+      <li><a asp-area="Member" asp-controller="MyProfile" asp-action="Index">MyProfile</a></li>
+      <li><a asp-area="" asp-controller="About" asp-action="Index">About</a></li>
+    </ul>
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    <form asp-area="Member" asp-controller="Login" asp-action="Logout" method="post" class="nav-logout">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="logout-btn">
+            Logout
+        </button>
+    </form>
+}
+else
+{
+    <div class="nav-logout">
+        <a asp-area="Member" asp-controller="Login" asp-action="Index" >
+            Login
+        </a>
+    </div>
+}
+  </nav>
+
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-top">
+        <h1 class="hero-headline">Push Your<br>Limits</h1>
+        <div class="hero-cta">
+          <a asp-area="" asp-controller="Memberships" asp-action="Index" class="btn-primary">Join Now</a>
+          <a asp-area="" asp-controller="Classes" asp-action="Index" class="btn-outline">Browse Classes</a>
+        </div>
+      </div>
+      <p class="hero-sub">World class facilities, expert trainers, and a community<br>that pushes you to be your best every single day.</p>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">50+</div>
+          <div class="stat-label">Classes / Weekly</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">15K</div>
+          <div class="stat-label">Members</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">10+</div>
+          <div class="stat-label">Expert Trainers</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLASSES -->
+  <section class="section reveal container py-5">
+    <div class="section-header">
+      <h2 class="section-title">Train with the best</h2>
+      <a asp-area="" asp-controller="Classes" asp-action="Index" class="view-all">View All &gt;&gt;&gt;</a>
+    </div>
+    <div class="cards-grid">
+
+      <!-- Card 1 -->
+      <div class="class-card">
+        <div class="card-img-wrap">
+         <img src="images/Strength.jpg" alt="Delta Gyms classes" class="nav-logo-img"/>
+          <span class="card-tag tag-strength">Strength</span>
+        </div>
+        <div class="card-body">
+          <div class="card-name">Power Lift</div>
+          <div class="card-trainer">Marcus Lewis</div>
+          <div class="card-meta">
+            <span>60 min</span>
+            <span class="spots"><span class="smiley">😊</span> 19/20</span>
+          </div>
+        </div>
+             <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="card-footer">JOIN CLASS</a>
+
+      </div>
+
+      <!-- Card 2 -->
+      <div class="class-card">
+        <div class="card-img-wrap">
+          <img src="images/Power Lifting.jpg" alt="Delta Gyms classes" class="nav-logo-img"/>
+          <span class="card-tag tag-hiit">HIIT</span>
+        </div>
+        <div class="card-body">
+          <div class="card-name">HIIT Blast</div>
+          <div class="card-trainer">Samy John</div>
+          <div class="card-meta">
+            <span>45 min</span>
+            <span class="spots"><span class="smiley">😊</span> 16/25</span>
+          </div>
+        </div>
+             <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="card-footer">JOIN CLASS</a>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="class-card">
+        <div class="card-img-wrap">
+          <img src="images/Yoga.jpg" alt="Delta Gyms classes" class="nav-logo-img" preserveAspectRatio="xMidYMid meet"/>
+          <span class="card-tag tag-yoga">Yoga</span>
+        </div>
+        <div class="card-body">
+          <div class="card-name">Morning Flow</div>
+          <div class="card-trainer">Priya Sharma</div>
+          <div class="card-meta">
+            <span>50 min</span>
+            <span class="spots"><span class="smiley">😊</span> 12/20</span>
+          </div>
+        </div>
+             <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="card-footer">JOIN CLASS</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TRAINERS -->
+  <section class="section reveal">
+    <div class="section-header">
+      <h2 class="section-title">Meet the Trainers</h2>
+      <a asp-area="" asp-controller="Classes" asp-action="Index" asp-fragment="class-type" class="view-all"> View All &gt;&gt;&gt; </a>
+    </div>
+    <div class="trainers-grid">
+      <div class="trainer-card">
+        <svg class="trainer-img" viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg">
+          <rect width="220" height="180" fill="#2a2a2a"/>
+          <circle cx="110" cy="70" r="35" fill="#444"/>
+          <ellipse cx="110" cy="180" rx="55" ry="40" fill="#444"/>
+        </svg>
+        <div class="trainer-info">
+          <div class="trainer-name">Marcus Lewis</div><i class="bi bi-check-circle-fill verified-icon" title="Verified Trainer"></i>
+          <div class="trainer-spec">Strength & Powerlifting</div>
+        </div>
+      </div>
+      <div class="trainer-card">
+        <svg class="trainer-img" viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg">
+          <rect width="220" height="180" fill="#2a1a00"/>
+          <circle cx="110" cy="70" r="35" fill="#554422"/>
+          <ellipse cx="110" cy="180" rx="55" ry="40" fill="#554422"/>
+        </svg>
+        <div class="trainer-info">
+          <div class="trainer-name">Samy John</div><i class="bi bi-check-circle-fill verified-icon" title="Verified Trainer"></i>
+          <div class="trainer-spec">HIIT & Conditioning</div>
+        </div>
+      </div>
+      <div class="trainer-card">
+        <svg class="trainer-img" viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg">
+          <rect width="220" height="180" fill="#001a0e"/>
+          <circle cx="110" cy="70" r="35" fill="#224433"/>
+          <ellipse cx="110" cy="180" rx="55" ry="40" fill="#224433"/>
+        </svg>
+        <div class="trainer-info">
+          <div class="trainer-name">Priya Sharma</div><i class="bi bi-check-circle-fill verified-icon" title="Verified Trainer"></i>
+          <div class="trainer-spec">Yoga & Mindfulness</div>
+        </div>
+      </div>
+      <div class="trainer-card">
+        <svg class="trainer-img" viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg">
+          <rect width="220" height="180" fill="#0a001a"/>
+          <circle cx="110" cy="70" r="35" fill="#332244"/>
+          <ellipse cx="110" cy="180" rx="55" ry="40" fill="#332244"/>
+        </svg>
+        <div class="trainer-info">
+          <div class="trainer-name">Jake Rivera</div><i class="bi bi-check-circle-fill verified-icon" title="Verified Trainer"></i>
+          <div class="trainer-spec">Cardio & Endurance</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEMBERSHIP PLANS -->
+  <section class="membership-section reveal">
+    <h2 class="membership-title">MEMBERSHIP PLANS</h2>
+    <div class="plans-grid">
+
+      <div class="plan-card">
+        <div class="plan-name">Basic</div>
+        <div class="plan-price">
+          <span class="dollar">$</span><span class="amount">19.99</span><span class="period"> / mo</span>
+        </div>
+        <ul class="plan-features">
+          <li>Access to GYM (Not in Peak)</li>
+          <li>Locker room access</li>
+          <li>1 free class per week</li>
+          <li>Basic fitness assessments</li>
+        </ul>
+        <a asp-area="Member" asp-controller="Subscribe" asp-action="Index" class="plan-btn">Get started</a>
+
+      </div>
+
+      <div class="plan-card featured">
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">
+          <span class="dollar">$</span><span class="amount">39.99</span><span class="period"> / mo</span>
+        </div>
+        <ul class="plan-features">
+          <li>Anytime GYM access</li>
+          <li>Unlimited classes</li>
+          <li>Personal Locker</li>
+          <li>Sauna and steam room free</li>
+        </ul>
+
+        <a asp-area="Member" asp-controller="Subscribe" asp-action="Index" class="plan-btn">Get started</a>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer reveal">
+    <div class="footer-inner">
+
+  <div class="footer-box">
+        <div class="footer-col-title">Get Social</div>
+        <span class="social-label">Follow us on social media for updates, tips, and exclusive content!</span>
+        <div class="social-icons">
+          <a href="#" class="social-icon icon-facebook" aria-label="Facebook">
+          <i class="bi bi-facebook"></i>
+          </a>
+          <a href="#" class="social-icon icon-instagram" aria-label="Instagram">
+           <i class="bi bi-instagram"></i>
+          </a>
+          <a href="#" class="social-icon icon-tiktok" aria-label="TikTok">
+            <i class="bi bi-tiktok"></i>
+          </a>
+        </div>
+      </div>
+    
+
+      <div class="footer-box">
+        <div class="footer-col-title">About the "GYM"</div>
+        <ul class="footer-links">
+          <li><a asp-area="" asp-controller="About" asp-action="Index" asp-fragment="hero-title">Gym Info</a></li>
+          <li><a asp-area="" asp-controller="About" asp-action="Index" asp-fragment="contact-section">Contact Us</a></li>
+          <li><a asp-area="" asp-controller="About" asp-action="Index" asp-fragment="machines-section">Gym Machines</a></li>
+          <li><a asp-area="" asp-controller="About" asp-action="Index" asp-fragment="opening-hours">Gym Opening hours</a></li>
+          <li><a asp-area="" asp-controller="About" asp-action="Index" asp-fragment="membership-rules">Membership rules</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-logo-wrap">
+      <img src="~/images/logo.png" alt="Delta Gyms Logo" class="nav-logo-img"/>
+    </div>
+      <span class="footer-brand">DELTAGYMS</span>
+      <p class="footer-copy">2026 DELTAGYMS all rights reserved</p>
+    </div>
+  </footer>
+
+   <!-- Scroll to Top Button -->
+    <button class="scroll-top-btn" id="scrollTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+  <i class="bi bi-arrow-up"></i>
+</button>
+
+  <script>
+    // Sticky nav shadow on scroll
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+      nav.style.boxShadow = window.scrollY > 10
+        ? '0 4px 24px rgba(0,0,0,0.10)'
+        : 'none';
+    });
+
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+
+    // Show/hide scroll to top button
+const scrollTopBtn = document.getElementById('scrollTopBtn');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 400) {
+    scrollTopBtn.classList.add('visible');
+  } else {
+    scrollTopBtn.classList.remove('visible');
+  }
+});
+  </script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
+
