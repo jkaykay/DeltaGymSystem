@@ -1,4 +1,4 @@
-namespace GymSystem.Web.ViewModels
+namespace GymSystem.Web.Areas.Trainer.ViewModels
 {
     public class ErrorViewModel
     {

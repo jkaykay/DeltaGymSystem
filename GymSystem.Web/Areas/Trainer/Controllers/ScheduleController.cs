@@ -11,11 +11,11 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
 {
     [Authorize(Roles = "Trainer")]
     [Area("Trainer")]
-    public class DashboardController : Controller
+    public class ScheduleController : Controller
     {
         private readonly ITrainerApiService _trainerApiService;
 
-        public DashboardController(ITrainerApiService trainerApiService)
+        public ScheduleController(ITrainerApiService trainerApiService)
         {
 
             _trainerApiService = trainerApiService;
@@ -37,24 +37,33 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
 
             var today = DateTime.Today;
 
-            var todaySessions = new List<SessionDTO>();
+            var startOfWeek = today.AddDays(-(int)today.DayOfWeek + 1);
+
+            if (today.DayOfWeek == DayOfWeek.Sunday) 
+            {
+                startOfWeek = today.AddDays(-6);
+            }
+
+            var endOfWeek = startOfWeek.AddDays(6);
+
+            var weeklySessions = new List<SessionDTO>();
 
             foreach (var session in sessions)
             {
-
-
-                if (session.InstructorId == trainerId && session.Start.Date == today)
+                if (session.InstructorId == trainerId &&
+                    session.Start.Date >= startOfWeek &&
+                    session.Start.Date <= endOfWeek)
                 {
-                    todaySessions.Add(session);
+                    weeklySessions.Add(session);
                 }
             }
 
-            todaySessions = todaySessions.OrderBy(s => s.Start).ToList();
+            weeklySessions = weeklySessions.OrderBy(s => s.Start).ToList();
 
-            var model = new TrainerDashboardViewModel
+            var model = new TrainerScheduleViewModel
             {
                 TrainerName = trainerName,
-                TodaySessions = todaySessions
+                WeeklySessions = weeklySessions
             };
 
             return View(model);

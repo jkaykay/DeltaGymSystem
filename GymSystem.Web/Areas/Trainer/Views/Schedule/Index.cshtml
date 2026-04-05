@@ -1,0 +1,36 @@
+﻿@model GymSystem.Web.Areas.Trainer.ViewModels.TrainerScheduleViewModel
+
+@{
+    ViewData["Title"] = "Schedule";
+    DateTime? currentDate = null;
+}
+
+<section class="schedule-page-wrapper">
+    <div class="schedule-page-card">
+        <h2>Full Weekly Schedule</h2>
+
+        @if (Model.WeeklySessions != null && Model.WeeklySessions.Any())
+        {
+            @foreach (var session in Model.WeeklySessions)
+            {
+                if (currentDate == null || currentDate.Value.Date != session.Start.Date)
+                {
+                    currentDate = session.Start.Date;
+
+                    <h3 class="schedule-date">@session.Start.ToString("dddd, dd MMMM yyyy")</h3>
+                }
+
+                <div class="schedule-row">
+                    <span>@session.Subject</span>
+                    <span>
+                        @session.Start.ToString("hh:mm tt") - @session.End.ToString("hh:mm tt")
+                    </span>
+                    <span>Room @session.RoomNumber</span>
+                </div>
+            }
+        
+        }
+    </div>
+    
+
+</section>
