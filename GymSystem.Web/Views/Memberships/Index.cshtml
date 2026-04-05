@@ -1,5 +1,5 @@
 @{
-    Layout= null;
+    Layout = null;
 }
 
 @{
@@ -8,21 +8,24 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
+
+
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>DeltaGyms-Memberships</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"> 
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <link href="~/css/members/stylememberships.css" rel="stylesheet" asp-append-version="true"/>
 </head>
 <body>
 
-
-  <!-- NAV  BAR-->
+  <!-- NAV BAR -->
   <nav>
-   <div class="nav-logo">
+    <div class="nav-logo">
       <img src="~/images/logo.png" alt="Delta Gyms Logo" class="nav-logo-img"/>
     </div>
     <ul class="nav-links">
@@ -34,22 +37,22 @@
       <li><a asp-area="" asp-controller="About" asp-action="Index">About</a></li>
     </ul>
     @if (User.Identity != null && User.Identity.IsAuthenticated)
-{
-    <form asp-area="Member" asp-controller="Login" asp-action="Logout" method="post" class="nav-logout">
+    {
+      <form asp-area="Member" asp-controller="Login" asp-action="Logout" method="post" class="nav-logout">
         @Html.AntiForgeryToken()
         <button type="submit" class="logout-btn">
-            Logout
+          Logout
         </button>
-    </form>
-}
-else
-{
-    <div class="nav-logout">
-        <a asp-area="Member" asp-controller="Login" asp-action="Index" >
-            Login
-        </a>
-    </div>
-}
+      </form>
+    }
+    else
+    {
+        <div class="nav-logout">
+            <a asp-area="Member" asp-controller="Login" asp-action="Index">
+                Login
+            </a>
+        </div>
+    }
   </nav>
 
   <!-- PAGE -->
@@ -129,25 +132,43 @@ else
       </div>
 
       <!-- Ask Delta -->
-      <div class="ask-delta-wrap reveal">
-        <div class="ask-delta">
-          <div class="ask-delta-title">"Ask DELTA"</div>
-          <div class="ask-delta-input">
-            <div class="ask-delta-avatar">
-              <img src="images/Dumbell.png" alt="Delta Gyms Logo" class="nav-logo-img"/>
+        <div class="ask-delta-wrap">
+            <div class="ask-delta">
+                <div class="ask-delta-title">Ask DELTA</div>
+
+                <form id="deltaChatForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="ask-delta-input">
+                        <div class="ask-delta-avatar">
+                            <img src="/images/LOGO.png" alt="DELTA" />
+                        </div>
+
+                        <textarea id="deltaMessage"
+                                    placeholder="Ask about memberships, plans, or pricing..."
+                                    rows="2"></textarea>
+                    </div>
+
+                    <div id="deltaLoading" class="ask-delta-loading" style="display:none;">
+                        DELTA is thinking...
+                    </div>
+
+                    <div id="deltaReply" class="ask-delta-response" style="display:none;"></div>
+
+                    <button type="button" id="deltaSendBtn" class="ask-delta-send">
+                        Send
+                    </button>
+                </form>
             </div>
-            <input type="text" placeholder="What is your question ?" />
-          </div>
         </div>
-      </div>
 
     </div>
   </div>
 
-   <!-- Scroll to Top Button -->
-    <button class="scroll-top-btn" id="scrollTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-  <i class="bi bi-arrow-up"></i>
-</button>
+  <!-- Scroll to Top Button -->
+  <button class="scroll-top-btn" id="scrollTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+    <i class="bi bi-arrow-up"></i>
+  </button>
 
   <script>
     // Sticky nav shadow
@@ -169,17 +190,70 @@ else
     }, { threshold: 0.1 });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-
     // Show/hide scroll to top button
-const scrollTopBtn = document.getElementById('scrollTopBtn');
-window.addEventListener('scroll', () => {
-  if (window.scrollY > 400) {
-    scrollTopBtn.classList.add('visible');
-  } else {
-    scrollTopBtn.classList.remove('visible');
-  }
-});
-
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 400) {
+        scrollTopBtn.classList.add('visible');
+      } else {
+        scrollTopBtn.classList.remove('visible');
+      }
+    });
   </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const messageBox = document.getElementById("deltaMessage");
+            const replyBox = document.getElementById("deltaReply");
+            const loadingText = document.getElementById("deltaLoading");
+            const sendBtn = document.getElementById("deltaSendBtn");
+
+            if (!messageBox || !replyBox || !loadingText || !sendBtn) {
+                console.log("Chatbot elements not found");
+                return;
+            }
+
+            sendBtn.addEventListener("click", async function () {
+                const message = messageBox.value.trim();
+
+                replyBox.style.display = "none";
+                loadingText.style.display = "none";
+                replyBox.innerText = "";
+
+                if (!message) {
+                    replyBox.style.display = "block";
+                    replyBox.innerText = "Please type a question first.";
+                    return;
+                }
+
+                loadingText.style.display = "block";
+                sendBtn.disabled = true;
+
+                try {
+                    const response = await fetch("https://localhost:7183/api/Chatbot/membership", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ message: message })
+                    });
+
+                    const data = await response.json();
+
+                    loadingText.style.display = "none";
+                    sendBtn.disabled = false;
+
+                    replyBox.style.display = "block";
+                    replyBox.innerText = data.reply ?? "Sorry, I couldn't get a response.";
+                } catch (error) {
+                    loadingText.style.display = "none";
+                    sendBtn.disabled = false;
+
+                    replyBox.style.display = "block";
+                    replyBox.innerText = "Something went wrong while contacting DELTA.";
+                    console.error("Chatbot error:", error);
+                }
+            });
+        });
+    </script>
 </body>
 </html>
