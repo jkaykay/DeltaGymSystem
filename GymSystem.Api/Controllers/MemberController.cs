@@ -189,8 +189,8 @@ public class MemberController : ControllerBase
         if (request.LastName is not null) user.LastName = request.LastName;
 
         // Only Admin/Staff can change active status
-        if (request.Active.HasValue && IsAdminOrStaff())
-            user.Active = request.Active.Value;
+        if (request.IsActive.HasValue && IsAdminOrStaff())
+            user.Active = request.IsActive.Value;
 
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
