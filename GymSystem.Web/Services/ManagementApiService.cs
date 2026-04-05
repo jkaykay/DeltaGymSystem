@@ -168,7 +168,9 @@ namespace GymSystem.Web.Services
             {
                 model.Email,
                 model.FirstName,
-                model.LastName
+                model.LastName,
+                model.EmployeeId,
+                model.BranchId
             });
             return response.IsSuccessStatusCode;
         }
@@ -177,6 +179,31 @@ namespace GymSystem.Web.Services
         {
             var response = await _http.DeleteAsync($"api/staff/{id}");
             return response.IsSuccessStatusCode;
+        }
+
+        public async Task<List<UserDTO>> GetAllStaffAsync()
+        {
+            var result = await _http.GetFromJsonAsync<PagedResult<UserDTO>>(
+                "api/staff?page=1&pageSize=999");
+            return result?.Items ?? new List<UserDTO>();
+        }
+
+        public async Task<List<UserDTO>> GetAllEmployeesAsync()
+        {
+            var staff = await GetAllStaffAsync();
+            var trainers = await GetAllTrainersAsync();
+
+            var combined = new Dictionary<string, UserDTO>();
+            foreach (var s in staff) combined[s.Id] = s;
+            foreach (var t in trainers) combined.TryAdd(t.Id, t);
+
+            return combined.Values.ToList();
+        }
+
+        public async Task<List<UserDTO>> GetEmployeesByBranchAsync(int branchId)
+        {
+            var all = await GetAllEmployeesAsync();
+            return all.Where(e => e.BranchId == branchId).ToList();
         }
 
         public async Task<CountResponse> GetTotalMembersAsync()
@@ -737,6 +764,113 @@ namespace GymSystem.Web.Services
         {
             var response = await _http.DeleteAsync($"api/booking/{id}");
             return response.IsSuccessStatusCode;
+        }
+
+        // --- Equipment ---
+
+        public async Task<PagedResult<EquipmentDTO>> GetEquipmentAsync(int page = 1, int pageSize = 10)
+        {
+            var result = await _http.GetFromJsonAsync<PagedResult<EquipmentDTO>>(
+                $"api/equipment?page={page}&pageSize={pageSize}");
+            return result ?? new PagedResult<EquipmentDTO>();
+        }
+
+        public async Task<EquipmentDTO?> GetEquipmentItemAsync(int id)
+        {
+            var response = await _http.GetAsync($"api/equipment/{id}");
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadFromJsonAsync<EquipmentDTO>();
+        }
+
+        public async Task<bool> CreateEquipmentAsync(CreateEquipmentViewModel model)
+        {
+            var response = await _http.PostAsJsonAsync("api/equipment", new
+            {
+                model.Description,
+                model.InDate,
+                model.Operational,
+                model.RoomId
+            });
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> UpdateEquipmentAsync(int id, EditEquipmentViewModel model)
+        {
+            var response = await _http.PutAsJsonAsync($"api/equipment/{id}", new
+            {
+                model.Description,
+                model.InDate,
+                model.Operational,
+                model.RoomId
+            });
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteEquipmentAsync(int id)
+        {
+            var response = await _http.DeleteAsync($"api/equipment/{id}");
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<List<EquipmentDTO>> GetAllEquipmentAsync()
+        {
+            var result = await _http.GetFromJsonAsync<PagedResult<EquipmentDTO>>(
+                "api/equipment?page=1&pageSize=999");
+            return result?.Items ?? new List<EquipmentDTO>();
+        }
+
+        // --- Schedules ---
+
+        public async Task<PagedResult<ScheduleDTO>> GetSchedulesAsync(int page = 1, int pageSize = 10)
+        {
+            var result = await _http.GetFromJsonAsync<PagedResult<ScheduleDTO>>(
+                $"api/schedule?page={page}&pageSize={pageSize}");
+            return result ?? new PagedResult<ScheduleDTO>();
+        }
+
+        public async Task<ScheduleDTO?> GetScheduleAsync(int id)
+        {
+            var response = await _http.GetAsync($"api/schedule/{id}");
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadFromJsonAsync<ScheduleDTO>();
+        }
+
+        public async Task<bool> CreateScheduleAsync(CreateScheduleViewModel model)
+        {
+            var response = await _http.PostAsJsonAsync("api/schedule", new
+            {
+                model.Start,
+                model.End,
+                model.UserId
+            });
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> UpdateScheduleAsync(int id, EditScheduleViewModel model)
+        {
+            var response = await _http.PutAsJsonAsync($"api/schedule/{id}", new
+            {
+                model.Start,
+                model.End
+            });
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteScheduleAsync(int id)
+        {
+            var response = await _http.DeleteAsync($"api/schedule/{id}");
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<List<ScheduleDTO>> GetAllSchedulesAsync()
+        {
+            var result = await _http.GetFromJsonAsync<PagedResult<ScheduleDTO>>(
+                "api/schedule?page=1&pageSize=999");
+            return result?.Items ?? new List<ScheduleDTO>();
         }
 
         // --- Attendances ---

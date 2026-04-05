@@ -35,6 +35,11 @@ namespace GymSystem.Web.Services
         Task<bool> UpdateStaffAsync(string id, EditStaffViewModel model);
         Task<bool> DeleteStaffAsync(string id);
         Task<CountResponse> GetTotalStaffAsync();
+        Task<List<UserDTO>> GetAllStaffAsync(); // for dropdowns
+
+        // Employees (staff + trainers combined, for schedule dropdowns)
+        Task<List<UserDTO>> GetAllEmployeesAsync();
+        Task<List<UserDTO>> GetEmployeesByBranchAsync(int branchId);
 
         // Trainers
         Task<PagedResult<UserDTO>> GetTrainersAsync(int page = 1, int pageSize = 10,
@@ -129,6 +134,22 @@ namespace GymSystem.Web.Services
         Task<BookingDTO?> GetBookingAsync(int id);
         Task<bool> CreateBookingAsync(CreateBookingViewModel model);
         Task<bool> DeleteBookingAsync(int id);
+
+        // Equipment
+        Task<PagedResult<EquipmentDTO>> GetEquipmentAsync(int page = 1, int pageSize = 10);
+        Task<EquipmentDTO?> GetEquipmentItemAsync(int id);
+        Task<bool> CreateEquipmentAsync(CreateEquipmentViewModel model);
+        Task<bool> UpdateEquipmentAsync(int id, EditEquipmentViewModel model);
+        Task<bool> DeleteEquipmentAsync(int id);
+        Task<List<EquipmentDTO>> GetAllEquipmentAsync();
+
+        // Schedules
+        Task<PagedResult<ScheduleDTO>> GetSchedulesAsync(int page = 1, int pageSize = 10);
+        Task<ScheduleDTO?> GetScheduleAsync(int id);
+        Task<bool> CreateScheduleAsync(CreateScheduleViewModel model);
+        Task<bool> UpdateScheduleAsync(int id, EditScheduleViewModel model);
+        Task<bool> DeleteScheduleAsync(int id);
+        Task<List<ScheduleDTO>> GetAllSchedulesAsync();
 
         // Attendances
         Task<PagedResult<AttendanceDTO>> GetAttendancesAsync(int page = 1, int pageSize = 10,

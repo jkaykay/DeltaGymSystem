@@ -1,11 +1,16 @@
-﻿using GymSystem.Shared.DTOs;
-using GymSystem.Api.Models;
+﻿using GymSystem.Api.Models;
 using GymSystem.Api.Services;
+using GymSystem.Api.Data;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+
+using GymSystem.Shared.DTOs;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace GymSystem.Api.Controllers
 {
@@ -16,15 +21,18 @@ namespace GymSystem.Api.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ITokenService _tokenService;
         private readonly ITokenRevocationService _revocationService;
+        private readonly GymDbContext _context;
 
         public AuthController(
             UserManager<ApplicationUser> userManager,
             ITokenService tokenService,
-            ITokenRevocationService revocationService)
+            ITokenRevocationService revocationService,
+            GymDbContext context)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _revocationService = revocationService;
+            _context = context;
         }
 
         [HttpPost("register")]
@@ -47,7 +55,7 @@ namespace GymSystem.Api.Controllers
                 JoinDate = DateTime.UtcNow,
                 Active = false
             };
-
+            
             var result = await _userManager.CreateAsync(user, request.Password);
 
             if (!result.Succeeded) return BadRequest(result.Errors);
@@ -60,11 +68,28 @@ namespace GymSystem.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
+            //
             var user = await _userManager.FindByEmailAsync(request.EmailOrUserName)
                        ?? await _userManager.FindByNameAsync(request.EmailOrUserName);
 
+
             if (user == null || !await _userManager.CheckPasswordAsync(user, request.Password))
                 return Unauthorized(new { message = "Invalid email/username or password." });
+
+            string gymLocation = "";
+
+            if (user.BranchId != null) 
+            {
+
+                var branch = await _context.Branches.FindAsync(user.BranchId);
+
+                if (branch != null)
+                {
+
+                    gymLocation = $"{branch.City}, {branch.Province}";
+                }
+            }
+              
 
             var token = await _tokenService.GenerateTokenAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
@@ -73,9 +98,10 @@ namespace GymSystem.Api.Controllers
                 token,
                 user.Id,
                 user.UserName ?? string.Empty,
-                user.Email!,
+                user.Email ?? string.Empty,
                 user.FirstName,
                 user.LastName,
+                gymLocation,
                 [.. roles]
             ));
         }
@@ -138,5 +164,14 @@ namespace GymSystem.Api.Controllers
 
             return NoContent();
         }
+
+
+   
     }
+
+
+            
+
+
+        
 }

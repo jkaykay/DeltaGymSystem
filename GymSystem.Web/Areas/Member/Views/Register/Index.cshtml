@@ -1,0 +1,106 @@
+@model RegisterViewModel
+
+@{
+    Layout = null;
+
+    }
+   
+ @{
+    ViewData["Title"] = "Register";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>@ViewData["Title"]</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="~/css/members/login.css" asp-append-version="true"/>
+</head>
+
+<body>
+
+<!-- NAV  BAR-->
+  <nav>
+   <div class="nav-logo">
+      <img src="~/images/logo.png" alt="Delta Gyms Logo" class="nav-logo-img"/>
+    </div>
+    <ul class="nav-links">
+      <li><a asp-area="" asp-controller="Home" asp-action="Index" class="active">Home</a></li>
+      <li><a asp-area="" asp-controller="Classes" asp-action="Index">Classes</a></li>
+      <li><a asp-area="" asp-controller="Memberships" asp-action="Index">Memberships</a></li>
+      <li><a asp-area="Member" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+      <li><a asp-area="Member" asp-controller="MyProfile" asp-action="Index">MyProfile</a></li>
+      <li><a asp-area="" asp-controller="About" asp-action="Index">About</a></li>
+    </ul>
+    </nav>
+
+<section id="register" class="min-vh-100 d-flex align-items-center justify-content-center">
+  <div class="container-user">
+
+    <h2>Create A New Account</h2>
+
+    <!-- Success message -->
+    @if (TempData["SuccessMessage"] is string msg)
+    {
+        <div class="alert alert-success">@msg</div>
+    }
+
+    <!-- Validation summary -->
+    <div asp-validation-summary="ModelOnly" class="error mb-2"></div>
+
+    <form asp-action="Register" asp-controller="Register" asp-area="Member" method="post">
+      @Html.AntiForgeryToken()
+
+      <!-- Username -->
+      <input asp-for="UserName" placeholder="Username" class="form-control mb-2"/>
+      <span asp-validation-for="UserName" class="error"></span>
+
+      <!-- Email -->
+      <input asp-for="Email" placeholder="Email" class="form-control mb-2"/>
+      <span asp-validation-for="Email" class="error"></span>
+
+      <!-- First Name -->
+      <input asp-for="FirstName" placeholder="First Name" class="form-control mb-2"/>
+      <span asp-validation-for="FirstName" class="error"></span>
+
+      <!-- Last Name -->
+      <input asp-for="LastName" placeholder="Last Name" class="form-control mb-2"/>
+      <span asp-validation-for="LastName" class="error"></span>
+
+      <!-- Password -->
+      <input asp-for="Password" type="password" placeholder="Password" class="form-control mb-2"/>
+      <span asp-validation-for="Password" class="error"></span>
+
+      <!-- Confirm Password (frontend only) -->
+      <input name="ConfirmPassword" type="password" placeholder="Confirm Password" class="form-control mb-2"/>
+      
+      <!-- Submit -->
+      <button type="submit" class="registrer-btn w-100 mt-2">
+        Sign Up
+      </button>
+    </form>
+
+    <!-- Login link -->
+    <div class="mt-4 text-center">
+      <p class="text-muted">
+        Already have an account?
+        <a asp-action="Index" asp-controller="Login" asp-area="Member">
+          Login
+        </a>
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- Scripts -->
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+</body>
+</html>

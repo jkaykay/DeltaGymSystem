@@ -1,8 +1,331 @@
-﻿@{
-    ViewData["Title"] = "About Gym";
+@{
+    ViewData["Title"] = "About Us";
 }
 
-<div class="page-block">
-    <h1>About Us</h1>
-    <p>This is the About page.</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DeltaGyms-About Us</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"> // For icons from bootstrap
+
+  <link rel="stylesheet" href="~/css/members/about.css" asp-append-version="true"/>
+  
+</head>
+<body>
+
+  <!-- NAV  BAR-->
+  <nav>
+   <div class="nav-logo">
+      <img src="~/images/logo.png" alt="Delta Gyms Logo" class="nav-logo-img"/>
+    </div>
+    <ul class="nav-links">
+      <li><a asp-area="" asp-controller="Home" asp-action="Index" class="active">Home</a></li>
+      <li><a asp-area="" asp-controller="Classes" asp-action="Index">Classes</a></li>
+      <li><a asp-area="" asp-controller="Memberships" asp-action="Index">Memberships</a></li>
+      <li><a asp-area="Member" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+      <li><a asp-area="Member" asp-controller="MyProfile" asp-action="Index">MyProfile</a></li>
+      <li><a asp-area="" asp-controller="About" asp-action="Index">About</a></li>
+    </ul>
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    <form asp-area="Member" asp-controller="Login" asp-action="Logout" method="post" class="nav-logout">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="logout-btn">
+            Logout
+        </button>
+    </form>
+}
+else
+{
+    <div class="nav-logout">
+        <a asp-area="Member" asp-controller="Login" asp-action="Index" >
+            Login
+        </a>
+    </div>
+}
+  </nav>
+
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-ash-block"></div>
+    <div class="hero-content reveal">
+      <div class="hero-eyebrow">About DeltaGyms</div>
+      <h1 class="hero-title">Built For<br>Champions</h1>
+      <p class="hero-desc">
+        DeltaGyms was founded with one mission — to build a space where every person, 
+        regardless of experience, feels empowered to push their limits. We combine 
+        world-class facilities, expert coaching, and a community that lifts each other up.
+      </p>
+    </div>
+  </section>
+
+  <!-- STATS BAND -->
+  <div class="stats-band reveal">
+    <div class="stat-item">
+      <div class="stat-num">50+</div>
+      <div class="stat-label">Classes Weekly</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">15K+</div>
+      <div class="stat-label">Active Members</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">10+</div>
+      <div class="stat-label">Expert Trainers</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">8</div>
+      <div class="stat-label">Years Running</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">2</div>
+      <div class="stat-label">Locations</div>
+    </div>
+  </div>
+
+  <!-- OUR STORY -->
+  <section class="split-section reveal">
+    <div class="split-content">
+      <span class="section-tag">Our Story</span>
+      <h2 class="section-title">Where It All<br>Started</h2>
+      <p class="section-body">
+        DeltaGyms opened its doors in 2016 with a single gym floor and a vision to 
+        create more than just a place to work out. We wanted to build a community. 
+        Over the years we've grown from a local gym into a full fitness hub, offering 
+        classes, personal training, nutrition advice and more — all under one roof. 
+        Every piece of equipment, every class, and every trainer has been chosen with 
+        one thing in mind: your results.
+      </p>
+    </div>
+    <div class="split-bg bg-red"></div>
+  </section>
+
+  <!-- WHY CHOOSE US -->
+  <section class="why-section reveal">
+    <span class="section-tag" style="color: var(--accent);">Why DeltaGyms</span>
+    <h2 class="section-title white" style="margin-top: 10px;">Why You Should<br>Choose Us</h2>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-num">01</div>
+        <h3>Expert Trainers</h3>
+        <p>All our trainers are fully certified with years of hands-on experience. They tailor every session to your personal goals.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">02</div>
+        <h3>World Class Equipment</h3>
+        <p>We invest in the latest gym equipment so you always have access to the best tools for your training.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">03</div>
+        <h3>Community First</h3>
+        <p>At DeltaGyms, you're never alone. Our community keeps each other accountable, motivated and moving forward.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">04</div>
+        <h3>Flexible Membership</h3>
+        <p>No contracts, no lock ins. Upgrade, downgrade or cancel your plan any time no questions asked ( JustTalk to a staff member).</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">05</div>
+        <h3>All Fitness Levels</h3>
+        <p>Whether you're just starting out or training for competition, we have classes and support for every type of fitness enthusiast.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">06</div>
+        <h3>Clean & Safe Facility</h3>
+        <p>Our facility is cleaned and sanitised throughout the day so you can focus on training in a safe environment.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MACHINES -->
+  <section class="machines-section reveal" id="machines-section">
+    <span class="section-tag">Equipment</span>
+    <h2 class="section-title" style="margin-top: 10px;">What We Got For YOU<br>In The Gym</h2>
+    <div class="machines-list">
+      <div class="machine-item"><span class="machine-dot"></span>Treadmills</div>
+      <div class="machine-item"><span class="machine-dot"></span>Rowing Machines</div>
+      <div class="machine-item"><span class="machine-dot"></span>Stationary Bikes</div>
+      <div class="machine-item"><span class="machine-dot"></span>Cable Machines</div>
+      <div class="machine-item"><span class="machine-dot"></span>Smith Machines</div>
+      <div class="machine-item"><span class="machine-dot"></span>Leg Press</div>
+      <div class="machine-item"><span class="machine-dot"></span>Lat Pulldown</div>
+      <div class="machine-item"><span class="machine-dot"></span>Chest Press</div>
+      <div class="machine-item"><span class="machine-dot"></span>Free Weights</div>
+      <div class="machine-item"><span class="machine-dot"></span>Battle Ropes</div>
+      <div class="machine-item"><span class="machine-dot"></span>Boxing Bags</div>
+      <div class="machine-item"><span class="machine-dot"></span>Yoga & Stretch Area</div>
+      <div class="machine-item"><span class="machine-dot"></span>Squat Racks</div>
+      <div class="machine-item"><span class="machine-dot"></span>Elliptical Trainers</div>
+      <div class="machine-item"><span class="machine-dot"></span>Functional Rig</div>
+      <div class="machine-item"><span class="machine-dot"></span>Sauna & Steam Room</div>
+    </div>
+  </section>
+
+  <!-- CLASS TYPES -->
+  <section class="cards-section reveal">
+    <div class="cards-header">
+      <span class="section-tag">What We Offer</span>
+      <h2 class="section-title" style="margin-top: 10px;">Classes For<br>Every Goal</h2>
+    </div>
+    <div class="cards-grid">
+      <div class="info-card">
+        <div class="card-icon red">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <h3>Cardio</h3>
+        <p>High energy sessions focused on burning fat, boosting endurance and keeping your heart healthy.</p>
+      </div>
+      <div class="info-card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 4v16M18 4v16M2 8h4M18 8h4M2 16h4M18 16h4M6 12h12"/>
+          </svg>
+        </div>
+        <h3>Strength Training</h3>
+        <p>Build muscle, increase power and transform your body with guided strength sessions.</p>
+      </div>
+      <div class="info-card">
+        <div class="card-icon red">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
+        <h3>HIIT</h3>
+        <p>Intense interval training that torches calories and builds strength at the same time.</p>
+      </div>
+      <div class="info-card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="5" r="2"/>
+            <path d="M12 7c-2 2-4 3-4 6h8c0-3-2-4-4-6z"/>
+            <path d="M8 13l-3 5h14l-3-5"/>
+          </svg>
+        </div>
+        <h3>Yoga</h3>
+        <p>Improve flexibility, mindfulness and recovery with our experienced yoga sessions.</p>
+      </div>
+      <div class="info-card">
+        <div class="card-icon red">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="9" width="16" height="10" rx="3"/>
+            <path d="M8 9V6a4 4 0 0 1 8 0v3"/>
+            <line x1="4" y1="14" x2="20" y2="14"/>
+          </svg>
+        </div>
+        <h3>Boxing</h3>
+        <p>Learn technique, build power and relieve stress with our boxing training classes.</p>
+      </div>
+      <div class="info-card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 8v4l3 3"/>
+          </svg>
+        </div>
+        <h3>Personal Training</h3>
+        <p>One to one sessions tailored completely to your goals, schedule and fitness level. You can talk to your trainer about your specific needs and goals.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEMBERSHIP OPS & HOURS -->
+  <section class="ops-section reveal" id="membership-rules">
+    <div class="ops-content">
+      <span class="section-tag white">Membership</span>
+      <h2 class="section-title white">Everything<br>You Need<br>To Know</h2>
+      <ul class="ops-list">
+        <li>No contracts ,cancel anytime with no fees</li>
+        <li>Upgrade or downgrade your plan instantly</li>
+        <li>Freeze your membership for up to 3 months per year (Talk to a staff member)</li>
+        <li>Access to all group classes included in Pro plan</li>
+        <li>Personal locker available on Pro membership</li>
+        <li>Free fitness assessment when you join</li>
+        <li>Student discount with valid ID</li>
+      </ul>
+    </div>
+    <div class="ops-hours" id="opening-hours">
+      <span class="section-tag" style="color: var(--accent);">Opening Hours</span>
+      <h2 class="section-title white" style="margin-top: 6px;">When We're<br>Open</h2>
+      <ul class="hours-list">
+        <li class="hours-row"><span class="day">Monday-Friday</span><span class="time">All day</span></li>
+        <li class="hours-row"><span class="day">Saturday</span><span class="time">06:00 – 22:00</span></li>
+        <li class="hours-row"><span class="day">Sunday</span><span class="time">08:00 – 20:00</span></li>
+        <li class="hours-row"><span class="day">Bank Holidays</span><span class="time closed">10:00 – 18:00</span></li>
+        <li class="hours-row"><span class="day">Christmas Day and New Year's Day</span><span class="time closed">Closed</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact-section reveal" id="contact-section">
+    <span class="section-tag">Get In Touch</span>
+    <h2 class="section-title" style="margin-top: 10px;">Contact Us</h2>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="contact-icon">
+          <i class="bi bi-geo-alt-fill"></i>
+        </div>
+        <span class="contact-label">Address</span>
+        <span class="contact-value">12 Delta Street, London, United Kingdom</span>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon">
+         <i class="bi bi-telephone-fill"></i>
+        </div>
+        <span class="contact-label">Phone</span>
+        <span class="contact-value">+44 000 0000 000</span>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon">
+         <i class="bi bi-envelope-fill"></i>
+        </div>
+        <span class="contact-label">Email</span>
+        <span class="contact-value">hello@deltagyms.com</span>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon">
+          <i class="bi bi-globe"></i>
+        </div>
+        <span class="contact-label">Social</span>
+        <span class="contact-value">DeltaGyms Socials</span> 
+      </div>
+    </div>
+  </section>
+
+
+<footer class="site-footer">
+    <div class="footer-bottom">
+      <div class="footer-logo-wrap">
+      <img src="~/images/logo.png" alt="Delta Gyms Logo" class="nav-logo-img"/>
+    </div>
+      <span class="footer-brand">DELTAGYMS</span> <br/>
+      <p class="footer-copy">2026 DELTAGYMS all rights reserved</p>
+    </div>
+  </footer>
+
+  <script>
+
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+      nav.style.boxShadow = window.scrollY > 10 ? '0 4px 24px rgba(0,0,0,0.08)' : 'none';
+    });
+
+    const items = document.querySelectorAll('.reveal');
+    items.forEach((el, i) => el.style.transitionDelay = `${i * 80}ms`);
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      });
+    }, { threshold: 0.08 });
+    items.forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>

@@ -1,23 +1,64 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-//using GymSystem.Web.Areas.Trainer.Models;
+using System.Security.Claims;
+using GymSystem.Web.Areas.Trainer.ViewModels;
+using GymSystem.Web.Services;
+using GymSystem.Shared.DTOs;
 
-namespace GymSystem.Web.Areas.Trainer.Controllers;
 
-[Area("Trainer")]
-[Authorize(Roles = "Trainer")]
-public class DashboardController : Controller
+namespace GymSystem.Web.Areas.Trainer.Controllers
 {
-    private readonly HttpClient _api;
-
-    public DashboardController(IHttpClientFactory httpClientFactory)
+    [Authorize(Roles = "Trainer")]
+    [Area("Trainer")]
+    public class DashboardController : Controller
     {
-        _api = httpClientFactory.CreateClient("GymApi");
-    }
+        private readonly ITrainerApiService _trainerApiService;
 
-    public async Task<IActionResult> Index()
-    {
-        // Call API — no business logic here
-        return View();
+        public DashboardController(ITrainerApiService trainerApiService)
+        {
+
+            _trainerApiService = trainerApiService;
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            var token = await HttpContext.GetTokenAsync("access_token");
+
+            if (string.IsNullOrWhiteSpace(token))
+                return Challenge();
+
+            var trainerId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
+            var trainerName = User.FindFirst("firstName")?.Value ?? "Trainer";
+
+            var sessions = await _trainerApiService.GetSessionsAsync(token);
+
+            var today = DateTime.Today;
+
+            var todaySessions = new List<SessionDTO>();
+
+            foreach (var session in sessions)
+            {
+
+
+                if (session.InstructorId == trainerId && session.Start.Date == today)
+                {
+                    todaySessions.Add(session);
+                }
+            }
+
+            todaySessions = todaySessions.OrderBy(s => s.Start).ToList();
+
+            var model = new TrainerDashboardViewModel
+            {
+                TrainerName = trainerName,
+                TodaySessions = todaySessions
+            };
+
+            return View(model);
+
+        }
     }
 }

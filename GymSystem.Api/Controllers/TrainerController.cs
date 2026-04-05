@@ -85,7 +85,14 @@ public class TrainerController : ControllerBase
                 HireDate = m.HireDate,
                 EmployeeId = m.EmployeeId,
                 Active = m.Active,
-                BranchId = m.BranchId
+                BranchId = m.BranchId,
+                Roles = _context.UserRoles
+                    .Where(ur => ur.UserId == m.Id)
+                    .Join(_context.Roles,
+                        ur => ur.RoleId,
+                        r => r.Id,
+                        (ur, r) => r.Name!)
+                    .ToList()
             })
             .ToPagedResultAsync(request.Page, request.PageSize);
 

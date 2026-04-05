@@ -1,0 +1,47 @@
+﻿@model GymSystem.Web.Areas.Trainer.ViewModels.TrainerLoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+@{
+    Layout = "~/Areas/Trainer/Views/Shared/_TrainerLoginLayout.cshtml";
+}
+
+<main class="login-page">
+    <section class="login-card" aria-labelledby="login-heading">
+        <h1 class="login-title" id="login-heading">Login</h1>
+        <p class="login-subtitle">Sign in with your username or email and password to access your account.</p>
+
+        <form asp-area="Trainer" asp-controller="Auth" asp-action="Index" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="EmailOrUserName"></label>
+                <input asp-for="EmailOrUserName" placeholder="Enter your email or username" />
+                <span asp-validation-for="EmailOrUserName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" placeholder="Enter your password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-row">
+                <label class="remember-me">
+                    <input asp-for="RememberMe" />
+                    Remember me
+                </label>
+                <br />
+                <br />
+                <a class="forgot-password" href="#">Forgot password?</a>
+            </div>
+
+            <button class="login-button" type="submit">Log In</button>
+        </form>
+
+        <p class="bottom-text">Welcome Trainer</p>
+    </section>
+</main>
