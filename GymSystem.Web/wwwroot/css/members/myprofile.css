@@ -6,7 +6,7 @@
       --dark: #111111;
       --accent: #c21c1c;
       --text: #ffffff;
-      --muted: #888;
+      --muted: #e4e4e0;
       --border: #e2e2de;
       --green: #4ade80;
       --green-bg: #dcfce7;
@@ -281,6 +281,18 @@
   border-radius: 8px;
 }
 
+.save-btn {
+  background: var(--accent);
+  color: var(--text);
+  border: none;
+  padding: 13px 34px;
+  border-radius: 50px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.15s;
+}
+.save-btn:hover { background-color: var(--muted); color: var(--bg); transform: translateY(-2px); }
 
     /* ── SCROLL REVEAL ── */
     .reveal {

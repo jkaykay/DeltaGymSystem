@@ -2,74 +2,74 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using GymSystem.Web.Areas.Member.ViewModels;
 using GymSystem.Web.Services;
+using System.Security.Claims;
 
-namespace GymSystem.Web.Areas.Member.Controllers
+namespace GymSystem.Web.Areas.Member.Controllers;
+
+[Authorize]
+[Area("Member")]
+public class MyProfileController : Controller
 {
-    [Authorize]
-    [Area("Member")]
-    public class MyProfileController : Controller
+    private readonly IMemberApiService _memberApiService;
+
+    public MyProfileController(IMemberApiService memberApiService)
     {
-        private readonly IMemberApiService _memberApiService;
+        _memberApiService = memberApiService;
+    }
 
-        public MyProfileController(IMemberApiService memberApiService)
+    public async Task<IActionResult> Index()
+    {
+
+        var memberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var profile = await _memberApiService.GetMyProfileAsync();
+
+        if (profile == null)
         {
-            _memberApiService = memberApiService;
+            ModelState.AddModelError(string.Empty, "Could not load profile.");
+            return View(new ProfileViewModel());
         }
 
-        // GET: Member/MyProfile
-        public async Task<IActionResult> Index()
+        var qrCode = await _memberApiService.GetMyQRAsync(memberId!);
+
+        var model = new ProfileViewModel
         {
-            try
-            {
-                var profile = await _memberApiService.GetMyProfileAsync();
+            UserId          = profile.Id,
+            UserName        = profile.UserName,
+            FullName        = $"{profile.FirstName} {profile.LastName}",
+            Email           = profile.Email,
+            FirstName       = profile.FirstName,
+            LastName        = profile.LastName,
+            MembershipName  = profile.MembershipName,
+            MembershipPrice = profile.MembershipPrice,
+            QrCodeBase64    = qrCode != null ? qrCode.QrCodeBase64 : null
+        };
 
-                if (profile == null)
-                    return RedirectToAction("Index", "Login", new { area = "Member" });
+        return View(model);
+    }
 
-                var model = new ProfileViewModel
-                  {
-                    UserName = profile.UserName,
-                    FullName = profile.FirstName + " " + profile.LastName,
-                    Email = profile.Email,
-                    MembershipName = profile.MembershipName,
-                    MembershipPrice = profile.MembershipPrice,
-                    MemberCode = profile.MemberCode
-                };
-
-                return View(model);
-            }
-
-            catch (Exception)
-            {
-                ModelState.AddModelError(string.Empty, "An error occurred while loading your profile. Please try again later.");
-                return View(new ProfileViewModel());
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(ProfileViewModel model)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Update(ProfileViewModel model)
+    {
+        try
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return View("Index", model);
+            if (!ModelState.IsValid)
+                return View("Index", model);
 
-                var result = await _memberApiService.UpdateProfileAsync(model);
-                if (!result.Success)
-                {
-                    ModelState.AddModelError("", result.Error ?? "Update failed.");
-                    return View("Index", model);
-                }
-
-                TempData["SuccessMessage"] = "Profile updated successfully!";
-                return RedirectToAction("Index");
-            }
-            catch (Exception ex)
+            var result = await _memberApiService.UpdateProfileAsync(model);
+            if (!result.Success)
             {
-                ModelState.AddModelError("", "Something went wrong: " + ex.Message);
+                ModelState.AddModelError(string.Empty, result.Error ?? "Update failed.");
                 return View("Index", model);
             }
+
+            TempData["SuccessMessage"] = "Profile updated successfully!";
+            return RedirectToAction("Index");
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, "Something went wrong: " + ex.Message);
+            return View("Index", model);
         }
     }
 }

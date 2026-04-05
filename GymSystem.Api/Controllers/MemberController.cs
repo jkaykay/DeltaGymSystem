@@ -228,6 +228,32 @@ public class MemberController : ControllerBase
         return NoContent();
     }
 
+[HttpGet("me")]
+public async Task<IActionResult> GetMe()
+{
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    if (userId is null) return Unauthorized();
+
+    var user = await _userManager.FindByIdAsync(userId);
+    if (user is null) return NotFound();
+
+    var roles = await _userManager.GetRolesAsync(user);
+    if (!roles.Contains("Member"))
+        return Forbid();
+
+    return Ok(new ProfileDto
+    {
+        Id             = user.Id,
+        UserName       = user.UserName!,
+        Email          = user.Email!,
+        FirstName      = user.FirstName,
+        LastName       = user.LastName,
+        MembershipName  = "N/A",   
+        MembershipPrice = 0        
+    });
+}
+
+
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(string id)
