@@ -257,30 +257,3 @@
     </div>
   </section>
 
-
-<footer class="site-footer">
-    <div class="footer-bottom">
-      <div class="footer-logo-wrap">
-      <img src="~/images/logo.png" alt="Delta Gyms Logo" class="nav-logo-img"/>
-    </div>
-      <span class="footer-brand">DELTAGYMS</span> <br/>
-      <p class="footer-copy">2026 DELTAGYMS all rights reserved</p>
-    </div>
-  </footer>
-
-  <script>
-
-    const nav = document.querySelector('nav');
-    window.addEventListener('scroll', () => {
-      nav.style.boxShadow = window.scrollY > 10 ? '0 4px 24px rgba(0,0,0,0.08)' : 'none';
-    });
-
-    const items = document.querySelectorAll('.reveal');
-    items.forEach((el, i) => el.style.transitionDelay = `${i * 80}ms`);
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
-      });
-    }, { threshold: 0.08 });
-    items.forEach(el => observer.observe(el));
-  </script>

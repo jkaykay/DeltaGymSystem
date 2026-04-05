@@ -152,22 +152,6 @@
   </div>
 
   <script>
-    // Nav shadow
-    const nav = document.querySelector('nav');
-    window.addEventListener('scroll', () => {
-      nav.style.boxShadow = window.scrollY > 10 ? '0 4px 24px rgba(0,0,0,0.08)' : 'none';
-    });
-
-    // Scroll reveal
-    const items = document.querySelectorAll('.reveal');
-    items.forEach((el, i) => el.style.transitionDelay = `${i * 60}ms`);
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
-      });
-    }, { threshold: 0.08 });
-    items.forEach(el => observer.observe(el));
-
     // Slot selection
     let selectedSlotData = null;
 

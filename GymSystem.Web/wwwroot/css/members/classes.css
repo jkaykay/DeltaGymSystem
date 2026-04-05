@@ -177,30 +177,6 @@
     }
     .join-btn:hover { background-color: #333; transform: translateY(-2px); }
 
-    /* Scroll to Top Button */
-    .scroll-top-btn {
-  position: fixed;
-  bottom: 36px;
-  right: 36px;
-  width: 48px;
-  height: 48px;
-  background: var(--dark);
-  color: white;
-  border: white solid 2px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s, transform 0.2s;
-  z-index: 999;
-
-}
-.scroll-top-btn:hover { transform: translateY(-3px); }
-.scroll-top-btn.visible { opacity: 1; pointer-events: all; }
-
 /* ── Questions and answers ── */
     .faq-section { margin-bottom: 60px; }
 
@@ -276,13 +252,4 @@
     .class-row.info-left  .class-bg-panel   { order: 2; }
     .class-row.info-right .class-bg-panel   { order: 1; }
     .class-row.info-right .class-info-panel { order: 2; }
-
-    /* ── SCROLL REVEAL ── */
-    .reveal {
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
-    }
-    .reveal.visible { opacity: 1; transform: none; }
-
 

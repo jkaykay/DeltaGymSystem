@@ -1,25 +1,3 @@
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #000000;
-      --card-bg: #e4e4e0;
-      --dark: #111111;
-      --accent: #c21c1c;
-      --text: #ffffff;
-      --muted: #666;
-      --nav-h: 72px;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Barlow', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      overflow-x: hidden;
-    }
-
-
     /* ── PAGE WRAPPER ── */
     .page {
       margin-top: var(--nav-h);
@@ -311,11 +289,3 @@
       font-weight: 500;
     }
     .ask-delta-input input::placeholder { color: #aaa; }
-
-    /* ── SCROLL REVEAL ── */
-    .reveal {
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
-    }
-    .reveal.visible { opacity: 1; transform: none; }

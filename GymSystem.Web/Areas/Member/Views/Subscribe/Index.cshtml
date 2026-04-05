@@ -98,12 +98,6 @@
   </div>
 
   <script>
-    // Nav shadow
-    const nav = document.querySelector('nav');
-    window.addEventListener('scroll', () => {
-      nav.style.boxShadow = window.scrollY > 10 ? '0 4px 24px rgba(0,0,0,0.08)' : 'none';
-    });
-
     // Read plan from URL params so you can pass ?plan=basic or ?plan=pro
     // e.g. href="checkout.html?plan=basic" from memberships page
     const params = new URLSearchParams(window.location.search);
