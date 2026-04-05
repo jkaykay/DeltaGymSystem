@@ -1,0 +1,253 @@
+@{
+    Layout = null;
+}
+
+@{
+    ViewData["Title"] = "Booking";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DeltaGyms – Book a Class</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"> // For icons from bootstrap
+  <link rel="stylesheet" href="~/css/members/booking.css" asp-append-version="true"/>
+
+</head>
+<body>
+
+  <!-- NAV  BAR-->
+  <nav>
+   <div class="nav-logo">
+      <img src="~/images/logo.png" alt="Delta Gyms Logo" class="nav-logo-img"/>
+    </div>
+    <ul class="nav-links">
+      <li><a asp-area="" asp-controller="Home" asp-action="Index" class="active">Home</a></li>
+      <li><a asp-area="" asp-controller="Classes" asp-action="Index">Classes</a></li>
+      <li><a asp-area="" asp-controller="Memberships" asp-action="Index">Memberships</a></li>
+      <li><a asp-area="Member" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+      <li><a asp-area="Member" asp-controller="MyProfile" asp-action="Index">MyProfile</a></li>
+      <li><a asp-area="" asp-controller="About" asp-action="Index">About</a></li>
+    </ul>
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    <form asp-area="Member" asp-controller="Login" asp-action="Logout" method="post" class="nav-logout">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="logout-btn">
+            Logout
+        </button>
+    </form>
+}
+else
+{
+    <div class="nav-logout">
+        <a asp-area="Member" asp-controller="Login" asp-action="Index" >
+            Login
+        </a>
+    </div>
+}
+  </nav>
+
+
+  <!-- PAGE -->
+  <div class="page">
+    <a asp-area="" asp-controller="Classes" asp-action="Index" class="back-link reveal">
+        <i class="bi bi-arrow-left"></i> Back to Classes
+    </a>
+
+    <!-- Hero Banner -->
+    <div class="class-hero reveal">
+      <div class="class-hero-content">
+        <span class="class-type-tag">CARDIO</span>
+        <h1>Power Cardio</h1>
+      </div>
+    </div>
+
+    <div class="booking-grid">
+
+      <!-- LEFT COLUMN -->
+      <div>
+
+        <!-- Description -->
+        <div class="info-card reveal">
+          <div class="card-title">About this Class</div>
+          <p class="class-description">
+            Power Cardio is a high-energy class designed to get your heart pumping and calories burning fast. 
+            This session combines interval training, bodyweight movements and cardio drills to help you 
+            build endurance and burn fat effectively. Suitable for all fitness levels — modifications are 
+            always available. Come ready to sweat!
+          </p>
+        </div>
+
+        <!-- Trainer -->
+        <div class="trainer-card reveal">
+          <div class="trainer-avatar" style="color: #ffffff;">
+             <i class="bi bi-person"></i>
+          </div>
+          <div class="trainer-details">
+            <div class="trainer-name">Marcus Lewis</div>
+            <div class="trainer-role">Cardio &amp; Strength Specialist</div>
+            <div class="trainer-bio">10 years of experience coaching group fitness. Certified personal trainer and nutrition advisor.</div>
+          </div>
+        </div>
+
+        <!-- Time Slots -->
+        <div class="slots-card reveal">
+          <div class="card-title">Pick a Time Slot</div>
+          <div class="slots-grid">
+            <div class="slot" onclick="selectSlot(this, 'Monday, 25 Mar', '06:00 – 07:00', 18, 20)">
+              <div class="slot-time">06:00 AM</div>
+              <div class="slot-date">Mon 25 Mar</div>
+              <div class="slot-spots">18/20 spots</div>
+            </div>
+            <div class="slot" onclick="selectSlot(this, 'Monday, 25 Mar', '09:00 – 10:00', 10, 20)">
+              <div class="slot-time">09:00 AM</div>
+              <div class="slot-date">Mon 25 Mar</div>
+              <div class="slot-spots low">10/20 spots</div>
+            </div>
+            <div class="slot full">
+              <div class="slot-time">12:00 PM</div>
+              <div class="slot-date">Mon 25 Mar</div>
+              <div class="slot-spots low">Full</div>
+            </div>
+            <div class="slot" onclick="selectSlot(this, 'Tuesday, 26 Mar', '06:00 – 07:00', 15, 20)">
+              <div class="slot-time">06:00 AM</div>
+              <div class="slot-date">Tue 26 Mar</div>
+              <div class="slot-spots">15/20 spots</div>
+            </div>
+            <div class="slot" onclick="selectSlot(this, 'Tuesday, 26 Mar', '18:00 – 19:00', 5, 20)">
+              <div class="slot-time">06:00 PM</div>
+              <div class="slot-date">Tue 26 Mar</div>
+              <div class="slot-spots low">5/20 spots</div>
+            </div>
+            <div class="slot" onclick="selectSlot(this, 'Wednesday, 27 Mar', '07:00 – 08:00', 19, 20)">
+              <div class="slot-time">07:00 AM</div>
+              <div class="slot-date">Wed 27 Mar</div>
+              <div class="slot-spots">19/20 spots</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: Summary -->
+      <div class="summary-card reveal">
+        <div class="summary-title">Booking Summary</div>
+
+        <div class="summary-row">
+          <span class="label">Class</span>
+          <span class="value">Power Cardio</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Trainer</span>
+          <span class="value">Marcus Lewis</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Duration</span>
+          <span class="value">60 minutes</span>
+        </div>
+          <div class="summary-row">
+          <span class="label">Location / Room </span>
+          <span class="value">Studio A</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Date &amp; Time</span>
+          <span class="value" id="selected-slot">— Select a slot</span>
+        </div>
+      
+
+        <hr class="summary-divider"/>
+
+        <div class="spots-bar-wrap">
+          <div class="spots-bar-label">
+            <span>Spots remaining</span>
+            <span id="spots-text">— </span>
+          </div>
+          <div class="spots-bar">
+            <div class="spots-bar-fill" id="spots-bar-fill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <button class="confirm-btn" id="confirm-btn" disabled onclick="confirmBooking()">
+          Select a time slot
+        </button>
+        <p class="confirm-note">A confirmation will be sent and you'll be redirected to your Dashboard.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONFIRMATION OVERLAY -->
+  <div class="overlay" id="overlay">
+    <div class="confirm-modal">
+      <div class="confirm-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <h2>You're Booked!</h2>
+      <p>Your class has been confirmed. A confirmation has been sent to you. See you on the studio</p>
+      <form asp-area="Member" asp-controller="Dashboard" asp-action="Index" method="get">
+        <button type="submit" class="modal-btn">Go to Dashboard</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Nav shadow
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+      nav.style.boxShadow = window.scrollY > 10 ? '0 4px 24px rgba(0,0,0,0.08)' : 'none';
+    });
+
+    // Scroll reveal
+    const items = document.querySelectorAll('.reveal');
+    items.forEach((el, i) => el.style.transitionDelay = `${i * 60}ms`);
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      });
+    }, { threshold: 0.08 });
+    items.forEach(el => observer.observe(el));
+
+    // Slot selection
+    let selectedSlotData = null;
+
+    function selectSlot(el, date, time, filled, total) {
+      document.querySelectorAll('.slot').forEach(s => s.classList.remove('selected'));
+      el.classList.add('selected');
+
+      selectedSlotData = { date, time, filled, total };
+
+      // Update summary
+      document.getElementById('selected-slot').textContent = `${date}, ${time}`;
+
+      // Update spots bar
+      const remaining = total - filled;
+      const pct = (filled / total) * 100;
+      document.getElementById('spots-text').textContent = `${remaining} / ${total}`;
+      document.getElementById('spots-bar-fill').style.width = pct + '%';
+
+      // Enable confirm button
+      const btn = document.getElementById('confirm-btn');
+      btn.disabled = false;
+      btn.textContent = 'Confirm Booking';
+    }
+
+    // Confirm booking
+    function confirmBooking() {
+      if (!selectedSlotData) return;
+
+      // Show overlay
+      document.getElementById('overlay').classList.add('show');
+    }
+
+    // Go to dashboard
+    function goToDashboard() {
+      window.location.href = 'dashboard.html';
+    }
+  </script>
+</body>
+</html>

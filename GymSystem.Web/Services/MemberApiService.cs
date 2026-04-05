@@ -2,38 +2,79 @@
 using GymSystem.Shared.DTOs;
 using System.Runtime.InteropServices;
 
-namespace GymSystem.Web.Services
+namespace GymSystem.Web.Services;
+
+public class MemberApiService : IMemberApiService
 {
-    public class MemberApiService : IMemberApiService
+    private readonly HttpClient _http;
+
+    public MemberApiService(IHttpClientFactory factory)
     {
-        private readonly HttpClient _http;
+        _http = factory.CreateClient("GymApi");
+    }
 
-        public MemberApiService(IHttpClientFactory factory)
+    public async Task<(bool Success, LoginResponse? Data, string? Error)> LoginAsync(LoginRequest request)
+    {
+        var response = await _http.PostAsJsonAsync("api/auth/login", request);
+
+        if (!response.IsSuccessStatusCode)
         {
-            _http = factory.CreateClient("GymApi");
+            var error = await response.Content.ReadAsStringAsync();
+            return (false, null, error);
         }
 
-        public async Task<LoginResponse?> MemberLoginAsync(string emailOrUserName, string password)
+        var data = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        return (true, data, null);
+    }
+
+    public async Task<(bool Success, string? Error)> RegisterAsync(RegisterRequest request)
+    {
+        var response = await _http.PostAsJsonAsync("api/auth/register", request);
+
+        if (!response.IsSuccessStatusCode)
         {
-            var response = await _http.PostAsJsonAsync("api/auth/login", new { emailOrUserName, password });
-
-            if (!response.IsSuccessStatusCode)
-                return null;
-
-            return await response.Content.ReadFromJsonAsync<LoginResponse>();
+            var error = await response.Content.ReadAsStringAsync();
+            return (false, error);
         }
 
-        public async Task MemberLogoutAsync()
-        {
-            await _http.PostAsync("api/auth/logout", null);
-        }
+        return (true, null);
+    }
 
-        public async Task<QRCodeResponse?> GetMyQRAsync(string id)
-        {
-            var code = await _http.GetAsync($"api/QRCode/generate/{id}");
-            if (!code.IsSuccessStatusCode) return null;
+    public async Task<int> GetUpcomingClassesCountAsync(string memberId)
+    {
+        var response = await _http.GetFromJsonAsync<CountResponse>($"api/members/{memberId}/upcoming-classes/count");
+        return response?.Count ?? 0;
+    }
 
-            return await code.Content.ReadFromJsonAsync<QRCodeResponse>();
-        }
+    public async Task<int> GetTotalBookingsCountAsync(string memberId)
+    {
+        var response = await _http.GetFromJsonAsync<CountResponse>($"api/members/{memberId}/bookings/count");
+        return response?.Count ?? 0;
+    }
+
+    public async Task<int> GetClassesAttendedCountAsync(string memberId)
+    {
+        var response = await _http.GetFromJsonAsync<CountResponse>($"api/members/{memberId}/attended/count");
+        return response?.Count ?? 0;
+    }
+
+    public async Task<List<LogItem>> GetLogHistoryAsync(string memberId)
+    {
+        var response = await _http.GetFromJsonAsync<List<LogItem>>($"api/members/{memberId}/logs");
+        return response ?? new List<LogItem>();
+    }
+
+    public async Task<List<PaymentItem>> GetPaymentHistoryAsync(string memberId)
+    {
+        var response = await _http.GetFromJsonAsync<List<PaymentItem>>($"api/members/{memberId}/payments");
+        return response ?? new List<PaymentItem>();
+    }
+
+    public async Task<QRCodeResponse?> GetMyQRAsync(string id)
+    {
+        var code = await _http.GetAsync($"api/QRCode/generate/{id}");
+        if (!code.IsSuccessStatusCode) return null;
+
+        return await code.Content.ReadFromJsonAsync<QRCodeResponse>();
     }
 }

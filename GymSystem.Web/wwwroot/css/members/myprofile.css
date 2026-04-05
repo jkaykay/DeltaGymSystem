@@ -1,0 +1,294 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #010101;
+      --card-bg: #ffffff;
+      --dark: #111111;
+      --accent: #c21c1c;
+      --text: #ffffff;
+      --muted: #888;
+      --border: #e2e2de;
+      --green: #4ade80;
+      --green-bg: #dcfce7;
+      --nav-h: 72px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      background: rgba(255, 255, 254, 0.92);
+      backdrop-filter: blur(12px);
+      --text :var(--bg);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(0,0,0,0.07);
+    }
+
+    .nav-logo {
+      width: 55px; height: 55px;
+      background: var(--dark);
+      border-radius: 15px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .nav-logo img { 
+      width: 48px; 
+      height: 48px; 
+      fill: white; 
+    border-radius: 10px;
+   }
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: 0.01em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-links a.active { font-weight: 700; }
+
+    .nav-logout a {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text);
+      text-decoration: none;
+      border: 2px solid var(--dark);
+      padding: 7px 20px;
+      border-radius: 8px;
+      transition: background-color 0.5s, color 0.2s;
+    }
+    .nav-logout a:hover { background: var(--dark); color: white; }
+
+     .logout-btn {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text);
+      text-decoration: none;
+      border: 2px solid var(--dark);
+      padding: 7px 20px;
+      border-radius: 8px;
+      transition: background-color 0.5s, color 0.2s;
+    }
+    .logout-btn:hover { background: var(--dark); color: white; }
+
+    /* ── PROFILE PAGE TITLE ── */
+    .profile-page-title {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 900;
+      font-size: clamp(28px, 4vw, 38px);
+      letter-spacing: 0.08em;
+      color: var(--text);
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    /* ── PAGE ── */
+    .page {
+      margin-top: var(--nav-h);
+      padding: 48px 48px 80px;
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ── EDIT BUTTON ── */
+    .edit-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .edit-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 6px 0;
+      transition: opacity 0.2s;
+    }
+    .edit-btn:hover { opacity: 0.6; }
+
+    .edit-btn svg {
+      width: 20px; height: 20px;
+      fill: none;
+      stroke: var(--text);
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    
+
+    /* ── MAIN GRID ── */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 40px;
+      align-items: start;
+      margin-bottom: 40px;
+    }
+
+    /* ── LEFT: USER INFO ── */
+    .user-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(36px, 5vw, 52px);
+      letter-spacing: 0.04em;
+      color: var(--text);
+      margin-bottom: 14px;
+      line-height: 1;
+    }
+
+    .membership-badge {
+      display: inline-block;
+      background: var(--green-bg);
+      color: #16a34a;
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      padding: 7px 16px;
+      border-radius: 50px;
+      margin-bottom: 18px;
+    }
+
+    .membership-price {
+      display: flex;
+      align-items: flex-start;
+      line-height: 1;
+      margin-bottom: 24px;
+    }
+    .membership-price .dollar {
+      font-size: 22px;
+      font-weight: 900;
+      margin-top: 6px;
+    }
+    .membership-price .amount {
+      font-size: 54px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .full-name-label {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* ── RIGHT: MEMBER CODE CARD ── */
+    .member-code-card {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      padding: 30px 32px;
+    }
+
+    .member-code-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 30px;
+      letter-spacing: 0.05em;
+      color: var(--dark);
+      margin-bottom: 24px;
+    }
+
+    .member-code-body {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    /* QR code SVG placeholder */
+    .qr-wrap {
+      flex-shrink: 0;
+      width: 72px; height: 72px;
+    }
+
+    .member-code-info .code-value {
+      font-weight: 900;
+      font-size: 17px;
+      color: var(--dark);
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+    .member-code-info .code-hint {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* ── FIELDS GRID ── */
+    .fields-section { margin-bottom: 32px; }
+
+    .fields-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field-label {
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+
+    .field-box {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--muted);
+      font-family: 'Barlow', sans-serif;
+    }
+
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }

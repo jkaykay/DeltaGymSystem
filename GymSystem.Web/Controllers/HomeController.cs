@@ -1,5 +1,5 @@
 using GymSystem.Web.Services;
-using GymSystem.Web.ViewModels;
+using GymSystem.Web.Areas.Trainer.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
