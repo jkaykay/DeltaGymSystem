@@ -49,20 +49,47 @@ public class TrainerController : ControllerBase
     [OutputCache(PolicyName = "trainers")]
     public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var result = await TrainersQuery()
-            .Select(m => new UserDTO
+        var pagedTrainers = await TrainersQuery()
+            .Select(m => new
             {
-                Id = m.Id,
+                m.Id,
                 Email = m.Email!,
                 UserName = m.UserName!,
-                FirstName = m.FirstName,
-                LastName = m.LastName,
-                HireDate = m.HireDate,
-                EmployeeId = m.EmployeeId,
-                Active = m.Active,
-                BranchId = m.BranchId
+                m.FirstName,
+                m.LastName,
+                m.HireDate,
+                m.EmployeeId,
+                m.Active,
+                m.BranchId,
+                Roles = _context.UserRoles
+                    .Where(ur => ur.UserId == m.Id)
+                    .Join(_context.Roles,
+                        ur => ur.RoleId,
+                        r => r.Id,
+                        (ur, r) => r.Name!)
+                    .ToList()
             })
             .ToPagedResultAsync(page, pageSize);
+
+        var result = new PagedResult<UserDTO>
+        {
+            Page = pagedTrainers.Page,
+            PageSize = pagedTrainers.PageSize,
+            TotalCount = pagedTrainers.TotalCount,
+            Items = pagedTrainers.Items.Select(t => new UserDTO
+            {
+                Id = t.Id,
+                Email = t.Email,
+                UserName = t.UserName,
+                FirstName = t.FirstName,
+                LastName = t.LastName,
+                HireDate = t.HireDate,
+                EmployeeId = t.EmployeeId,
+                Active = t.Active,
+                BranchId = t.BranchId,
+                Roles = t.Roles
+            }).ToList()
+        };
 
         return Ok(result);
     }

@@ -152,6 +152,14 @@ builder.Services.AddOutputCache(options =>
     options.AddPolicy("attendance", policy => policy
         .Expire(TimeSpan.FromSeconds(10))
         .Tag("attendance"));
+
+    options.AddPolicy("equipment", policy => policy
+        .Expire(TimeSpan.FromSeconds(60))
+        .Tag("equipment"));
+
+    options.AddPolicy("schedules", policy => policy
+        .Expire(TimeSpan.FromSeconds(30))
+        .Tag("schedules"));
 });
 
 builder.Services.AddControllers();

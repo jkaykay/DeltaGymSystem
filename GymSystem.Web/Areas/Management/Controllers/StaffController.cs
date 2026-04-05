@@ -67,12 +67,16 @@ public class StaffController : Controller
         if (staff is null)
             return NotFound();
 
+        ViewBag.Branches = await _api.GetAllBranchesAsync();
+
         var vm = new EditStaffViewModel
         {
             Id = staff.Id,
             Email = staff.Email,
             FirstName = staff.FirstName,
-            LastName = staff.LastName
+            LastName = staff.LastName,
+            EmployeeId = staff.EmployeeId,
+            BranchId = staff.BranchId
         };
 
         return View(vm);
@@ -84,13 +88,17 @@ public class StaffController : Controller
     public async Task<IActionResult> Edit(EditStaffViewModel model)
     {
         if (!ModelState.IsValid)
+        {
+            ViewBag.Branches = await _api.GetAllBranchesAsync();
             return View(model);
+        }
 
         var success = await _api.UpdateStaffAsync(model.Id, model);
 
         if (!success)
         {
             ModelState.AddModelError(string.Empty, "Failed to update staff member.");
+            ViewBag.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
 
