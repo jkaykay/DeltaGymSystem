@@ -1,0 +1,31 @@
+<!-- NAV BAR -->
+<nav>
+  <div class="nav-logo">
+    <img src="~/images/logo.png" alt="Delta Gym Logo" class="nav-logo-img"/>
+  </div>
+  <ul class="nav-links">
+    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+    <li><a asp-area="" asp-controller="Classes" asp-action="Index">Classes</a></li>
+    <li><a asp-area="" asp-controller="Memberships" asp-action="Index">Memberships</a></li>
+    <li><a asp-area="Member" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+    <li><a asp-area="Member" asp-controller="MyProfile" asp-action="Index">MyProfile</a></li>
+    <li><a asp-area="" asp-controller="About" asp-action="Index">About</a></li>
+  </ul>
+  @if (User.Identity != null && User.Identity.IsAuthenticated)
+  {
+    <form asp-area="Member" asp-controller="Login" asp-action="Logout" method="post" class="nav-logout">
+      @Html.AntiForgeryToken()
+      <button type="submit" class="logout-btn">
+        Logout
+      </button>
+    </form>
+  }
+  else
+  {
+    <div class="nav-logout">
+      <a asp-area="Member" asp-controller="Login" asp-action="Index">
+        Login
+      </a>
+    </div>
+  }
+</nav>

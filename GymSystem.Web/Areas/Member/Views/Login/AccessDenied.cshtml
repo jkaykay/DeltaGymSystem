@@ -1,0 +1,25 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/members/login.css" asp-append-version="true" />
+}
+
+<div class="page">
+    <section class="min-vh-100 d-flex align-items-center justify-content-center">
+        <div class="container-user">
+            <h2>🚫 Access Denied</h2>
+            <p style="margin-bottom: 20px; color: #555;">
+                You do not have permission to access this page.
+            </p>
+            <p style="margin-bottom: 25px; color: #888; font-size: 14px;">
+                Please log in with an account that has the required permissions.
+            </p>
+            <a asp-controller="Login" asp-action="Index" asp-area="Member" class="login-btn"
+               style="display: inline-block; text-decoration: none; padding: 12px 30px;">
+                Back to Login
+            </a>
+        </div>
+    </section>
+</div>

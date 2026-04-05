@@ -2,74 +2,92 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using GymSystem.Web.Areas.Member.ViewModels;
 using GymSystem.Web.Services;
+using GymSystem.Shared.DTOs;
 using System.Security.Claims;
 
-namespace GymSystem.Web.Areas.Member.Controllers;
-
-[Authorize]
-[Area("Member")]
-public class MyProfileController : Controller
+namespace GymSystem.Web.Areas.Member.Controllers
 {
-    private readonly IMemberApiService _memberApiService;
-
-    public MyProfileController(IMemberApiService memberApiService)
+    [Authorize(Roles = "Member")]
+    [Area("Member")]
+    public class MyProfileController : Controller
     {
-        _memberApiService = memberApiService;
-    }
+        private readonly IMemberApiService _memberApiService;
 
-    public async Task<IActionResult> Index()
-    {
-
-        var memberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var profile = await _memberApiService.GetMyProfileAsync();
-
-        if (profile == null)
+        public MyProfileController(IMemberApiService memberApiService)
         {
-            ModelState.AddModelError(string.Empty, "Could not load profile.");
-            return View(new ProfileViewModel());
+            _memberApiService = memberApiService;
         }
 
-        var qrCode = await _memberApiService.GetMyQRAsync(memberId!);
-
-        var model = new ProfileViewModel
+        // GET: Member/MyProfile
+        public async Task<IActionResult> Index()
         {
-            UserId          = profile.Id,
-            UserName        = profile.UserName,
-            FullName        = $"{profile.FirstName} {profile.LastName}",
-            Email           = profile.Email,
-            FirstName       = profile.FirstName,
-            LastName        = profile.LastName,
-            MembershipName  = profile.MembershipName,
-            MembershipPrice = profile.MembershipPrice,
-            QrCodeBase64    = qrCode != null ? qrCode.QrCodeBase64 : null
-        };
-
-        return View(model);
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Update(ProfileViewModel model)
-    {
-        try
-        {
-            if (!ModelState.IsValid)
-                return View("Index", model);
-
-            var result = await _memberApiService.UpdateProfileAsync(model);
-            if (!result.Success)
+            try
             {
-                ModelState.AddModelError(string.Empty, result.Error ?? "Update failed.");
-                return View("Index", model);
+                var profile = await _memberApiService.GetMyProfileAsync();
+
+                if (profile == null)
+                    return RedirectToAction("Index", "Login", new { area = "Member" });
+
+                QRCodeResponse? qr = null;
+                try { qr = await _memberApiService.GetMyQRAsync(profile.Id); } catch { }
+
+                var model = new ProfileViewModel
+                {
+                    Id = profile.Id,
+                    UserName = profile.UserName,
+                    Email = profile.Email,
+                    FirstName = profile.FirstName,
+                    LastName = profile.LastName,
+                    JoinDate = profile.JoinDate,
+                    Active = profile.Active,
+                    QrCodeBase64 = qr?.QrCodeBase64,
+                    QrExpiresAt = qr?.ExpiresAt
+                };
+
+                return View(model);
             }
 
-            TempData["SuccessMessage"] = "Profile updated successfully!";
-            return RedirectToAction("Index");
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "An error occurred while loading your profile. Please try again later.");
+                return View(new ProfileViewModel());
+            }
         }
-        catch (Exception ex)
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(ProfileViewModel model)
         {
-            ModelState.AddModelError(string.Empty, "Something went wrong: " + ex.Message);
-            return View("Index", model);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return View("Index", model);
+
+                var memberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(memberId))
+                    return RedirectToAction("Index", "Login", new { area = "Member" });
+
+                var request = new UpdateMemberRequest(
+                    Email: model.Email,
+                    FirstName: model.FirstName,
+                    LastName: model.LastName
+                );
+
+                var result = await _memberApiService.UpdateProfileAsync(memberId, request);
+                if (!result.Success)
+                {
+                    ModelState.AddModelError("", result.Error ?? "Update failed.");
+                    return View("Index", model);
+                }
+
+                TempData["SuccessMessage"] = "Profile updated successfully!";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Something went wrong: " + ex.Message);
+                return View("Index", model);
+            }
         }
     }
 }

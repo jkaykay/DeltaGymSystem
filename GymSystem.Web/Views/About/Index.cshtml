@@ -2,62 +2,19 @@
     ViewData["Title"] = "About Us";
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DeltaGyms-About Us</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet"/>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"> // For icons from bootstrap
-
+@section Styles {
   <link rel="stylesheet" href="~/css/members/about.css" asp-append-version="true"/>
-  
-</head>
-<body>
-
-  <!-- NAV  BAR-->
-  <nav>
-   <div class="nav-logo">
-      <img src="~/images/logo.png" alt="Delta Gyms Logo" class="nav-logo-img"/>
-    </div>
-    <ul class="nav-links">
-      <li><a asp-area="" asp-controller="Home" asp-action="Index" class="active">Home</a></li>
-      <li><a asp-area="" asp-controller="Classes" asp-action="Index">Classes</a></li>
-      <li><a asp-area="" asp-controller="Memberships" asp-action="Index">Memberships</a></li>
-      <li><a asp-area="Member" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
-      <li><a asp-area="Member" asp-controller="MyProfile" asp-action="Index">MyProfile</a></li>
-      <li><a asp-area="" asp-controller="About" asp-action="Index">About</a></li>
-    </ul>
-    @if (User.Identity != null && User.Identity.IsAuthenticated)
-{
-    <form asp-area="Member" asp-controller="Login" asp-action="Logout" method="post" class="nav-logout">
-        @Html.AntiForgeryToken()
-        <button type="submit" class="logout-btn">
-            Logout
-        </button>
-    </form>
 }
-else
-{
-    <div class="nav-logout">
-        <a asp-area="Member" asp-controller="Login" asp-action="Index" >
-            Login
-        </a>
-    </div>
-}
-  </nav>
 
 
   <!-- HERO -->
   <section class="hero">
     <div class="hero-ash-block"></div>
     <div class="hero-content reveal">
-      <div class="hero-eyebrow">About DeltaGyms</div>
+      <div class="hero-eyebrow">About Delta Gym</div>
       <h1 class="hero-title">Built For<br>Champions</h1>
       <p class="hero-desc">
-        DeltaGyms was founded with one mission — to build a space where every person, 
+        Delta Gym was founded with one mission — to build a space where every person,
         regardless of experience, feels empowered to push their limits. We combine 
         world-class facilities, expert coaching, and a community that lifts each other up.
       </p>
@@ -94,7 +51,7 @@ else
       <span class="section-tag">Our Story</span>
       <h2 class="section-title">Where It All<br>Started</h2>
       <p class="section-body">
-        DeltaGyms opened its doors in 2016 with a single gym floor and a vision to 
+        Delta Gym opened its doors in 2016 with a single gym floor and a vision to
         create more than just a place to work out. We wanted to build a community. 
         Over the years we've grown from a local gym into a full fitness hub, offering 
         classes, personal training, nutrition advice and more — all under one roof. 
@@ -107,7 +64,7 @@ else
 
   <!-- WHY CHOOSE US -->
   <section class="why-section reveal">
-    <span class="section-tag" style="color: var(--accent);">Why DeltaGyms</span>
+    <span class="section-tag" style="color: var(--accent);">Why Delta Gym</span>
     <h2 class="section-title white" style="margin-top: 10px;">Why You Should<br>Choose Us</h2>
     <div class="why-grid">
       <div class="why-card">
@@ -117,18 +74,18 @@ else
       </div>
       <div class="why-card">
         <div class="why-num">02</div>
-        <h3>World Class Equipment</h3>
+        <h3>World-Class Equipment</h3>
         <p>We invest in the latest gym equipment so you always have access to the best tools for your training.</p>
       </div>
       <div class="why-card">
         <div class="why-num">03</div>
         <h3>Community First</h3>
-        <p>At DeltaGyms, you're never alone. Our community keeps each other accountable, motivated and moving forward.</p>
+        <p>At Delta Gym, you're never alone. Our community keeps each other accountable, motivated, and moving forward.</p>
       </div>
       <div class="why-card">
         <div class="why-num">04</div>
         <h3>Flexible Membership</h3>
-        <p>No contracts, no lock ins. Upgrade, downgrade or cancel your plan any time no questions asked ( JustTalk to a staff member).</p>
+        <p>No contracts, no lock-ins. Upgrade, downgrade, or cancel your plan at any time — no questions asked (just talk to a staff member).</p>
       </div>
       <div class="why-card">
         <div class="why-num">05</div>
@@ -231,7 +188,7 @@ else
           </svg>
         </div>
         <h3>Personal Training</h3>
-        <p>One to one sessions tailored completely to your goals, schedule and fitness level. You can talk to your trainer about your specific needs and goals.</p>
+        <p>One-to-one sessions tailored completely to your goals, schedule, and fitness level. You can talk to your trainer about your specific needs and goals.</p>
       </div>
     </div>
   </section>
@@ -242,7 +199,7 @@ else
       <span class="section-tag white">Membership</span>
       <h2 class="section-title white">Everything<br>You Need<br>To Know</h2>
       <ul class="ops-list">
-        <li>No contracts ,cancel anytime with no fees</li>
+        <li>No contracts, cancel anytime with no fees</li>
         <li>Upgrade or downgrade your plan instantly</li>
         <li>Freeze your membership for up to 3 months per year (Talk to a staff member)</li>
         <li>Access to all group classes included in Pro plan</li>
@@ -288,44 +245,15 @@ else
          <i class="bi bi-envelope-fill"></i>
         </div>
         <span class="contact-label">Email</span>
-        <span class="contact-value">hello@deltagyms.com</span>
+        <span class="contact-value">hello@deltagym.com</span>
       </div>
       <div class="contact-card">
         <div class="contact-icon">
           <i class="bi bi-globe"></i>
         </div>
         <span class="contact-label">Social</span>
-        <span class="contact-value">DeltaGyms Socials</span> 
+        <span class="contact-value">Delta Gym Socials</span>
       </div>
     </div>
   </section>
 
-
-<footer class="site-footer">
-    <div class="footer-bottom">
-      <div class="footer-logo-wrap">
-      <img src="~/images/logo.png" alt="Delta Gyms Logo" class="nav-logo-img"/>
-    </div>
-      <span class="footer-brand">DELTAGYMS</span> <br/>
-      <p class="footer-copy">2026 DELTAGYMS all rights reserved</p>
-    </div>
-  </footer>
-
-  <script>
-
-    const nav = document.querySelector('nav');
-    window.addEventListener('scroll', () => {
-      nav.style.boxShadow = window.scrollY > 10 ? '0 4px 24px rgba(0,0,0,0.08)' : 'none';
-    });
-
-    const items = document.querySelectorAll('.reveal');
-    items.forEach((el, i) => el.style.transitionDelay = `${i * 80}ms`);
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
-      });
-    }, { threshold: 0.08 });
-    items.forEach(el => observer.observe(el));
-  </script>
-</body>
-</html>

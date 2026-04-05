@@ -6,10 +6,6 @@ namespace GymSystem.Web.Services
 {
     public interface IManagementApiService
     {
-        // Auth
-        Task<LoginResponse?> LoginAsync(string email, string password);
-        Task LogoutAsync();
-
         // Members
         Task<bool> CreateMemberAsync(CreateMemberViewModel model);
         Task<PagedResult<UserDTO>> GetMembersAsync(int page = 1, int pageSize = 10,

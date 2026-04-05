@@ -9,6 +9,7 @@
       --accent-orange: #ff6b00;
       --text: #000000;
       --muted: #555;
+      --border: #e2e2de;
       --nav-h: 72px;
     }
 
@@ -21,56 +22,8 @@
       overflow-x: hidden;
     }
 
-    /* ── NAV ── */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      height: var(--nav-h);
-      background: rgba(255, 255, 254, 0.92);
-      backdrop-filter: blur(12px);
-      --text :var(--bg);
-      -webkit-backdrop-filter: blur(12px);
-      display: flex;
-      align-items: center;
-    }
 
-    .nav-logo {
-      width: 55px; height: 55px;
-      background: var(--dark);
-      border-radius: 15px;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      margin-left: 35px;
-    }
-
-    .nav-logo img { 
-      width: 48px; 
-      height: 48px; 
-      fill: white; 
-      border-radius: 10px;
-    
-   }
-
-    .nav-links {
-      display: flex;
-      gap: 36px;
-      margin: 0 auto;
-      text-decoration: none;
-      list-style: none;
-      padding: 0;
-    }
-    .nav-links a {
-      text-decoration: none;
-      color: var(--text);
-      font-weight: 600;
-      font-size: 15px;
-      letter-spacing: 0.01em;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--accent); }
-
-
-/* Login and Register Container */
+    /* Login and Register Container */
 .container-user {
     max-width: 550px;
     margin: 100px auto 30px; 
@@ -107,7 +60,7 @@
   
 }
 
-.login-btn, .registrer-btn {
+.login-btn, .register-btn {
     background:  #c21c1c;
     color: white;
     padding: 12px 30px;
@@ -119,7 +72,7 @@
     transition: transform 0.3s; 
 }
 
-.login-btn:hover, .registrer-btn:hover {
+.login-btn:hover, .register-btn:hover {
     transform: translateY(-3px); 
     background: #fefeff;
     color:rgb(0, 0, 0);

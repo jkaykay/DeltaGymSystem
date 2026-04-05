@@ -1,0 +1,81 @@
+@model BookingHistoryViewModel
+@{
+    ViewData["Title"] = "Booking History";
+}
+
+@section Styles {
+  <link rel="stylesheet" href="~/css/members/dashboard.css" asp-append-version="true"/>
+}
+
+<div class="page">
+
+  <a asp-area="Member" asp-controller="Dashboard" asp-action="Index" class="back-link reveal">
+    <i class="bi bi-arrow-left"></i> Back to Dashboard
+  </a>
+
+  <h1 class="history-page-title reveal">BOOKING HISTORY</h1>
+  <p class="history-subtitle reveal">@Model.TotalCount total bookings</p>
+
+  <div class="history-list reveal">
+    @if (Model.Bookings.Any())
+    {
+      @foreach (var booking in Model.Bookings)
+      {
+        var isPast = booking.SessionEnd <= DateTime.UtcNow;
+        <div class="history-item @(isPast ? "" : "upcoming")">
+          <div class="history-date">@booking.SessionStart.ToLocalTime().ToString("dd MMM yyyy")</div>
+          <div class="history-details">
+            <div class="history-subject">@booking.Subject</div>
+            <div class="history-time">@booking.SessionStart.ToLocalTime().ToString("dddd, HH:mm") &ndash; @booking.SessionEnd.ToLocalTime().ToString("HH:mm") &bull; Room @booking.RoomNumber</div>
+          </div>
+          <div class="history-status">
+            @if (isPast)
+            {
+              <span class="badge-past">Completed</span>
+            }
+            else
+            {
+              <span class="badge-upcoming">Upcoming</span>
+            }
+          </div>
+        </div>
+      }
+    }
+    else
+    {
+      <p class="history-empty">No bookings yet.</p>
+    }
+  </div>
+
+  @if (Model.TotalPages > 1)
+  {
+    <div class="pagination reveal">
+      @if (Model.CurrentPage > 1)
+      {
+        <a asp-action="BookingHistory" asp-route-page="@(Model.CurrentPage - 1)" class="page-link">&laquo; Previous</a>
+      }
+      <span class="page-info">Page @Model.CurrentPage of @Model.TotalPages</span>
+      @if (Model.CurrentPage < Model.TotalPages)
+      {
+        <a asp-action="BookingHistory" asp-route-page="@(Model.CurrentPage + 1)" class="page-link">Next &raquo;</a>
+      }
+    </div>
+  }
+
+</div>
+
+<script>
+  const items = document.querySelectorAll('.reveal');
+  items.forEach((el, i) => {
+    el.style.transitionDelay = `${i * 80}ms`;
+  });
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  items.forEach(el => observer.observe(el));
+</script>

@@ -1,57 +1,12 @@
-@{
-    Layout= null;
-}
-
+@model GymSystem.Web.Areas.Member.ViewModels.SubscribeViewModel
 @{
     ViewData["Title"] = "Subscribe";
 }
 
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DELTA GYMS-Home</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet"/>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="~/css/members/subscribe.css" asp-append-version="true"/> 
-</head>
-<body>
-
-
- <!-- NAV  BAR-->
-  <nav>
-   <div class="nav-logo">
-      <img src="~/images/logo.png" alt="Delta Gyms Logo" class="nav-logo-img"/>
-    </div>
-    <ul class="nav-links">
-      <li><a asp-area="" asp-controller="Home" asp-action="Index" class="active">Home</a></li>
-      <li><a asp-area="" asp-controller="Classes" asp-action="Index">Classes</a></li>
-      <li><a asp-area="" asp-controller="Memberships" asp-action="Index">Memberships</a></li>
-      <li><a asp-area="Member" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
-      <li><a asp-area="Member" asp-controller="MyProfile" asp-action="Index">MyProfile</a></li>
-      <li><a asp-area="" asp-controller="About" asp-action="Index">About</a></li>
-    </ul>
-    @if (User.Identity != null && User.Identity.IsAuthenticated)
-{
-    <form asp-area="Member" asp-controller="Login" asp-action="Logout" method="post" class="nav-logout">
-        @Html.AntiForgeryToken()
-        <button type="submit" class="logout-btn">
-            Logout
-        </button>
-    </form>
+@section Styles {
+  <link rel="stylesheet" href="~/css/members/subscribe.css" asp-append-version="true"/>
 }
-else
-{
-    <div class="nav-logout">
-        <a asp-area="Member" asp-controller="Login" asp-action="Index" >
-            Login
-        </a>
-    </div>
-}
-  </nav>
+
 
 
   <!-- PAGE -->
@@ -60,7 +15,7 @@ else
 
       <!-- Banner -->
       <div class="card-banner">
-        <a href="memberships.html" class="back-link">
+        <a asp-area="" asp-controller="Memberships" asp-action="Index" class="back-link">
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <line x1="19" y1="12" x2="5" y2="12"/>
             <polyline points="12 19 5 12 12 5"/>
@@ -74,15 +29,22 @@ else
       <!-- Body -->
       <div class="card-body">
 
+        @if (TempData["ErrorMessage"] is string errorMsg)
+        {
+          <div style="background: #ff4444; color: white; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem;">
+            @errorMsg
+          </div>
+        }
+
         <div class="summary-block">
           <div class="summary-row">
             <span class="s-label">Member Name</span>
-            <span class="s-value" id="member-name">USERNAME</span>
+            <span class="s-value">@Model.MemberName</span>
           </div>
           <div class="summary-row">
             <span class="s-label">Plan</span>
             <span class="s-value">
-              <span class="membership-badge" id="plan-badge">PRO</span>
+              <span class="membership-badge">@Model.TierName.ToUpper()</span>
             </span>
           </div>
           <div class="summary-row">
@@ -91,7 +53,7 @@ else
           </div>
           <div class="summary-row">
             <span class="s-label">Amount</span>
-            <span class="s-value price" id="plan-price">$39.99</span>
+            <span class="s-value price">$@Model.Price.ToString("F2")</span>
           </div>
         </div>
 
@@ -99,12 +61,17 @@ else
 
         <div class="total-row">
           <span class="t-label">Total Due Today</span>
-          <span class="t-amount" id="total-amount">$39.99</span>
+          <span class="t-amount">$@Model.Price.ToString("F2")</span>
         </div>
 
-        <button class="confirm-btn" onclick="confirmPayment()">
-          CONFIRM PAYMENT
-        </button>
+        <form asp-area="Member" asp-controller="Subscribe" asp-action="ConfirmPayment" method="post">
+          @Html.AntiForgeryToken()
+          <input type="hidden" name="tierName" value="@Model.TierName" />
+          <input type="hidden" name="amount" value="@Model.Price" />
+          <button type="submit" class="confirm-btn">
+            CONFIRM PAYMENT
+          </button>
+        </form>
 
         <div class="secure-note">
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -131,8 +98,8 @@ else
           </svg>
         </div>
         <h3>You're all set!</h3>
-        <p>Your membership is now active. Welcome to DeltaGyms — let's get to work!</p>
-       
+        <p>Your membership is now active. Welcome to Delta Gym — let's get to work!</p>
+
         <form asp-area="Member" asp-controller="MyProfile" asp-action="Index" method="get">
           <button type="submit" class="modal-btn">
             GO TO MY PROFILE
@@ -143,37 +110,11 @@ else
     </div>
   </div>
 
-  <script>
-    // Nav shadow
-    const nav = document.querySelector('nav');
-    window.addEventListener('scroll', () => {
-      nav.style.boxShadow = window.scrollY > 10 ? '0 4px 24px rgba(0,0,0,0.08)' : 'none';
-    });
-
-    // Read plan from URL params so you can pass ?plan=basic or ?plan=pro
-    // e.g. href="checkout.html?plan=basic" from memberships page
-    const params = new URLSearchParams(window.location.search);
-    const plan = params.get('plan') || 'pro';
-
-    const plans = {
-      basic: { label: 'BASIC', price: '$19.99' },
-      pro:   { label: 'PRO',   price: '$39.99' }
-    };
-
-    const selected = plans[plan] || plans.pro;
-    document.getElementById('plan-badge').textContent   = selected.label;
-    document.getElementById('plan-price').textContent   = selected.price;
-    document.getElementById('total-amount').textContent = selected.price;
-
-    // Confirm payment
-    function confirmPayment() {
-      document.getElementById('overlay').classList.add('show');
-    }
-
-    // Redirect to profile
-    function goToProfile() {
-      window.location.href = 'myprofile.html';
-    }
-  </script>
-</body>
-</html>
+  @if (TempData["SuccessMessage"] != null)
+  {
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('overlay').classList.add('show');
+      });
+    </script>
+  }

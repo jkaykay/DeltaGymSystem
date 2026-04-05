@@ -12,18 +12,6 @@ namespace GymSystem.Web.Services
             _http = factory.CreateClient("GymApi");
         }
 
-        // --- Auth ---
-
-        public async Task<LoginResponse?> LoginAsync(string email, string password)
-        {
-            var response = await _http.PostAsJsonAsync("api/auth/login", new { EmailOrUserName = email, password });
-
-            if (!response.IsSuccessStatusCode)
-                return null;
-
-            return await response.Content.ReadFromJsonAsync<LoginResponse>();
-        }
-
         // --- Members ---
 
         public async Task<PagedResult<UserDTO>> GetMembersAsync(int page = 1, int pageSize = 10,
@@ -226,11 +214,6 @@ namespace GymSystem.Web.Services
         {
             var result = await _http.GetFromJsonAsync<List<UserDTO>>("api/member/recents");
             return result ?? new List<UserDTO>();
-        }
-
-        public async Task LogoutAsync()
-        {
-            await _http.PostAsync("api/auth/logout", null);
         }
 
         // --- Branches ---

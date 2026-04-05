@@ -1,26 +1,33 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace GymSystem.Web.Areas.Member.ViewModels;
-
-public class ProfileViewModel
+namespace GymSystem.Web.Areas.Member.ViewModels
 {
-    public string UserId { get; set; } = string.Empty;
-    public string UserName { get; set; } = string.Empty;
-    public string FullName { get; set; } = string.Empty;
+    public class ProfileViewModel
+    {
+        public string Id { get; set; } = string.Empty;
 
-    [Required]
-    [EmailAddress]
-    public string Email { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
 
-    [Required]
-    [MaxLength(100)]
-    public string FirstName { get; set; } = string.Empty;
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
 
-    [Required]
-    [MaxLength(100)]
-    public string LastName { get; set; } = string.Empty;
+        [Required]
+        [Display(Name = "First Name")]
+        [MaxLength(100)]
+        public string FirstName { get; set; } = string.Empty;
 
-    public string? MembershipName { get; set; }
-    public double? MembershipPrice { get; set; }
-    public string? QrCodeBase64 { get; set; }
+        [Required]
+        [Display(Name = "Last Name")]
+        [MaxLength(100)]
+        public string LastName { get; set; } = string.Empty;
+
+        [Display(Name = "Join Date")]
+        public DateTime? JoinDate { get; set; }
+
+        public bool Active { get; set; }
+
+        public string? QrCodeBase64 { get; set; }
+        public DateTime? QrExpiresAt { get; set; }
+    }
 }
