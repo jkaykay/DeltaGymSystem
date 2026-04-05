@@ -19,50 +19,46 @@
 
     <!-- Stats -->
     <div class="stats-row reveal">
-      <div class="stat-block">
-        <label>Upcoming Classes</label>
-        <div class="stat-box">
-          <span class="val">@Model.UpcomingClasses</span>
-          <span class="stat-icon">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-          </span>
-        </div>
-      </div>
-
-      <div class="stat-block">
-        <label>Total Bookings</label>
-        <div class="stat-box">
-          <span class="val">@Model.TotalBookings</span>
-          <span class="stat-icon">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-          </span>
-        </div>
-      </div>
-
-      <div class="stat-block">
-        <label>Classes Attended</label>
-        <div class="stat-box">
-          <span class="val">@Model.ClassesAttended</span>
-        </div>
+      <div class="stat-block upcoming-block">
+        <label>Upcoming Bookings <span class="attendance-count">@Model.TotalBookings bookings</span></label>
+        @if (Model.UpcomingBookings.Any())
+        {
+          <div class="upcoming-list">
+            @foreach (var booking in Model.UpcomingBookings)
+            {
+              <div class="upcoming-item">
+                <span class="upcoming-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                </span>
+                <div class="upcoming-info">
+                  <div class="upcoming-name">@booking.Subject</div>
+                  <div class="upcoming-time">@booking.SessionStart.ToLocalTime().ToString("ddd dd MMM, HH:mm") &ndash; @booking.SessionEnd.ToLocalTime().ToString("HH:mm")</div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+        else
+        {
+          <div class="stat-box">
+            <span class="val">No upcoming bookings</span>
+          </div>
+        }
+        <a asp-area="Member" asp-controller="Dashboard" asp-action="BookingHistory" class="view-more-link">View All &raquo;</a>
       </div>
     </div>
 
     <!-- Bottom Grid -->
     <div class="bottom-grid">
 
-      <!-- Log History -->
+      <!-- Visit History -->
       <div class="reveal">
-        <h2 class="section-title">Log History</h2>
+        <h2 class="section-title">Visit History <span class="attendance-count">@Model.TotalAttendances visits</span></h2>
         <div class="log-card">
           @if (Model.LogHistory.Any())
           {
@@ -78,16 +74,15 @@
                     </svg>
                   </span>
                   <div class="log-info">
-                    <div class="log-name">@log.CheckIn.ToString("dddd") workout</div>
+                    <div class="log-name">@log.CheckIn.ToLocalTime().ToString("dd MMM") &ndash; @log.CheckIn.ToString("dddd") &ndash; @if (log.CheckOut.HasValue)
+{<text>@((log.CheckOut.Value - log.CheckIn).TotalHours.ToString("0.#")) hrs</text>}
+else
+{<text>In progress</text>}</div>
                     <div class="log-time">
-                      From @log.CheckIn.ToLocalTime().ToString("HH:mm")
+                      @log.CheckIn.ToLocalTime().ToString("HH:mm")
                       @if (log.CheckOut.HasValue)
                       {
                         <text> – @log.CheckOut.Value.ToLocalTime().ToString("HH:mm")</text>
-                      }
-                      else
-                      {
-                        <text> – In progress</text>
                       }
                     </div>
                   </div>
@@ -97,7 +92,7 @@
           }
           else
           {
-            <p class="log-month">No attendance logs yet</p>
+            <p class="log-month">No visits yet</p>
           }
         </div>
         <a asp-area="Member" asp-controller="Dashboard" asp-action="AttendanceHistory" class="view-more-link">View More &raquo;</a>
@@ -129,30 +124,4 @@
 
     </div>
   </div>
-
-  <script>
-    // Nav shadow on scroll
-    const nav = document.querySelector('nav');
-    window.addEventListener('scroll', () => {
-      nav.style.boxShadow = window.scrollY > 10
-        ? '0 4px 24px rgba(0,0,0,0.08)'
-        : 'none';
-    });
-
-    // Scroll reveal — stagger each item
-    const items = document.querySelectorAll('.reveal');
-    items.forEach((el, i) => {
-      el.style.transitionDelay = `${i * 80}ms`;
-    });
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-          observer.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.08 });
-    items.forEach(el => observer.observe(el));
-  </script>
 

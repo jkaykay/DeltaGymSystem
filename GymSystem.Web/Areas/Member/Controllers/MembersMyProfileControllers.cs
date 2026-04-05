@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace GymSystem.Web.Areas.Member.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Member")]
     [Area("Member")]
     public class MyProfileController : Controller
     {
@@ -28,6 +28,9 @@ namespace GymSystem.Web.Areas.Member.Controllers
                 if (profile == null)
                     return RedirectToAction("Index", "Login", new { area = "Member" });
 
+                QRCodeResponse? qr = null;
+                try { qr = await _memberApiService.GetMyQRAsync(profile.Id); } catch { }
+
                 var model = new ProfileViewModel
                 {
                     Id = profile.Id,
@@ -36,7 +39,9 @@ namespace GymSystem.Web.Areas.Member.Controllers
                     FirstName = profile.FirstName,
                     LastName = profile.LastName,
                     JoinDate = profile.JoinDate,
-                    Active = profile.Active
+                    Active = profile.Active,
+                    QrCodeBase64 = qr?.QrCodeBase64,
+                    QrExpiresAt = qr?.ExpiresAt
                 };
 
                 return View(model);

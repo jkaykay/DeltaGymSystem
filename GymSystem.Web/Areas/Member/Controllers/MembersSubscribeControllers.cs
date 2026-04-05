@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace GymSystem.Web.Areas.Member.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Member")]
 [Area("Member")]
 public class SubscribeController : Controller
 {

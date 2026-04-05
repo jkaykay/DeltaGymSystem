@@ -26,5 +26,8 @@ namespace GymSystem.Web.Areas.Member.ViewModels
         public DateTime? JoinDate { get; set; }
 
         public bool Active { get; set; }
+
+        public string? QrCodeBase64 { get; set; }
+        public DateTime? QrExpiresAt { get; set; }
     }
 }

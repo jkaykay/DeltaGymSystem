@@ -54,7 +54,7 @@
     /* ── STAT CARDS ── */
     .stats-row {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 1fr;
       gap: 20px;
       margin-bottom: 48px;
     }
@@ -106,12 +106,19 @@
       align-items: start;
     }
 
-    /* ── LOG HISTORY ── */
+    /* ── VISIT HISTORY ── */
     .section-title {
       font-weight: 900;
       font-size: 20px;
       color: var(--text);
       margin-bottom: 16px;
+    }
+
+    .attendance-count {
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--muted);
+      margin-left: 10px;
     }
 
     .log-card {
@@ -230,5 +237,181 @@
     .view-more-link:hover {
       opacity: 0.75;
       text-decoration: underline;
+    }
+
+    /* ── UPCOMING BOOKINGS LIST ── */
+    .upcoming-block {
+      grid-column: span 1;
+    }
+
+    .upcoming-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .upcoming-item {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .upcoming-icon {
+      flex-shrink: 0;
+    }
+    .upcoming-icon svg {
+      width: 18px; height: 18px;
+      fill: none;
+      stroke: var(--dark);
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .upcoming-info .upcoming-name {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--dark);
+      line-height: 1.2;
+    }
+    .upcoming-info .upcoming-time {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    /* ── BACK LINK ── */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text);
+      text-decoration: none;
+      margin-bottom: 24px;
+      transition: opacity 0.2s;
+    }
+    .back-link:hover { opacity: 0.6; }
+
+    /* ── BOOKING HISTORY PAGE ── */
+    .history-page-title {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 900;
+      font-size: clamp(26px, 4vw, 36px);
+      letter-spacing: 0.01em;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .history-subtitle {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .history-item {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .history-date {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--dark);
+      min-width: 90px;
+      flex-shrink: 0;
+    }
+
+    .history-details {
+      flex: 1;
+    }
+
+    .history-subject {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--dark);
+      line-height: 1.2;
+    }
+
+    .history-time {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-top: 3px;
+    }
+
+    .history-status {
+      flex-shrink: 0;
+    }
+
+    .badge-past,
+    .badge-upcoming {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 5px 12px;
+      border-radius: 50px;
+    }
+
+    .badge-past {
+      background: #e2e2de;
+      color: var(--muted);
+    }
+
+    .badge-upcoming {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+
+    .history-empty {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* ── PAGINATION ── */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .page-link {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--accent);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .page-link:hover {
+      opacity: 0.75;
+      text-decoration: underline;
+    }
+
+    .page-info {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
     }
   

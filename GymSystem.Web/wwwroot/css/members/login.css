@@ -60,7 +60,7 @@
   
 }
 
-.login-btn, .registrer-btn {
+.login-btn, .register-btn {
     background:  #c21c1c;
     color: white;
     padding: 12px 30px;
@@ -72,7 +72,7 @@
     transition: transform 0.3s; 
 }
 
-.login-btn:hover, .registrer-btn:hover {
+.login-btn:hover, .register-btn:hover {
     transform: translateY(-3px); 
     background: #fefeff;
     color:rgb(0, 0, 0);

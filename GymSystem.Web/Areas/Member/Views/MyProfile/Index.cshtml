@@ -38,6 +38,38 @@
       {
         <div class="membership-badge">Member since @Model.JoinDate.Value.ToString("MMM yyyy")</div>
       }
+
+      <button type="button" class="qr-btn" onclick="document.getElementById('qrModal').style.display='flex'">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="8" height="8" rx="1"/>
+          <rect x="14" y="2" width="8" height="8" rx="1"/>
+          <rect x="2" y="14" width="8" height="8" rx="1"/>
+          <rect x="14" y="14" width="4" height="4" rx="0.5"/>
+          <line x1="22" y1="14" x2="22" y2="22"/>
+          <line x1="14" y1="22" x2="22" y2="22"/>
+        </svg>
+        My QR Code
+      </button>
+    </div>
+  </div>
+
+  <!-- QR Code Modal -->
+  <div id="qrModal" class="qr-modal-overlay" onclick="if(event.target===this)this.style.display='none'">
+    <div class="qr-modal">
+      <button class="qr-modal-close" onclick="document.getElementById('qrModal').style.display='none'">&times;</button>
+      <h2>My QR Code</h2>
+      @if (!string.IsNullOrEmpty(Model.QrCodeBase64))
+      {
+        <img src="data:image/png;base64,@Model.QrCodeBase64" alt="My QR Code" class="qr-modal-img"/>
+        @if (Model.QrExpiresAt.HasValue)
+        {
+          <p class="qr-expires">Refreshes @Model.QrExpiresAt.Value.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</p>
+        }
+      }
+      else
+      {
+        <p class="qr-unavailable">QR code is not available at this time.</p>
+      }
     </div>
   </div>
 

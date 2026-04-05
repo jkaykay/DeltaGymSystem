@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GymSystem.Web.Areas.Trainer.Controllers
 {
     [Area("Trainer")]
-    [Authorize(Roles = "Trainer")]
+    [Authorize(Roles = "Trainer,Admin")]
     public class ProfileController : Controller
     {
         private readonly ITrainerApiService _trainerApiService;

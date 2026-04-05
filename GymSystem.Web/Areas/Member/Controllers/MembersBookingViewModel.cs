@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace GymSystem.Web.Areas.Member.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Member")]
 [Area("Member")]
 public class BookingController : Controller
 {
