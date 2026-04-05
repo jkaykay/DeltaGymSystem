@@ -28,9 +28,9 @@ builder.Services.AddHttpClient("GymApi", client =>
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies", options =>
     {
-        options.LoginPath = "/Account/Login";
-        options.LogoutPath = "/Account/Logout";
-        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.LoginPath = "/Member/Login/Index";
+        options.LogoutPath = "/Member/Logout";
+        options.AccessDeniedPath = "/Member/Login/AccessDenied";
 
         options.Events.OnRedirectToLogin = ctx =>
         {
@@ -43,7 +43,7 @@ builder.Services.AddAuthentication("Cookies")
             }
             else if (ctx.Request.Path.StartsWithSegments("/Member", StringComparison.OrdinalIgnoreCase))
             {
-                var redirect = $"/Member/Account/Login?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                var redirect = $"/Member/Login/Index?returnUrl={Uri.EscapeDataString(returnUrl)}";
                 ctx.Response.Redirect(redirect);
             }
             else if (ctx.Request.Path.StartsWithSegments("/Trainer", StringComparison.OrdinalIgnoreCase))
@@ -53,7 +53,7 @@ builder.Services.AddAuthentication("Cookies")
             }
             else
             {
-                var redirect = $"/Account/Login?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                var redirect = $"/Login/Index?returnUrl={Uri.EscapeDataString(returnUrl)}";
                 ctx.Response.Redirect(redirect);
             }
             return Task.CompletedTask;
@@ -64,12 +64,12 @@ builder.Services.AddAuthentication("Cookies")
             var returnUrl = ctx.Request.Path + ctx.Request.QueryString;
             if (ctx.Request.Path.StartsWithSegments("/Management", StringComparison.OrdinalIgnoreCase))
             {
-                var redirect = $"/Management/Account/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                var redirect = $"/Management/Login/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
                 ctx.Response.Redirect(redirect);
             }
             else if (ctx.Request.Path.StartsWithSegments("/Member", StringComparison.OrdinalIgnoreCase))
             {
-                var redirect = $"/Member/Account/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                var redirect = $"/Member/Login/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
                 ctx.Response.Redirect(redirect);
             }
 
@@ -81,7 +81,7 @@ builder.Services.AddAuthentication("Cookies")
 
             else
             {
-                var redirect = $"/Account/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                var redirect = $"/Login/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
                 ctx.Response.Redirect(redirect);
             }
             return Task.CompletedTask;
@@ -108,7 +108,7 @@ app.UseAuthorization();
 // --- Area routing (must come before default) ---
 app.MapControllerRoute(
     name: "areas",
-    pattern: "{area:exists}/{controller=Account}/{action=Login}/{id?}")
+    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 app.MapControllerRoute(
@@ -121,5 +121,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
 
 app.Run();

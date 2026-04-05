@@ -1,0 +1,392 @@
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #000000;
+      --card-bg: #e4e4e0;
+      --dark: #111111;
+      --accent: #c21c1c;
+      --text: #ffffff;
+      --muted: #666;
+      --nav-h: 72px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      background: rgba(255, 255, 254, 0.92);
+      backdrop-filter: blur(12px);
+      --text :var(--bg);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(0,0,0,0.07);
+    }
+
+    .nav-logo {
+      width: 55px; height: 55px;
+      background: var(--dark);
+      border-radius: 15px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .nav-logo img { 
+      width: 48px; 
+      height: 48px; 
+      fill: white; 
+    border-radius: 10px;
+   }
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: 0.01em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    .nav-logout a {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text);
+      text-decoration: none;
+      border: 2px solid var(--dark);
+      padding: 7px 20px;
+      border-radius: 8px;
+      transition: background-color 0.5s, color 0.2s;
+    }
+    .nav-logout a:hover { background: var(--dark); color: white; }
+
+    .logout-btn {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text);
+      text-decoration: none;
+      border: 2px solid var(--dark);
+      padding: 7px 20px;
+      border-radius: 8px;
+      transition: background-color 0.5s, color 0.2s;
+    }
+    .logout-btn:hover { background: var(--dark); color: white; }
+
+
+    /* ── PAGE WRAPPER ── */
+    .page {
+      margin-top: var(--nav-h);
+      min-height: calc(100vh - var(--nav-h));
+      padding: 60px 40px 80px;
+    }
+
+    .page-inner {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* ── HEADER ── */
+    .page-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .page-header .eyebrow {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 900;
+      font-size: 18px;
+      color: var(--accent);
+      letter-spacing: 0.02em;
+      margin-bottom: 10px;
+    }
+
+    .page-header h1 {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 900;
+      font-size: clamp(32px, 5vw, 52px);
+      line-height: 1.05;
+      color: var(--text);
+    }
+
+    /* ── PLANS GRID ── */
+    .plans-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 60px;
+    }
+
+    .plan-card {
+      background: white;
+      border: 1.5px solid #e0e0dc;
+      border-radius: 16px;
+      padding: 32px 28px 28px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .plan-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.10);
+    }
+    .plan-card.featured {
+      border-color: var(--dark);
+    }
+
+    .popular-badge {
+      position: absolute;
+      top: -1px; right: -1px;
+      background: var(--accent);
+      color: white;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      padding: 7px 16px;
+      border-radius: 0 14px 0 12px;
+    }
+
+    .plan-name {
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 16px;
+      color: var(--dark);
+    }
+
+    .plan-price {
+      text-align: center;
+      margin-bottom: 24px;
+      line-height: 1;
+      color: #000;
+    }
+    .plan-price .dollar {
+      font-size: 20px;
+      font-weight: 900;
+      vertical-align: top;
+      margin-top: 8px;
+      display: inline-block;
+    }
+    .plan-price .amount {
+      font-size: 54px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+    .plan-price .period {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .plan-features {
+      list-style: none;
+      margin-bottom: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+    .plan-features li {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .plan-features li::before {
+      content: '•';
+      color: var(--dark);
+      font-size: 20px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    a.plan-btn {
+      background: var(--dark);
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 15px;
+      border-radius: 10px;
+      font-family: 'Barlow', sans-serif;
+      display: block;
+      text-decoration: none;
+      text-align: center;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.15s;
+    }
+    .plan-btn:hover { background-color: #333; transform: translateY(-1px); }
+
+    /* ── Questions and answers ── */
+    .faq-section { margin-bottom: 60px; }
+
+    .faq-title {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 900;
+      font-size: 22px;
+      text-align: center;
+      margin-bottom: 24px;
+      color: var(--text);
+    }
+
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .faq-item {
+      background: white;
+      border: 1.5px solid #e0e0dc;
+      border-radius: 14px;
+      padding: 22px 24px;
+      cursor: pointer;
+      transition: box-shadow 0.2s;
+    }
+    .faq-item:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.07); }
+
+    .faq-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: var(--text);
+    }
+
+    .faq-icon {
+      width: 36px; height: 36px;
+      border: 2px solid var(--dark);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900;
+      font-size: 15px;
+      flex-shrink: 0;
+      color: var(--dark);
+    }
+
+    .faq-question {
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--dark);
+    }
+
+    .faq-answer {
+      margin-top: 12px;
+      padding-left: 52px;
+      font-size: 16px;
+      color: var(--muted);
+      font-weight: 500;
+      line-height: 1.6;
+    }
+
+      /* Scroll to Top Button */
+    .scroll-top-btn {
+  position: fixed;
+  bottom: 36px;
+  right: 36px;
+  width: 48px;
+  height: 48px;
+  background: var(--dark);
+  color: rgb(255, 255, 255);
+  border: white solid 2px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.2s;
+  z-index: 999;
+
+}
+.scroll-top-btn:hover { transform: translateY(-3px); }
+.scroll-top-btn.visible { opacity: 1; pointer-events: all; }
+
+
+    /* ── ASK DELTA ── */
+    .ask-delta-wrap {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .ask-delta {
+      background: white;
+      border: 1.5px solid #e0e0dc;
+      border-radius: 16px;
+      padding: 24px 28px;
+      width: 320px;
+    }
+
+    .ask-delta-title {
+      font-weight: 900;
+      font-size: 18px;
+      color: var(--dark);
+      margin-bottom: 16px;
+    }
+
+    .ask-delta-input {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--card-bg);
+      border-radius: 50px;
+      padding: 10px 18px 10px 10px;
+      cursor: text;
+    }
+
+    .ask-delta-avatar {
+      width: 34px; height: 34px;
+      background: var(--text);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .ask-delta-avatar img { width: 18px; height: 18px; fill: white; }
+
+    .ask-delta-placeholder {
+      font-size: 21px;
+      color: #aaa;
+      font-weight: 500;
+      flex: 1;
+    }
+
+    .ask-delta-input input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-family: 'Barlow', sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      flex: 1;
+      font-weight: 500;
+    }
+    .ask-delta-input input::placeholder { color: #aaa; }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
