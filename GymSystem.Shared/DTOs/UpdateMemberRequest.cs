@@ -6,5 +6,8 @@ public record UpdateMemberRequest(
     [EmailAddress, MaxLength(256)] string? Email = null,
     [MaxLength(100)] string? FirstName = null,
     [MaxLength(100)] string? LastName = null,
-    bool? Active = null
+    [MaxLength(15)] string? Telephone = null,
+    [MaxLength(100)] string? EmergencyContact = null,
+    double? Weight = null,
+    bool? IsActive = null
 );

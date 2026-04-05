@@ -1,24 +1,26 @@
+@model ProfileViewModel
+
 @{
-    Layout= null;
+    Layout = null;
 }
 
 @{
     ViewData["Title"] = "My Profile";
-}
-
+} 
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DELTA GYMS-Home</title>
+  <title>@ViewData["Title"]</title>
+
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"> // For icons from bootstrap
-  <link rel="stylesheet" href="~/css/members/myprofile.css" asp-append-version="true"/> 
-
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="~/css/members/myprofile.css" asp-append-version="true"/>
 </head>
+
 <body>
 
 <!-- NAV  BAR-->
@@ -53,134 +55,112 @@ else
 }
   </nav>
 
-   <!-- PAGE -->
-  <div class="page">
 
-    <!-- Edit / Back row -->
-    <div class="edit-row reveal">
-      <button class="edit-btn" title="Edit profile">
+<div class="page">
+
+  <!-- SUCCESS MESSAGE -->
+  @if (TempData["SuccessMessage"] is string msg)
+  {
+      <div class="alert alert-success">@msg</div>
+  }
+
+  <!-- EDIT BUTTON -->
+  <div class="edit-row">
+    <button type="button" class="edit-btn" onclick="enableEdit()">
       <i class="bi bi-pencil-square"></i>
-      </button>
-    </div>
+    </button>
+  </div>
 
-    <!-- Page Title -->
-    <h1 class="profile-page-title reveal">MY PROFILE</h1>
+  <h1 class="profile-page-title">MY PROFILE</h1>
 
-    <!-- Profile top grid -->
-    <div class="profile-grid reveal">
+  <!-- TOP INFO -->
+  <div class="profile-grid">
 
-      <!-- Left: User info -->
-      <div>
-        <div class="user-name">USER NAME</div>
-        <div class="membership-badge">CURRENT MEMBERSHIP</div>
-        <div class="membership-price">
-          <span class="dollar">$</span>
-          <span class="amount">19.99</span>
-        </div>
-        <div class="full-name-label">FULL NAME</div>
+    <div>
+      <div class="user-name">@Model.UserName</div>
+      <div class="membership-badge">@Model.MembershipName</div>
+
+      <div class="membership-price">
+        <span class="dollar">$</span>
+        <span class="amount">@Model.MembershipPrice</span>
       </div>
 
-      <!--Member code -->
-      <div class="member-code-card">
-        <div class="member-code-title">MEMBER CODE</div>
-        <div class="member-code-body">
-          <!-- QR code placeholder SVG -->
-          <div class="qr-wrap">
-            <svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" width="72" height="72">
-              <!-- Outer border squares -->
-              <rect x="2" y="2" width="26" height="26" rx="3" fill="none" stroke="#111" stroke-width="3"/>
-              <rect x="8" y="8" width="14" height="14" rx="1" fill="#111"/>
-              <rect x="44" y="2" width="26" height="26" rx="3" fill="none" stroke="#111" stroke-width="3"/>
-              <rect x="50" y="8" width="14" height="14" rx="1" fill="#111"/>
-              <rect x="2" y="44" width="26" height="26" rx="3" fill="none" stroke="#111" stroke-width="3"/>
-              <rect x="8" y="50" width="14" height="14" rx="1" fill="#111"/>
-              <!-- Data dots -->
-              <rect x="32" y="2" width="6" height="6" fill="#111"/>
-              <rect x="32" y="10" width="6" height="6" fill="#111"/>
-              <rect x="32" y="18" width="6" height="6" fill="#111"/>
-              <rect x="40" y="32" width="6" height="6" fill="#111"/>
-              <rect x="48" y="32" width="6" height="6" fill="#111"/>
-              <rect x="56" y="32" width="6" height="6" fill="#111"/>
-              <rect x="64" y="32" width="6" height="6" fill="#111"/>
-              <rect x="32" y="32" width="6" height="6" fill="#111"/>
-              <rect x="2" y="32" width="6" height="6" fill="#111"/>
-              <rect x="10" y="32" width="6" height="6" fill="#111"/>
-              <rect x="18" y="32" width="6" height="6" fill="#111"/>
-              <rect x="40" y="40" width="6" height="6" fill="#111"/>
-              <rect x="56" y="40" width="6" height="6" fill="#111"/>
-              <rect x="48" y="48" width="6" height="6" fill="#111"/>
-              <rect x="64" y="48" width="6" height="6" fill="#111"/>
-              <rect x="40" y="56" width="6" height="6" fill="#111"/>
-              <rect x="56" y="56" width="6" height="6" fill="#111"/>
-              <rect x="48" y="64" width="6" height="6" fill="#111"/>
-              <rect x="64" y="64" width="6" height="6" fill="#111"/>
-              <!-- SCAN ME label -->
-              <text x="36" y="78" text-anchor="middle" font-size="7" font-family="sans-serif" font-weight="700" fill="#111">SCAN ME</text>
-            </svg>
-          </div>
-          <div class="member-code-info">
-            <div class="code-value">" CODE "</div>
-            <div class="code-hint">Show at front desk if needed</div>
-          </div>
-        </div>
-      </div>
-
+      <div class="full-name-label">@Model.FullName</div>
     </div>
 
-    <!-- Fields -->
-    <div class="fields-section reveal">
+    <div class="member-code-card">
+      <div class="member-code-title">MEMBER CODE</div>
+      <div class="member-code-body">
+
+        <div class="qr-wrap">
+          <!-- keep your SVG -->
+        </div>
+
+        <div class="member-code-info">
+          <div class="code-value">@Model.MemberCode</div>
+          <div class="code-hint">Show at front desk if needed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORM START -->
+  <form asp-area="Member" asp-controller="MyProfile" asp-action="Update" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="fields-section">
+
       <div class="fields-row">
         <div class="field-group">
           <span class="field-label">Telephone</span>
-          <div class="field-box">Value</div>
+          <input asp-for="Telephone" class="field-box" readonly />
+          <span asp-validation-for="Telephone" class="error"></span>
         </div>
+
         <div class="field-group">
           <span class="field-label">Email</span>
-          <div class="field-box">Value</div>
+          <input asp-for="Email" class="field-box" readonly />
+          <span asp-validation-for="Email" class="error"></span>
         </div>
       </div>
 
       <div class="fields-row">
-      <div class="field-group">
-        <span class="field-label">Emergency Contact</span>
-        <div class="field-box">Value</div>
+        <div class="field-group">
+          <span class="field-label">Emergency Contact</span>
+          <input asp-for="EmergencyContact" class="field-box" readonly />
+          <span asp-validation-for="EmergencyContact" class="error"></span>
+        </div>
+
+        <div class="field-group">
+          <span class="field-label">Current Weight</span>
+          <input asp-for="Weight" class="field-box" readonly />
+          <span asp-validation-for="Weight" class="error"></span>
+        </div>
       </div>
-    
 
-    <div class="field-group">
-        <span class="field-label">Current Weight</span>
-        <div class="field-box">Value</div>
+      <!-- SAVE BUTTON -->
+      <button type="submit" class="save-btn" style="display:none;">
+        Save Changes
+      </button>
+
     </div>
-    </div>
+  </form>
 
-  </div>
+</div>
 
-  <script>
-    // Nav shadow on scroll
-    const nav = document.querySelector('nav');
-    window.addEventListener('scroll', () => {
-      nav.style.boxShadow = window.scrollY > 10
-        ? '0 4px 24px rgba(0,0,0,0.08)'
-        : 'none';
-    });
+<!-- SCRIPTS -->
+<script>
+function enableEdit() {
+    const inputs = document.querySelectorAll('.field-box');
+    inputs.forEach(input => input.removeAttribute('readonly'));
 
-    // Scroll reveal with stagger
-    const items = document.querySelectorAll('.reveal');
-    items.forEach((el, i) => {
-      el.style.transitionDelay = `${i * 80}ms`;
-    });
+    document.querySelector('.save-btn').style.display = 'inline-block';
+}
+</script>
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-          observer.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.08 });
-    items.forEach(el => observer.observe(el));
-  </script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
 </body>
 </html>
-
-
