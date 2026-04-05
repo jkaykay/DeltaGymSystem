@@ -76,7 +76,7 @@ namespace GymSystem.Api.Controllers
                 user.Email!,
                 user.FirstName,
                 user.LastName,
-                [.. roles]
+                roles.ToList()
             ));
         }
 
@@ -103,7 +103,7 @@ namespace GymSystem.Api.Controllers
                 EmployeeId = user.EmployeeId,
                 BranchId = user.BranchId,
                 Active = user.Active,
-                Roles = [.. roles]
+                Roles = roles.ToList()
             });
         }
 

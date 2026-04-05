@@ -131,7 +131,7 @@ public class MemberController : ControllerBase
             LastName = user.LastName,
             JoinDate = user.JoinDate,
             Active = user.Active,
-            Roles = [role]
+            Roles = new List<string> { role }
         });
     }
 

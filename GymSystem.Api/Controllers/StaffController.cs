@@ -120,7 +120,7 @@ public class StaffController : ControllerBase
             EmployeeId = user.EmployeeId,
             Active = user.Active,
             BranchId = user.BranchId,
-            Roles = [.. roles]
+            Roles = roles.ToList()
         });
     }
 
@@ -190,7 +190,7 @@ public class StaffController : ControllerBase
             EmployeeId = user.EmployeeId,
             Active = user.Active,
             BranchId = user.BranchId,
-            Roles = [request.Role]
+            Roles = new List<string> { request.Role }
         });
     }
 
