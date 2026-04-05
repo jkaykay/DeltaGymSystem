@@ -98,10 +98,7 @@ public async Task<(bool Success, string? Error)> UpdateProfileAsync(ProfileViewM
     var request = new UpdateMemberRequest(
         Email: model.Email,
         FirstName: firstName,
-        LastName: lastName,
-        Telephone: model.Telephone,
-        EmergencyContact: model.EmergencyContact,
-        Weight: model.Weight
+        LastName: lastName
     );
 
     var response = await _http.PutAsJsonAsync("api/member/update", request);

@@ -31,9 +31,6 @@ namespace GymSystem.Web.Areas.Member.Controllers
                     UserName = profile.UserName,
                     FullName = profile.FirstName + " " + profile.LastName,
                     Email = profile.Email,
-                    Telephone = profile.Telephone,
-                    EmergencyContact = profile.EmergencyContact,
-                    Weight = profile.Weight,
                     MembershipName = profile.MembershipName,
                     MembershipPrice = profile.MembershipPrice,
                     MemberCode = profile.MemberCode

@@ -23,8 +23,8 @@ public interface IMemberApiService
 
     Task<QRCodeResponse?> GetMyQRAsync(string memberId);
 
-  
+  // Profile
     Task<ProfileDto?> GetMyProfileAsync();
-
+ //Update Profile 
 Task<(bool Success, string? Error)> UpdateProfileAsync(ProfileViewModel model);
 }

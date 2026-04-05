@@ -36,6 +36,7 @@
       <li><a asp-area="Member" asp-controller="MyProfile" asp-action="Index">MyProfile</a></li>
       <li><a asp-area="" asp-controller="About" asp-action="Index">About</a></li>
     </ul>
+    
     @if (User.Identity != null && User.Identity.IsAuthenticated)
 {
     <form asp-area="Member" asp-controller="Login" asp-action="Logout" method="post" class="nav-logout">
@@ -93,7 +94,7 @@ else
       <div class="member-code-body">
 
         <div class="qr-wrap">
-          <!-- keep your SVG -->
+          <img src="@Model.QrCodeBase64" alt="QR Code" class="qr-code"/>
         </div>
 
         <div class="member-code-info">

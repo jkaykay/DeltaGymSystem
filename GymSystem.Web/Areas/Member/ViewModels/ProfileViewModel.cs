@@ -13,15 +13,6 @@ namespace GymSystem.Web.Areas.Member.ViewModels
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
 
-        [Display(Name = "Telephone")]
-        public string? Telephone { get; set; }
-
-        [Display (Name = "Emergency Contact Name")]
-        public string? EmergencyContact { get; set; }
-
-        [Display(Name = "Weight")]
-        public double? Weight { get; set; } 
-
         public string? MembershipName { get; set; } = string.Empty;
         public double? MembershipPrice { get; set; }
 
