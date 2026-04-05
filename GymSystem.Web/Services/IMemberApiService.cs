@@ -7,5 +7,6 @@ namespace GymSystem.Web.Services
     {
         Task<LoginResponse?> MemberLoginAsync(string emailOrUserName, string password);
         Task MemberLogoutAsync();
+        Task<QRCodeResponse?> GetMyQRAsync(string memberId);
     }
 }
