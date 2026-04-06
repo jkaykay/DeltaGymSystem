@@ -42,6 +42,18 @@
                             <span class="value">@Model.Email</span>
                         }
                     </div>
+
+                    <div class="profile-item">
+                        <span class="label">Phone Number</span>
+                        @if (Model.IsEditing)
+                        {
+                            <input asp-for="PhoneNumber" class="value" />
+                        }
+                        else
+                        {
+                            <span class="value">@(Model.PhoneNumber ?? "—")</span>
+                        }
+                    </div>
                 </div>
 
                 <div class="profile-card">
@@ -67,5 +79,13 @@
                 </div>
             }
         </form>
+
+        <div class="profile-card" style="margin-top:24px;">
+            <h2>Security</h2>
+            <div class="profile-item profile-item-row">
+                <span class="label">Password</span>
+                <a asp-area="Trainer" asp-controller="Password" asp-action="Index" class="edit-button">Change Password</a>
+            </div>
+        </div>
     </section>
 </main>

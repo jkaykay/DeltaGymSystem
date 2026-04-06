@@ -6,6 +6,7 @@ using GymSystem.Shared.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -18,11 +19,13 @@ public class SubscriptionController : ControllerBase
 {
     private readonly GymDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IOutputCacheStore _outputCache;
 
-    public SubscriptionController(GymDbContext context, UserManager<ApplicationUser> userManager)
+    public SubscriptionController(GymDbContext context, UserManager<ApplicationUser> userManager, IOutputCacheStore outputCache)
     {
         _context = context;
         _userManager = userManager;
+        _outputCache = outputCache;
     }
 
     [HttpGet]
@@ -146,6 +149,8 @@ public class SubscriptionController : ControllerBase
         if (rowsAffected == 0)
             return BadRequest("Subscription creation failed.");
 
+        await _outputCache.EvictByTagAsync("subscriptions", default);
+
         return CreatedAtAction(nameof(Get), new { id = sub.SubId }, new SubscriptionDTO
         {
             SubId = sub.SubId,
@@ -185,6 +190,7 @@ public class SubscriptionController : ControllerBase
             sub.EndDate = request.EndDate.Value;
 
         await _context.SaveChangesAsync();
+        await _outputCache.EvictByTagAsync("subscriptions", default);
         return NoContent();
     }
 
@@ -200,6 +206,8 @@ public class SubscriptionController : ControllerBase
         var rowsAffected = await _context.SaveChangesAsync();
         if (rowsAffected == 0)
             return BadRequest("Subscription deletion failed.");
+
+        await _outputCache.EvictByTagAsync("subscriptions", default);
 
         return NoContent();
     }
@@ -264,6 +272,8 @@ public class SubscriptionController : ControllerBase
         var rowsAffected = await _context.SaveChangesAsync();
         if (rowsAffected == 0)
             return BadRequest("Subscription creation failed.");
+
+        await _outputCache.EvictByTagAsync("subscriptions", default);
 
         return CreatedAtAction(nameof(GetMy), null, new SubscriptionDTO
         {

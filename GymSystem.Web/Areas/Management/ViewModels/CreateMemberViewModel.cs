@@ -35,5 +35,10 @@ namespace GymSystem.Web.Areas.Management.ViewModels
         [Compare("Password", ErrorMessage = "Passwords do not match.")]
         [Display(Name = "Confirm Password")]
         public string ConfirmPassword { get; set; } = string.Empty;
+
+        [Phone]
+        [MaxLength(20)]
+        [Display(Name = "Phone Number")]
+        public string? PhoneNumber { get; set; }
     }
 }

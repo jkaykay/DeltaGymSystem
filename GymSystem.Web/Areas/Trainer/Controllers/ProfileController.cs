@@ -48,9 +48,10 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
                 RoleLabel = "Trainer",
                 UserName = trainer.UserName ?? "",
                 Email = trainer.Email ?? "",
+                PhoneNumber = trainer.PhoneNumber,
                 GymLocation = gymLocation,
                 IsEditing = edit
-                
+
             };
 
             return View(model);
@@ -91,7 +92,8 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
             var request = new UpdateTrainerProfileRequest(
                 Email: model.Email,
                 FirstName: null,
-                LastName: null
+                LastName: null,
+                PhoneNumber: model.PhoneNumber
                 );
 
             var success = await _trainerApiService.UpdateTrainerProfileAsync(request, token);

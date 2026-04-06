@@ -371,6 +371,14 @@ body {
     font-weight: 700;
     cursor: pointer;
     transition: opacity 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.profile-item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .edit-button:hover {
@@ -406,6 +414,10 @@ body {
     margin-bottom: 6px;
     font-weight: 700;
     color: var(--dark);
+}
+
+.profile-item-row .label {
+    margin-bottom: 0;
 }
 
 .value {

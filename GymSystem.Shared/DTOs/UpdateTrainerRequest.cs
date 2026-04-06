@@ -7,5 +7,6 @@ public record UpdateTrainerRequest(
     [MaxLength(100)] string? FirstName = null,
     [MaxLength(100)] string? LastName = null,
     [MaxLength(50)] string? EmployeeId = null,
-    int? BranchId = null
+    int? BranchId = null,
+    [Phone, MaxLength(20)] string? PhoneNumber = null
 );

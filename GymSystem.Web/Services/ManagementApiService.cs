@@ -62,7 +62,8 @@ namespace GymSystem.Web.Services
                 UserName = model.Username,
                 model.FirstName,
                 model.LastName,
-                model.Password
+                model.Password,
+                model.PhoneNumber
             });
             return response.IsSuccessStatusCode;
         }
@@ -71,9 +72,11 @@ namespace GymSystem.Web.Services
         {
             var response = await _http.PutAsJsonAsync($"api/member/{id}", new
             {
+                model.Email,
                 model.FirstName,
                 model.LastName,
-                model.Active
+                model.Active,
+                model.PhoneNumber
             });
             return response.IsSuccessStatusCode;
         }
@@ -145,7 +148,8 @@ namespace GymSystem.Web.Services
                 model.LastName,
                 model.Password,
                 model.EmployeeId,
-                model.Role
+                model.Role,
+                model.PhoneNumber
             });
             return response.IsSuccessStatusCode;
         }
@@ -158,7 +162,8 @@ namespace GymSystem.Web.Services
                 model.FirstName,
                 model.LastName,
                 model.EmployeeId,
-                model.BranchId
+                model.BranchId,
+                model.PhoneNumber
             });
             return response.IsSuccessStatusCode;
         }
@@ -387,7 +392,8 @@ namespace GymSystem.Web.Services
                 model.LastName,
                 model.Password,
                 model.EmployeeId,
-                model.BranchId
+                model.BranchId,
+                model.PhoneNumber
             });
             return response.IsSuccessStatusCode;
         }
@@ -400,7 +406,8 @@ namespace GymSystem.Web.Services
                 model.FirstName,
                 model.LastName,
                 model.EmployeeId,
-                model.BranchId
+                model.BranchId,
+                model.PhoneNumber
             });
             return response.IsSuccessStatusCode;
         }

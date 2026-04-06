@@ -104,6 +104,10 @@ namespace GymSystem.Api.Data
                 .HasForeignKey(b => b.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            modelBuilder.Entity<Booking>()
+                .HasIndex(b => new { b.SessionId, b.UserId })
+                .IsUnique();
+
             modelBuilder.Entity<Attendance>()
                 .HasOne(a => a.User)
                 .WithMany(u => u.Attendances)

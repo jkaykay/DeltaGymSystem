@@ -24,5 +24,10 @@ namespace GymSystem.Web.Areas.Management.ViewModels
         [Required]
         [Display(Name = "Active")]
         public bool Active { get; set; }
+
+        [Phone]
+        [MaxLength(20)]
+        [Display(Name = "Phone Number")]
+        public string? PhoneNumber { get; set; }
     }
 }

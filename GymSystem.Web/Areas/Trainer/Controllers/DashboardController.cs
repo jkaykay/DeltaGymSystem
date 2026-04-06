@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using GymSystem.Web.Areas.Trainer.ViewModels;
 using GymSystem.Web.Services;
-using GymSystem.Shared.DTOs;
 
 
 namespace GymSystem.Web.Areas.Trainer.Controllers
@@ -33,38 +32,21 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
             var trainerId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
             var trainerName = User.FindFirst("firstName")?.Value ?? "Trainer";
 
-            var sessions = await _trainerApiService.GetSessionsAsync(token);
+            var today = DateTime.UtcNow.Date;
 
-            var today = DateTime.Today;
-            var now = DateTime.Now;
+            // Fetch today's sessions for this trainer
+            var todayResult = await _trainerApiService.GetSessionsByTrainerAsync(
+                trainerId, today, today.AddDays(1).AddTicks(-1), 1, 50, token);
 
-            var todaySessions = new List<SessionDTO>();
-            var upcomingSessions = new List<SessionDTO>();
-
-            foreach (var session in sessions)
-            {
-                if (session.InstructorId == trainerId)
-                {
-                    if (session.Start.Date == today)
-                    {
-                        todaySessions.Add(session);
-                    }
-
-                    if (session.Start > now && session.Start.Date > today)
-                    {
-                        upcomingSessions.Add(session);
-                    }
-                }
-            }
-
-            todaySessions = todaySessions.OrderBy(s => s.Start).ToList();
-            upcomingSessions = upcomingSessions.OrderBy(s => s.Start).Take(10).ToList();
+            // Fetch upcoming sessions (after today) for this trainer
+            var upcomingResult = await _trainerApiService.GetSessionsByTrainerAsync(
+                trainerId, today.AddDays(1), null, 1, 10, token);
 
             var model = new TrainerDashboardViewModel
             {
                 TrainerName = trainerName,
-                TodaySessions = todaySessions,
-                UpcomingSessions = upcomingSessions
+                TodaySessions = todayResult.Items.OrderBy(s => s.Start).ToList(),
+                UpcomingSessions = upcomingResult.Items.OrderBy(s => s.Start).ToList()
             };
 
             return View(model);

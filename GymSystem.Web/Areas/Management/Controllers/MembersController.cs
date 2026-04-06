@@ -57,7 +57,8 @@ public class MembersController : Controller
             Email = member.Email,
             FirstName = member.FirstName,
             LastName = member.LastName,
-            Active = member.Active
+            Active = member.Active,
+            PhoneNumber = member.PhoneNumber
         };
 
         return View(vm);

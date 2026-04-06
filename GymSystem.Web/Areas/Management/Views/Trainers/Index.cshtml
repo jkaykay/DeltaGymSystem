@@ -94,6 +94,7 @@
             <tr>
                 <th>Name</th>
                 <th>Email</th>
+                <th>Phone</th>
                 <th>Employee ID</th>
                 <th>Branch</th>
                 <th>Hire Date</th>
@@ -106,6 +107,7 @@
                 <tr>
                     <td>@trainer.FirstName @trainer.LastName</td>
                     <td>@trainer.Email</td>
+                    <td>@(trainer.PhoneNumber ?? "—")</td>
                     <td>@(trainer.EmployeeId ?? "—")</td>
                     <td>@(trainer.BranchId?.ToString() ?? "—")</td>
                     <td>@(trainer.HireDate?.ToString("MMM dd, yyyy") ?? "—")</td>

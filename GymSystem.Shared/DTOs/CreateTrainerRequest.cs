@@ -8,5 +8,6 @@ public record CreateTrainerRequest(
     [Required, MaxLength(100)] string LastName,
     [Required, MinLength(6), MaxLength(100)] string Password,
     [MaxLength(50)] string? EmployeeId,
-    int? BranchId
+    int? BranchId,
+    [Phone, MaxLength(20)] string? PhoneNumber = null
 );

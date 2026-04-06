@@ -18,17 +18,17 @@ namespace GymSystem.Web.Services
         //main method to send this login data to the API and return what came back
         public async Task<LoginResponse?> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
         {
-            
+
             var client = _httpClientFactory.CreateClient("GymApi");
 
-            
+
             var response = await client.PostAsJsonAsync("api/auth/login", request, cancellationToken);
 
-            
+
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            
+
             return await response.Content.ReadFromJsonAsync<LoginResponse>(cancellationToken: cancellationToken);
         }
 
@@ -43,6 +43,20 @@ namespace GymSystem.Web.Services
             var response = await client.PostAsync("api/auth/logout", null, cancellationToken);
 
             return response.IsSuccessStatusCode;
+        }
+
+        public async Task<(bool Success, string? Error)> ChangePasswordAsync(string currentPassword, string newPassword, CancellationToken cancellationToken = default)
+        {
+            var client = _httpClientFactory.CreateClient("GymApi");
+
+            var request = new ChangePasswordRequest(currentPassword, newPassword);
+            var response = await client.PostAsJsonAsync("api/auth/change-password", request, cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+                return (true, null);
+
+            var error = await response.Content.ReadAsStringAsync(cancellationToken);
+            return (false, error);
         }
     }
 }

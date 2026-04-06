@@ -16,4 +16,6 @@ public class ClassDTO
     public string TrainerName { get; set; } = string.Empty;
 
     public int SessionCount { get; set; }
+
+    public int UpcomingSessionCount { get; set; }
 }

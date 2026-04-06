@@ -23,7 +23,7 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string? search = null)
         {
             var token = await HttpContext.GetTokenAsync("access_token");
 
@@ -33,30 +33,16 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
             var trainerId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
             var trainerName = User.FindFirst("firstName")?.Value ?? "Trainer";
 
-            var sessions = await _trainerApiService.GetSessionsAsync(token);
-
-            var trainerSessions = new List<SessionDTO>();
-
-            foreach (var session in sessions)
-            {
-                if (session.InstructorId == trainerId)
-                {
-                    trainerSessions.Add(session);
-                }
-            }
-
-            trainerSessions = trainerSessions.OrderBy(s => s.Start).ToList();
-
-            var totalCount = trainerSessions.Count;
-            var paged = trainerSessions.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            var result = await _trainerApiService.GetSessionsAsync(trainerId, page, pageSize, token, search);
 
             var model = new TrainerSessionViewModel
             {
                 TrainerName = trainerName,
-                WeeklySessions = paged,
-                Page = page,
-                PageSize = pageSize,
-                TotalCount = totalCount
+                Search = search,
+                WeeklySessions = result.Items,
+                Page = result.Page,
+                PageSize = result.PageSize,
+                TotalCount = result.TotalCount
             };
 
             return View(model);

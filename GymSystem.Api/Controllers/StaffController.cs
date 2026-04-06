@@ -79,6 +79,7 @@ public class StaffController : ControllerBase
                 u.EmployeeId,
                 u.Active,
                 u.BranchId,
+                u.PhoneNumber,
                 Roles = _context.UserRoles
                     .Where(ur => ur.UserId == u.Id)
                     .Join(_context.Roles,
@@ -105,6 +106,7 @@ public class StaffController : ControllerBase
                 EmployeeId = s.EmployeeId,
                 Active = s.Active,
                 BranchId = s.BranchId,
+                PhoneNumber = s.PhoneNumber,
                 Roles = s.Roles
             }).ToList()
         };
@@ -144,6 +146,7 @@ public class StaffController : ControllerBase
             EmployeeId = user.EmployeeId,
             Active = user.Active,
             BranchId = user.BranchId,
+            PhoneNumber = user.PhoneNumber,
             Roles = [.. roles]
         });
     }
@@ -190,6 +193,7 @@ public class StaffController : ControllerBase
             FirstName = request.FirstName,
             LastName = request.LastName,
             EmployeeId = request.EmployeeId,
+            PhoneNumber = request.PhoneNumber,
             HireDate = DateTime.UtcNow,
             Active = true,
             BranchId = request.BranchId
@@ -214,6 +218,7 @@ public class StaffController : ControllerBase
             EmployeeId = user.EmployeeId,
             Active = user.Active,
             BranchId = user.BranchId,
+            PhoneNumber = user.PhoneNumber,
             Roles = [request.Role]
         });
     }
@@ -248,6 +253,7 @@ public class StaffController : ControllerBase
 
         if (request.FirstName is not null) user.FirstName = request.FirstName;
         if (request.LastName is not null) user.LastName = request.LastName;
+        if (request.PhoneNumber is not null) user.PhoneNumber = request.PhoneNumber;
 
         if (!string.IsNullOrWhiteSpace(request.EmployeeId))
         {
