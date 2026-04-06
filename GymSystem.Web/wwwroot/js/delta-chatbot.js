@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var loadingMsg = appendMessage("DELTA is thinking...", "bot loading");
 
     try {
-      var response = await fetch("https://localhost:7183/api/LLM/chat", {
+      var response = await fetch("https://deltagymapi.azurewebsites.net/api/LLM/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: message })
