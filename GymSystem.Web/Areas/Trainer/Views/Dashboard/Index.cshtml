@@ -3,33 +3,51 @@
 @{
     ViewData["Title"] = "Dashboard";
 }
-<section class="schedule-card dashboard-schedule">
+<section class="schedule-card dashboard-schedule" style="margin-bottom: 2rem;">
     <div class="section-header">
-        <h2>Today's Schedule</h2>
-        <a asp-area="Trainer" asp-controller="Schedule" asp-action="Index" class="schedule-btn">
-            View Full Schedule
-        </a>
+        <h2>Today's Sessions</h2>
     </div>
 
     @if (Model.TodaySessions != null && Model.TodaySessions.Any())
     {
         @foreach (var session in Model.TodaySessions)
         {
-            <div class="schedule-row">
+            <a asp-area="Trainer" asp-controller="Session" asp-action="Details" asp-route-id="@session.SessionId" class="schedule-row session-link">
                 <span>@session.Subject</span>
                 <span>@session.Start.ToString("hh:mm tt")</span>
-
-            </div>               
+            </a>
         }
     }
     else
     {
         <div class="schedule-row">
             <span>No Sessions For Today</span>
-        </div>    
-    
+        </div>
     }
+</section>
 
+<section class="schedule-card dashboard-schedule">
+    <div class="section-header">
+        <h2>Upcoming Sessions</h2>
+    </div>
+
+    @if (Model.UpcomingSessions != null && Model.UpcomingSessions.Any())
+    {
+        @foreach (var session in Model.UpcomingSessions)
+        {
+            <a asp-area="Trainer" asp-controller="Session" asp-action="Details" asp-route-id="@session.SessionId" class="schedule-row session-link">
+                <span>@session.Subject</span>
+                <span>@session.Start.ToString("ddd, MMM d")</span>
+                <span>@session.Start.ToString("hh:mm tt")</span>
+            </a>
+        }
+    }
+    else
+    {
+        <div class="schedule-row">
+            <span>No Upcoming Sessions</span>
+        </div>
+    }
 </section>
 
 

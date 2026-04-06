@@ -70,5 +70,101 @@ namespace GymSystem.Web.Services
 
             return result?.Items ?? new List<SessionDTO>();
         }
+
+
+        public async Task<SessionDTO?> GetSessionByIdAsync(int sessionId, string token, CancellationToken cancellationToken = default)
+        {
+            var client = _httpClientFactory.CreateClient("GymApi");
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync($"api/session/{sessionId}", cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadFromJsonAsync<SessionDTO>(cancellationToken: cancellationToken);
+        }
+
+
+        public async Task<List<BookingDTO>> GetSessionBookingsAsync(int sessionId, string token, CancellationToken cancellationToken = default)
+        {
+            var client = _httpClientFactory.CreateClient("GymApi");
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync($"api/session/{sessionId}/bookings", cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+                return new List<BookingDTO>();
+
+            return await response.Content.ReadFromJsonAsync<List<BookingDTO>>(cancellationToken: cancellationToken) ?? new List<BookingDTO>();
+        }
+
+
+        public async Task<bool> DeleteSessionAsync(int sessionId, string token, CancellationToken cancellationToken = default)
+        {
+            var client = _httpClientFactory.CreateClient("GymApi");
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.DeleteAsync($"api/session/{sessionId}", cancellationToken);
+
+            return response.IsSuccessStatusCode;
+        }
+
+
+        public async Task<List<RoomDTO>> GetRoomsByBranchAsync(int branchId, string token, CancellationToken cancellationToken = default)
+        {
+            var client = _httpClientFactory.CreateClient("GymApi");
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync($"api/room?branchId={branchId}&page=1&pageSize=999", cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+                return new List<RoomDTO>();
+
+            var result = await response.Content.ReadFromJsonAsync<TrainerPagedResult<RoomDTO>>(cancellationToken: cancellationToken);
+
+            return result?.Items ?? new List<RoomDTO>();
+        }
+
+
+        public async Task<List<ClassDTO>> GetTrainerClassesAsync(string trainerId, string token, CancellationToken cancellationToken = default)
+        {
+            var client = _httpClientFactory.CreateClient("GymApi");
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync("api/class?page=1&pageSize=999", cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+                return new List<ClassDTO>();
+
+            var result = await response.Content.ReadFromJsonAsync<TrainerPagedResult<ClassDTO>>(cancellationToken: cancellationToken);
+
+            var allClasses = result?.Items ?? new List<ClassDTO>();
+
+            return allClasses.Where(c => c.UserId == trainerId).ToList();
+        }
+
+
+        public async Task<bool> CreateSessionAsync(AddSessionRequest request, string token, CancellationToken cancellationToken = default)
+        {
+            var client = _httpClientFactory.CreateClient("GymApi");
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.PostAsJsonAsync("api/session", request, cancellationToken);
+
+            return response.IsSuccessStatusCode;
+        }
     }
 }
