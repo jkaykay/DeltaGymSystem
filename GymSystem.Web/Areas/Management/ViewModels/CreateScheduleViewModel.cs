@@ -14,10 +14,10 @@ namespace GymSystem.Web.Areas.Management.ViewModels
 
         [Required]
         [Display(Name = "Start Time")]
-        public DateTime Start { get; set; }
+        public DateTime Start { get; set; } = DateTime.Now;
 
         [Required]
         [Display(Name = "End Time")]
-        public DateTime End { get; set; }
+        public DateTime End { get; set; } = DateTime.Now;
     }
 }

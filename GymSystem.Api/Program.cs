@@ -162,6 +162,10 @@ builder.Services.AddOutputCache(options =>
     options.AddPolicy("schedules", policy => policy
         .Expire(TimeSpan.FromSeconds(30))
         .Tag("schedules"));
+
+    options.AddPolicy("subscriptions", policy => policy
+        .Expire(TimeSpan.FromSeconds(30))
+        .Tag("subscriptions"));
 });
 
 builder.Services.AddControllers();

@@ -41,7 +41,7 @@ public class DashboardController : Controller
             TotalAttendances = attendances.Count,
             UpcomingBookings = upcomingBookings,
             LogHistory = attendances.OrderByDescending(a => a.CheckIn).Take(7).ToList(),
-            PaymentHistory = payments.Items.OrderByDescending(p => p.PaymentDate).Take(10).ToList()
+            PaymentHistory = payments.Items.OrderByDescending(p => p.PaymentDate).Take(5).ToList()
         };
 
         return View(model);
@@ -84,6 +84,28 @@ public class DashboardController : Controller
         var model = new BookingHistoryViewModel
         {
             Bookings = ordered.Skip((page - 1) * pageSize).Take(pageSize).ToList(),
+            CurrentPage = page,
+            TotalPages = totalPages,
+            TotalCount = totalCount
+        };
+
+        return View(model);
+    }
+
+    public async Task<IActionResult> PaymentHistory(int page = 1)
+    {
+        const int pageSize = 10;
+
+        var payments = await _api.GetMyPaymentsAsync();
+        var ordered = payments.Items.OrderByDescending(p => p.PaymentDate).ToList();
+
+        var totalCount = ordered.Count;
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+        page = Math.Clamp(page, 1, Math.Max(1, totalPages));
+
+        var model = new PaymentHistoryViewModel
+        {
+            Payments = ordered.Skip((page - 1) * pageSize).Take(pageSize).ToList(),
             CurrentPage = page,
             TotalPages = totalPages,
             TotalCount = totalCount
