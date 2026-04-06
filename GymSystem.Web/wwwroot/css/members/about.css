@@ -430,3 +430,81 @@
       font-size: 15px;
       color: var(--dark);
     }
+
+    /* ── MOBILE RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .hero {
+        padding: 48px 24px;
+        min-height: 360px;
+      }
+
+      .hero-ash-block {
+        width: 50%;
+        clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%);
+      }
+
+      .stats-band {
+        padding: 28px 24px;
+        gap: 20px;
+      }
+
+      .stat-num {
+        font-size: 38px;
+      }
+
+      .split-section {
+        grid-template-columns: 1fr;
+      }
+
+      .split-content {
+        padding: 40px 24px;
+      }
+
+      .split-bg {
+        min-height: 220px;
+      }
+
+      .cards-section {
+        padding: 48px 24px;
+      }
+
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .why-section {
+        padding: 48px 24px;
+      }
+
+      .why-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .machines-section {
+        padding: 48px 24px;
+      }
+
+      .machines-list {
+        grid-template-columns: 1fr;
+      }
+
+      .ops-section {
+        grid-template-columns: 1fr;
+      }
+
+      .ops-content {
+        padding: 40px 24px;
+      }
+
+      .ops-hours {
+        padding: 40px 24px;
+      }
+
+      .contact-section {
+        padding: 48px 24px;
+      }
+
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+    }

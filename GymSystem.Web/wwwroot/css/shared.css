@@ -139,3 +139,35 @@
       transition: opacity 0.55s ease, transform 0.55s ease;
     }
     .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── MOBILE RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .site-footer {
+        padding: 40px 20px 30px;
+        margin-top: 40px;
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        text-align: center;
+      }
+
+      .social-icons { justify-content: center; }
+
+      .footer-links { align-items: center; }
+
+      .footer-bottom {
+        margin-top: 24px;
+        padding-top: 18px;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .scroll-top-btn {
+        bottom: 20px;
+        right: 20px;
+        width: 42px;
+        height: 42px;
+      }
+    }
