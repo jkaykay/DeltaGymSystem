@@ -77,9 +77,13 @@ public class MemberApiService : IMemberApiService
 
     // --- Dashboard data ---
 
-    public async Task<PagedResult<BookingDTO>> GetMyBookingsAsync(int page = 1, int pageSize = 100)
+    public async Task<PagedResult<BookingDTO>> GetMyBookingsAsync(int page = 1, int pageSize = 100, string? search = null)
     {
-        var result = await _http.GetFromJsonAsync<PagedResult<BookingDTO>>($"api/booking/my?page={page}&pageSize={pageSize}");
+        var url = $"api/booking/my?page={page}&pageSize={pageSize}";
+        if (!string.IsNullOrWhiteSpace(search))
+            url += $"&search={Uri.EscapeDataString(search)}";
+
+        var result = await _http.GetFromJsonAsync<PagedResult<BookingDTO>>(url);
         return result ?? new PagedResult<BookingDTO>();
     }
 
@@ -97,10 +101,14 @@ public class MemberApiService : IMemberApiService
 
     // --- Booking ---
 
-    public async Task<PagedResult<SessionDTO>> GetUpcomingSessionsAsync(int page = 1, int pageSize = 100)
+    public async Task<PagedResult<SessionDTO>> GetUpcomingSessionsAsync(int page = 1, int pageSize = 100, string? search = null)
     {
         var from = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss");
-        var result = await _http.GetFromJsonAsync<PagedResult<SessionDTO>>($"api/session?page={page}&pageSize={pageSize}&dateFrom={from}&sortBy=start&sortDir=asc");
+        var url = $"api/session?page={page}&pageSize={pageSize}&dateFrom={from}&sortBy=start&sortDir=asc";
+        if (!string.IsNullOrWhiteSpace(search))
+            url += $"&search={Uri.EscapeDataString(search)}";
+
+        var result = await _http.GetFromJsonAsync<PagedResult<SessionDTO>>(url);
         return result ?? new PagedResult<SessionDTO>();
     }
 

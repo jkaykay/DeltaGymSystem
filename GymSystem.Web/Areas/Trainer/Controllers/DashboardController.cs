@@ -32,7 +32,7 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
             var trainerId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
             var trainerName = User.FindFirst("firstName")?.Value ?? "Trainer";
 
-            var today = DateTime.Today;
+            var today = DateTime.UtcNow.Date;
 
             // Fetch today's sessions for this trainer
             var todayResult = await _trainerApiService.GetSessionsByTrainerAsync(

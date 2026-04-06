@@ -5,6 +5,7 @@ namespace GymSystem.Web.Areas.Trainer.ViewModels
     public class TrainerSessionViewModel
     {
         public string TrainerName { get; set; } = "";
+        public string? Search { get; set; }
         public List<SessionDTO> WeeklySessions { get; set; } = new();
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 10;

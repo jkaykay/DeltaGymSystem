@@ -54,14 +54,18 @@ namespace GymSystem.Web.Services
 
 
         //dashboard service
-        public async Task<TrainerPagedResult<SessionDTO>> GetSessionsAsync(string instructorId, int page, int pageSize, string token, CancellationToken cancellationToken = default)
+        public async Task<TrainerPagedResult<SessionDTO>> GetSessionsAsync(string instructorId, int page, int pageSize, string token, string? search = null, CancellationToken cancellationToken = default)
         {
             var client = _httpClientFactory.CreateClient("GymApi");
 
             client.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await client.GetAsync($"api/session?instructorId={Uri.EscapeDataString(instructorId)}&page={page}&pageSize={pageSize}", cancellationToken);
+            var url = $"api/session?instructorId={Uri.EscapeDataString(instructorId)}&page={page}&pageSize={pageSize}";
+            if (!string.IsNullOrWhiteSpace(search))
+                url += $"&search={Uri.EscapeDataString(search)}";
+
+            var response = await client.GetAsync(url, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
                 return new TrainerPagedResult<SessionDTO>();
@@ -176,10 +180,10 @@ namespace GymSystem.Web.Services
             var url = $"api/session?instructorId={Uri.EscapeDataString(instructorId)}&page={page}&pageSize={pageSize}";
 
             if (dateFrom.HasValue)
-                url += $"&dateFrom={dateFrom.Value:o}";
+                url += $"&dateFrom={Uri.EscapeDataString(dateFrom.Value.ToString("o"))}";
 
             if (dateTo.HasValue)
-                url += $"&dateTo={dateTo.Value:o}";
+                url += $"&dateTo={Uri.EscapeDataString(dateTo.Value.ToString("o"))}";
 
             var response = await client.GetAsync(url, cancellationToken);
 

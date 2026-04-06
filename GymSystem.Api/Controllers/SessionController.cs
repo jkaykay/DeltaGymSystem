@@ -34,10 +34,12 @@ namespace GymSystem.Api.Controllers
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
                 var term = request.Search.Trim().ToLower();
+                int.TryParse(term, out var roomNumber);
                 query = query.Where(s =>
                     s.Class.Subject.ToLower().Contains(term) ||
                     s.Class.User.FirstName.ToLower().Contains(term) ||
-                    s.Class.User.LastName.ToLower().Contains(term));
+                    s.Class.User.LastName.ToLower().Contains(term) ||
+                    (roomNumber > 0 && s.Room.RoomNumber == roomNumber));
             }
 
             if (request.DateFrom.HasValue)

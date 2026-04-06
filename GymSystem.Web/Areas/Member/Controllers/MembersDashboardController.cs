@@ -70,11 +70,11 @@ public class DashboardController : Controller
         return View(model);
     }
 
-    public async Task<IActionResult> BookingHistory(int page = 1)
+    public async Task<IActionResult> BookingHistory(int page = 1, string? search = null)
     {
         const int pageSize = 10;
 
-        var bookings = await _api.GetMyBookingsAsync();
+        var bookings = await _api.GetMyBookingsAsync(search: search);
         var ordered = bookings.Items.OrderByDescending(b => b.SessionStart).ToList();
 
         var totalCount = ordered.Count;
@@ -83,6 +83,7 @@ public class DashboardController : Controller
 
         var model = new BookingHistoryViewModel
         {
+            Search = search,
             Bookings = ordered.Skip((page - 1) * pageSize).Take(pageSize).ToList(),
             CurrentPage = page,
             TotalPages = totalPages,
