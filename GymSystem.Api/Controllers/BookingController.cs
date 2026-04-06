@@ -2,10 +2,12 @@
 using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
+using GymSystem.Shared.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -170,12 +172,21 @@ namespace GymSystem.Api.Controllers
 
         [HttpGet("my")]
         [Authorize(Roles = "Member")]
-        public async Task<IActionResult> GetMy([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetMy([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-            var result = await _context.Bookings
-                .Where(b => b.UserId == userId)
+            var query = _context.Bookings
+                .Where(b => b.UserId == userId);
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.Trim().ToLower();
+                query = query.Where(b =>
+                    b.Session.Class.Subject.ToLower().Contains(term));
+            }
+
+            var result = await query
                 .Select(b => new BookingDTO
                 {
                     BookingId = b.BookingId,
@@ -195,6 +206,7 @@ namespace GymSystem.Api.Controllers
 
         [HttpPost("my")]
         [Authorize(Roles = "Member")]  // UserId comes from claims — members can only book for themselves
+        [EnableRateLimiting("booking")]
         public async Task<IActionResult> CreateMy([FromBody] AddMyBookingRequest request)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -203,6 +215,7 @@ namespace GymSystem.Api.Controllers
 
         [HttpDelete("my/{id}")]
         [Authorize(Roles = "Member")]
+        [EnableRateLimiting("booking")]
         public async Task<IActionResult> DeleteMy(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -240,6 +253,9 @@ namespace GymSystem.Api.Controllers
             if (session is null)
                 return BadRequest("Session not found.");
 
+            if (session.Start <= DateTime.UtcNow)
+                return BadRequest("Cannot book a session that has already started.");
+
             if (session.Bookings.Count >= session.MaxCapacity)
                 return Conflict("This session is fully booked.");
 
@@ -259,8 +275,16 @@ namespace GymSystem.Api.Controllers
             };
 
             _context.Bookings.Add(booking);
-            var rowsAffected = await _context.SaveChangesAsync();
-            if (rowsAffected == 0) return BadRequest("Failed to create booking.");
+
+            try
+            {
+                var rowsAffected = await _context.SaveChangesAsync();
+                if (rowsAffected == 0) return BadRequest("Failed to create booking.");
+            }
+            catch (DbUpdateException)
+            {
+                return Conflict("User has already booked this session.");
+            }
 
             await _outputCache.EvictByTagAsync("bookings", default);
 

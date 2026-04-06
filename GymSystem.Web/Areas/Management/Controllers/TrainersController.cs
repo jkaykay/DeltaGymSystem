@@ -91,7 +91,8 @@ public class TrainersController : Controller
             FirstName = trainer.FirstName,
             LastName = trainer.LastName,
             EmployeeId = trainer.EmployeeId,
-            BranchId = trainer.BranchId
+            BranchId = trainer.BranchId,
+            PhoneNumber = trainer.PhoneNumber
         };
 
         return View(vm);

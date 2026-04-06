@@ -26,5 +26,10 @@ namespace GymSystem.Web.Areas.Management.ViewModels
         [MaxLength(50)]
         [Display(Name = "Employee ID (e.g., GYM-2026-001)")]
         public string? EmployeeId { get; set; }
+
+        [Phone]
+        [MaxLength(20)]
+        [Display(Name = "Phone Number")]
+        public string? PhoneNumber { get; set; }
     }
 }

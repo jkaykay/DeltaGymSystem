@@ -79,7 +79,8 @@ public class MemberController : ControllerBase
                 FirstName = m.FirstName,
                 LastName = m.LastName,
                 JoinDate = m.JoinDate,
-                Active = m.Active
+                Active = m.Active,
+                PhoneNumber = m.PhoneNumber
             })
             .ToPagedResultAsync(request.Page, request.PageSize);
 
@@ -111,7 +112,8 @@ public class MemberController : ControllerBase
                 FirstName = m.FirstName,
                 LastName = m.LastName,
                 JoinDate = m.JoinDate,
-                Active = m.Active
+                Active = m.Active,
+                PhoneNumber = m.PhoneNumber
             })
             .ToListAsync();
 
@@ -136,6 +138,7 @@ public class MemberController : ControllerBase
             Email = request.Email,
             FirstName = request.FirstName,
             LastName = request.LastName,
+            PhoneNumber = request.PhoneNumber,
             JoinDate = DateTime.UtcNow,
             Active = false
         };
@@ -158,6 +161,7 @@ public class MemberController : ControllerBase
             LastName = user.LastName,
             JoinDate = user.JoinDate,
             Active = user.Active,
+            PhoneNumber = user.PhoneNumber,
             Roles = [role]
         });
     }
@@ -184,7 +188,8 @@ public class MemberController : ControllerBase
             FirstName = user.FirstName,
             LastName = user.LastName,
             JoinDate = user.JoinDate,
-            Active = user.Active
+            Active = user.Active,
+            PhoneNumber = user.PhoneNumber
         });
     }
 
@@ -214,6 +219,7 @@ public class MemberController : ControllerBase
 
         if (request.FirstName is not null) user.FirstName = request.FirstName;
         if (request.LastName is not null) user.LastName = request.LastName;
+        if (request.PhoneNumber is not null) user.PhoneNumber = request.PhoneNumber;
 
         // Only Admin/Staff can change active status
         if (request.IsActive.HasValue && IsAdminOrStaff())

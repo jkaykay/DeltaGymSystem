@@ -7,5 +7,6 @@ public record UpdateMemberRequest(
     [MaxLength(100)] string? FirstName = null,
     [MaxLength(100)] string? LastName = null,
     [MaxLength(256)] string? QrCodeBase64 = null,
-    bool? IsActive = null
+    bool? IsActive = null,
+    [Phone, MaxLength(20)] string? PhoneNumber = null
 );

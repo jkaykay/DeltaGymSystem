@@ -87,7 +87,8 @@ public class StaffController : Controller
             FirstName = staff.FirstName,
             LastName = staff.LastName,
             EmployeeId = staff.EmployeeId,
-            BranchId = staff.BranchId
+            BranchId = staff.BranchId,
+            PhoneNumber = staff.PhoneNumber
         };
 
         return View(vm);

@@ -24,6 +24,17 @@ namespace GymSystem.Web.Areas.Member.Controllers
             if (string.IsNullOrEmpty(memberId))
                 return Unauthorized();
 
+            // Do not issue a QR code to inactive / unsubscribed members
+            var profile = await _api.GetMyProfileAsync();
+            if (profile is null)
+                return Unauthorized();
+
+            if (!profile.Active)
+            {
+                TempData["Error"] = "Your membership is inactive. QR codes are only available for active members.";
+                return RedirectToAction("Index", "Dashboard", new { area = "Member" });
+            }
+
             var qrcode = await _api.GetMyQRAsync(memberId);
             return View(qrcode);
         }

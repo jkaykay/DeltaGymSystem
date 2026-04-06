@@ -16,12 +16,12 @@ public interface IMemberApiService
     Task<QRCodeResponse?> GetMyQRAsync(string memberId);
 
     // Dashboard — uses real API endpoints
-    Task<PagedResult<BookingDTO>> GetMyBookingsAsync(int page = 1, int pageSize = 100);
+    Task<PagedResult<BookingDTO>> GetMyBookingsAsync(int page = 1, int pageSize = 100, string? search = null);
     Task<List<AttendanceDTO>> GetMyAttendancesAsync(string memberId);
     Task<PagedResult<PaymentDTO>> GetMyPaymentsAsync(int page = 1, int pageSize = 100);
 
     // Booking
-    Task<PagedResult<SessionDTO>> GetUpcomingSessionsAsync(int page = 1, int pageSize = 100);
+    Task<PagedResult<SessionDTO>> GetUpcomingSessionsAsync(int page = 1, int pageSize = 100, string? search = null);
     Task<(bool Success, string? Error)> CreateMyBookingAsync(int sessionId);
     Task<(bool Success, string? Error)> CancelMyBookingAsync(int bookingId);
 

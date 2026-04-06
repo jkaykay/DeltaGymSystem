@@ -8,5 +8,6 @@ public record UpdateStaffRequest(
     [MaxLength(100)] string? LastName = null,
     [MaxLength(50)] string? EmployeeId = null,
     bool? Active = null,
-    int? BranchId = null
+    int? BranchId = null,
+    [Phone, MaxLength(20)] string? PhoneNumber = null
 );

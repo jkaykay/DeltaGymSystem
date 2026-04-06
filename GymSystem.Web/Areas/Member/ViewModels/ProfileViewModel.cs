@@ -22,6 +22,11 @@ namespace GymSystem.Web.Areas.Member.ViewModels
         [MaxLength(100)]
         public string LastName { get; set; } = string.Empty;
 
+        [Phone]
+        [Display(Name = "Phone Number")]
+        [MaxLength(20)]
+        public string? PhoneNumber { get; set; }
+
         [Display(Name = "Join Date")]
         public DateTime? JoinDate { get; set; }
 

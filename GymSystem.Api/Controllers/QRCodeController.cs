@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using QRCoder;
@@ -39,7 +40,8 @@ public class QRCodeController : ControllerBase
 
     [Authorize]
     [HttpGet("generate/{memberId}")]
-    public IActionResult Generate(string memberId)
+    [EnableRateLimiting("qr")]
+    public async Task<IActionResult> Generate(string memberId)
     {
         // Members can only generate their own QR code
         var callerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -47,6 +49,15 @@ public class QRCodeController : ControllerBase
 
         if (!isStaffOrAdmin && callerId != memberId)
             return Forbid();
+
+        // Inactive / unsubscribed members must not receive a QR code
+        var user = await _userManager.FindByIdAsync(memberId);
+        if (user is null)
+            return NotFound(new { message = $"No member found with ID '{memberId}'." });
+
+        if (!user.Active)
+            return StatusCode(StatusCodes.Status403Forbidden,
+                new { message = $"{user.FirstName} {user.LastName} is not an active member." });
 
         var cacheKey = $"qr:{memberId}";
 
@@ -73,6 +84,7 @@ public class QRCodeController : ControllerBase
     /// Staff scans a member's QR code — automatically checks them in or out.
     [Authorize(Roles = "Staff,Admin")]
     [HttpPost("scan")]
+    [EnableRateLimiting("qr")]
     public async Task<IActionResult> Scan([FromBody] ScanRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Token))

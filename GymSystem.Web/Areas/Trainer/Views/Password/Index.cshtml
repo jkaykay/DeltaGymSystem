@@ -1,0 +1,58 @@
+@model GymSystem.Web.Areas.Trainer.ViewModels.ChangePasswordViewModel
+
+@{
+    ViewData["Title"] = "Change Password";
+}
+
+<main class="profile-page">
+    <section class="profile-wrapper">
+        <div class="profile-top">
+            <div>
+                <h1 class="profile-name">Change Password</h1>
+                <p class="profile-role">Update your account password</p>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] is string msg)
+        {
+            <div class="alert-success" style="background:#22c55e22;color:#16a34a;padding:12px 16px;border-radius:8px;margin-bottom:20px;border:1px solid #22c55e44;">
+                @msg
+            </div>
+        }
+
+        <form asp-area="Trainer" asp-controller="Password" asp-action="Index" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="profile-grid">
+                <div class="profile-card">
+                    <h2>Password Details</h2>
+
+                    <div asp-validation-summary="ModelOnly" style="color:#ef4444;margin-bottom:12px;" role="alert"></div>
+
+                    <div class="profile-item">
+                        <span class="label">Current Password</span>
+                        <input asp-for="CurrentPassword" type="password" class="value" />
+                        <span asp-validation-for="CurrentPassword" style="color:#ef4444;font-size:0.85rem;"></span>
+                    </div>
+
+                    <div class="profile-item">
+                        <span class="label">New Password</span>
+                        <input asp-for="NewPassword" type="password" class="value" />
+                        <span asp-validation-for="NewPassword" style="color:#ef4444;font-size:0.85rem;"></span>
+                    </div>
+
+                    <div class="profile-item">
+                        <span class="label">Confirm New Password</span>
+                        <input asp-for="ConfirmPassword" type="password" class="value" />
+                        <span asp-validation-for="ConfirmPassword" style="color:#ef4444;font-size:0.85rem;"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions" style="margin-top:20px;display:flex;gap:12px;">
+                <button type="submit" class="edit-button">Change Password</button>
+                <a asp-area="Trainer" asp-controller="Profile" asp-action="Index" class="edit-button">Cancel</a>
+            </div>
+        </form>
+    </section>
+</main>

@@ -25,6 +25,10 @@ public class UserDTO
     [MaxLength(50)]
     public string? EmployeeId { get; set; }
 
+    [Phone]
+    [MaxLength(20)]
+    public string? PhoneNumber { get; set; }
+
     public int? BranchId { get; set; }
     public List<string> Roles { get; set; } = [];
 }

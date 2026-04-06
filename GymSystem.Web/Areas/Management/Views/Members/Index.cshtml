@@ -93,6 +93,7 @@
             <tr>
                 <th>Name</th>
                 <th>Email</th>
+                <th>Phone</th>
                 <th>Join Date</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -104,6 +105,7 @@
                 <tr>
                     <td>@member.FirstName @member.LastName</td>
                     <td>@member.Email</td>
+                    <td>@(member.PhoneNumber ?? "—")</td>
                     <td>@member.JoinDate?.ToString("MMM dd, yyyy")</td>
                     <td>
                         @if (member.Active)

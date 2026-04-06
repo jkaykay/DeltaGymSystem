@@ -101,7 +101,7 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Member ID</th>
+                <th>Member</th>
                 <th>Subscription</th>
                 <th>Amount</th>
                 <th>Date</th>
@@ -113,7 +113,7 @@
             {
                 <tr>
                     <td>@payment.PaymentId</td>
-                    <td><code>@payment.UserId</code></td>
+                    <td>@payment.UserFullName</td>
                     <td>#@payment.SubId</td>
                     <td>@payment.Amount.ToString("C")</td>
                     <td>@payment.PaymentDate.ToString("MMM dd, yyyy HH:mm")</td>

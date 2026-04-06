@@ -81,3 +81,22 @@ nav {
 }
 
 .logout-btn:hover { background: #111111; color: white; }
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dashboard-btn {
+    font-weight: 700;
+    font-size: 15px;
+    color: #c21c1c;
+    text-decoration: none;
+    border: 2px solid #c21c1c;
+    padding: 7px 20px;
+    border-radius: 8px;
+    transition: background-color 0.5s, color 0.2s;
+}
+
+.dashboard-btn:hover { background: #c21c1c; color: white; }
