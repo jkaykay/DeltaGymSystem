@@ -1,13 +1,149 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using GymSystem.Shared.DTOs
+@{
+    ViewData["Title"] = "Home";
+    var sessions = ViewBag.Sessions as List<SessionDTO> ?? new List<SessionDTO>();
+    var tiers = ViewBag.Tiers as List<TierDTO> ?? new List<TierDTO>();
+    var trainerNames = sessions.Select(s => s.InstructorName).Distinct().ToList();
 }
 
-<div id="banner-block">
-    <div id="info-banner">
-        <!-- <img />-->
+@section Styles {
+  <link rel="stylesheet" href="~/css/members/styleindex.css" asp-append-version="true"/>
+}
+
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-top">
+        <h1 class="hero-headline">Push Your<br>Limits</h1>
+        <div class="hero-cta">
+          <a asp-area="" asp-controller="Memberships" asp-action="Index" class="btn-primary">Join Now</a>
+          <a asp-area="" asp-controller="Classes" asp-action="Index" class="btn-outline">Browse Classes</a>
+        </div>
+      </div>
+      <p class="hero-sub">World-class facilities, expert trainers, and a community<br>that pushes you to be your best every single day.</p>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">50+</div>
+          <div class="stat-label">Classes / Weekly</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">15K</div>
+          <div class="stat-label">Members</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">10+</div>
+          <div class="stat-label">Expert Trainers</div>
+        </div>
+      </div>
     </div>
-</div>
-<div class="page-block">
-    <h1>Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+  </section>
+
+  <!-- CLASSES -->
+  <section class="section reveal container py-5">
+    <div class="section-header">
+      <h2 class="section-title">Train with the best</h2>
+      <a asp-area="" asp-controller="Classes" asp-action="Index" class="view-all">View All &gt;&gt;&gt;</a>
+    </div>
+    <div class="cards-grid">
+      @if (sessions.Any())
+      {
+        @foreach (var session in sessions)
+        {
+          var duration = (int)(session.End - session.Start).TotalMinutes;
+          <div class="class-card">
+            <div class="card-img-wrap">
+              <img src="images/Strength.jpg" alt="@session.Subject" class="nav-logo-img"/>
+              <span class="card-tag tag-strength">@session.Subject</span>
+            </div>
+            <div class="card-body">
+              <div class="card-name">@session.Subject</div>
+              <div class="card-trainer">@session.InstructorName</div>
+              <div class="card-meta">
+                <span>@duration min</span>
+                <span class="spots"><span class="smiley">😊</span> @session.BookingCount/@session.MaxCapacity</span>
+              </div>
+            </div>
+            <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="card-footer">JOIN CLASS</a>
+          </div>
+        }
+      }
+      else
+      {
+        <p>No upcoming sessions at the moment. Check back soon!</p>
+      }
+    </div>
+  </section>
+
+  <!-- TRAINERS -->
+  <section class="section reveal">
+    <div class="section-header">
+      <h2 class="section-title">Meet the Trainers</h2>
+      <a asp-area="" asp-controller="Classes" asp-action="Index" asp-fragment="class-type" class="view-all"> View All &gt;&gt;&gt; </a>
+    </div>
+    <div class="trainers-grid">
+      @if (trainerNames.Any())
+      {
+        var colors = new[] { "#2a2a2a", "#2a1a00", "#001a0e", "#0a001a" };
+        var accents = new[] { "#444", "#554422", "#224433", "#332244" };
+        var i = 0;
+        @foreach (var name in trainerNames)
+        {
+          var bg = colors[i % colors.Length];
+          var accent = accents[i % accents.Length];
+          <div class="trainer-card">
+            <svg class="trainer-img" viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg">
+              <rect width="220" height="180" fill="@bg"/>
+              <circle cx="110" cy="70" r="35" fill="@accent"/>
+              <ellipse cx="110" cy="180" rx="55" ry="40" fill="@accent"/>
+            </svg>
+            <div class="trainer-info">
+              <div class="trainer-name">@name</div><i class="bi bi-check-circle-fill verified-icon" title="Verified Trainer"></i>
+              <div class="trainer-spec">Personal Trainer</div>
+            </div>
+          </div>
+          i++;
+        }
+      }
+      else
+      {
+        <p>Trainer information coming soon.</p>
+      }
+    </div>
+  </section>
+
+  <!-- MEMBERSHIP PLANS -->
+  <section class="membership-section reveal">
+    <h2 class="membership-title">MEMBERSHIP PLANS</h2>
+    <div class="plans-grid">
+      @if (tiers.Any())
+      {
+        var featured = tiers.OrderByDescending(t => t.Price).First();
+        @foreach (var tier in tiers)
+        {
+          var isFeatured = tier.TierName == featured.TierName;
+          <div class="plan-card @(isFeatured ? "featured" : "")">
+            <div class="plan-name">@tier.TierName</div>
+            <div class="plan-price">
+              <span class="dollar">$</span><span class="amount">@tier.Price.ToString("F2")</span><span class="period"> / mo</span>
+            </div>
+            <ul class="plan-features">
+              <li>Full gym access</li>
+              <li>Locker room access</li>
+              <li>@tier.SubCount active subscribers</li>
+            </ul>
+            <a asp-area="Member" asp-controller="Subscribe" asp-action="Index" asp-route-tier="@tier.TierName" class="plan-btn">Get started</a>
+          </div>
+        }
+      }
+      else
+      {
+        <p>Membership plans coming soon.</p>
+      }
+    </div>
+  </section>
+
+@section Scripts {
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+}
+

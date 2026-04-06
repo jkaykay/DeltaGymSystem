@@ -2,6 +2,7 @@
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
     <File Path="API Tests/Branch.http" />
+    <File Path="API Tests/LLM.http" />
     <File Path="API Tests/QR.http" />
     <File Path="API Tests/Subscriptions.http" />
     <File Path="API Tests/Trainer.http" />

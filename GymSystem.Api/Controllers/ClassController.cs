@@ -27,10 +27,31 @@ namespace GymSystem.Api.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [OutputCache(PolicyName = "classes")]
-        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetAll([FromQuery] ClassSearchRequest request)
         {
-            var result = await _context.Classes
+            var query = _context.Classes.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                var term = request.Search.Trim().ToLower();
+                query = query.Where(c =>
+                    c.Subject.ToLower().Contains(term) ||
+                    c.User.FirstName.ToLower().Contains(term) ||
+                    c.User.LastName.ToLower().Contains(term));
+            }
+
+            var descending = string.Equals(request.SortDir, "desc", StringComparison.OrdinalIgnoreCase);
+
+            query = request.SortBy?.ToLower() switch
+            {
+                "trainer"  => descending ? query.OrderByDescending(c => c.User.LastName) : query.OrderBy(c => c.User.LastName),
+                "sessions" => descending ? query.OrderByDescending(c => c.Sessions.Count) : query.OrderBy(c => c.Sessions.Count),
+                _          => descending ? query.OrderByDescending(c => c.Subject)       : query.OrderBy(c => c.Subject),
+            };
+
+            var result = await query
                 .Select(c => new ClassDTO
                 {
                     ClassId = c.ClassId,
@@ -39,12 +60,13 @@ namespace GymSystem.Api.Controllers
                     TrainerName = $"{c.User.FirstName} {c.User.LastName}",
                     SessionCount = c.Sessions.Count
                 })
-                .ToPagedResultAsync(page, pageSize);
+                .ToPagedResultAsync(request.Page, request.PageSize);
 
             return Ok(result);
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         [OutputCache(PolicyName = "classes")]
         public async Task<IActionResult> GetById(int id)
         {

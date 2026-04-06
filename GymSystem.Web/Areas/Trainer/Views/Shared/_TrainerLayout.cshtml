@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="~/css/trainer/trainer.css" asp-append-version="true" />
+    <title>@ViewData["Title"] - Trainer</title>
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="logo-box">
+                <img src="~/images/logo.png" alt="Delta Gym Logo" class="nav-logo-img" />
+            </div>
+
+            <nav class="nav-links">
+                <a asp-area="Trainer" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                <a asp-area="Trainer" asp-controller="Session" asp-action="Index">Sessions</a>
+                <a asp-area="Trainer" asp-controller="Profile" asp-action="Index">Profile</a>
+            </nav>
+
+            <form asp-area="Trainer" asp-controller="Auth" asp-action="Logout" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
+        </div>
+    </header>
+
+    <main class="page-content">
+        @RenderBody()
+    </main>
+</body>
+</html>
+
+

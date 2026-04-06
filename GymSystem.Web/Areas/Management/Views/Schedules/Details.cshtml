@@ -1,0 +1,36 @@
+@model ScheduleDTO
+
+@{
+    ViewData["Title"] = "Schedule Details";
+}
+
+<div class="page-header">
+    <h1 class="page-header-title">Schedule Details</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+</div>
+
+<div class="detail-card">
+    <div class="card-header">
+        <h5>Schedule #@Model.ScheduleId</h5>
+    </div>
+    <div class="detail-body">
+        <p class="detail-name">Schedule for @Model.UserName</p>
+        <dl class="detail-dl">
+            <dt>Employee</dt>
+            <dd>@Model.UserName</dd>
+
+            <dt>Start</dt>
+            <dd>@Model.Start.ToString("MMM dd, yyyy HH:mm")</dd>
+
+            <dt>End</dt>
+            <dd>@Model.End.ToString("MMM dd, yyyy HH:mm")</dd>
+        </dl>
+    </div>
+    <div class="detail-actions">
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.ScheduleId" class="btn btn-primary">Edit</a>
+        }
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>

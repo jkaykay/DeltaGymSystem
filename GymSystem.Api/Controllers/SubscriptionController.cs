@@ -27,9 +27,43 @@ public class SubscriptionController : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = "Admin,Staff")]
-    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetAll([FromQuery] SubscriptionSearchRequest request)
     {
-        var result = await _context.Subscriptions
+        var query = _context.Subscriptions.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var term = request.Search.Trim().ToLower();
+            query = query.Where(s =>
+                s.TierName.ToLower().Contains(term) ||
+                s.User.FirstName.ToLower().Contains(term) ||
+                s.User.LastName.ToLower().Contains(term));
+        }
+
+        if (request.State.HasValue)
+            query = query.Where(s => (int)s.State == request.State.Value);
+
+        if (!string.IsNullOrWhiteSpace(request.TierName))
+            query = query.Where(s => s.TierName == request.TierName);
+
+        if (request.StartFrom.HasValue)
+            query = query.Where(s => s.StartDate >= request.StartFrom.Value);
+
+        if (request.StartTo.HasValue)
+            query = query.Where(s => s.StartDate <= request.StartTo.Value);
+
+        var descending = string.Equals(request.SortDir, "desc", StringComparison.OrdinalIgnoreCase);
+
+        query = request.SortBy?.ToLower() switch
+        {
+            "membername" => descending ? query.OrderByDescending(s => s.User.LastName) : query.OrderBy(s => s.User.LastName),
+            "tiername"   => descending ? query.OrderByDescending(s => s.TierName)      : query.OrderBy(s => s.TierName),
+            "state"      => descending ? query.OrderByDescending(s => s.State)         : query.OrderBy(s => s.State),
+            "enddate"    => descending ? query.OrderByDescending(s => s.EndDate)        : query.OrderBy(s => s.EndDate),
+            _            => descending ? query.OrderByDescending(s => s.StartDate)      : query.OrderBy(s => s.StartDate),
+        };
+
+        var result = await query
             .Select(s => new SubscriptionDTO
             {
                 SubId = s.SubId,
@@ -40,7 +74,7 @@ public class SubscriptionController : ControllerBase
                 UserId = s.UserId,
                 MemberName = $"{s.User.FirstName} {s.User.LastName}"
             })
-            .ToPagedResultAsync(page, pageSize);
+            .ToPagedResultAsync(request.Page, request.PageSize);
 
         return Ok(result);
     }

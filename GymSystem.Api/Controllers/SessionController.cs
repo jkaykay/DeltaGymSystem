@@ -23,9 +23,41 @@ namespace GymSystem.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAll([FromQuery] SessionSearchRequest request)
         {
-            var result = await _context.Sessions
+            var query = _context.Sessions.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                var term = request.Search.Trim().ToLower();
+                query = query.Where(s =>
+                    s.Class.Subject.ToLower().Contains(term) ||
+                    s.Class.User.FirstName.ToLower().Contains(term) ||
+                    s.Class.User.LastName.ToLower().Contains(term));
+            }
+
+            if (request.DateFrom.HasValue)
+                query = query.Where(s => s.Start >= request.DateFrom.Value);
+
+            if (request.DateTo.HasValue)
+                query = query.Where(s => s.Start <= request.DateTo.Value);
+
+            if (request.RoomId.HasValue)
+                query = query.Where(s => s.RoomId == request.RoomId.Value);
+
+            var descending = string.Equals(request.SortDir, "desc", StringComparison.OrdinalIgnoreCase);
+
+            query = request.SortBy?.ToLower() switch
+            {
+                "subject"    => descending ? query.OrderByDescending(s => s.Class.Subject)         : query.OrderBy(s => s.Class.Subject),
+                "instructor" => descending ? query.OrderByDescending(s => s.Class.User.LastName)    : query.OrderBy(s => s.Class.User.LastName),
+                "room"       => descending ? query.OrderByDescending(s => s.Room.RoomNumber)        : query.OrderBy(s => s.Room.RoomNumber),
+                "capacity"   => descending ? query.OrderByDescending(s => s.MaxCapacity)            : query.OrderBy(s => s.MaxCapacity),
+                _            => descending ? query.OrderByDescending(s => s.Start)                  : query.OrderBy(s => s.Start),
+            };
+
+            var result = await query
                 .Select(s => new SessionDTO
                 {
                     SessionId = s.SessionId,
@@ -40,7 +72,7 @@ namespace GymSystem.Api.Controllers
                     InstructorId = s.Class.User.Id,
                     InstructorName = $"{s.Class.User.FirstName} {s.Class.User.LastName}"
                 })
-                .ToPagedResultAsync(page, pageSize);
+                .ToPagedResultAsync(request.Page, request.PageSize);
 
             return Ok(result);
         }
@@ -72,6 +104,32 @@ namespace GymSystem.Api.Controllers
             }
 
             return Ok(result);
+        }
+
+        [HttpGet("{id}/bookings")]
+        public async Task<IActionResult> GetBookings(int id)
+        {
+            var sessionExists = await _context.Sessions.AnyAsync(s => s.SessionId == id);
+            if (!sessionExists)
+                return NotFound();
+
+            var bookings = await _context.Bookings
+                .Where(b => b.SessionId == id)
+                .Select(b => new BookingDTO
+                {
+                    BookingId = b.BookingId,
+                    BookDate = b.BookDate,
+                    SessionId = b.Session.SessionId,
+                    SessionStart = b.Session.Start,
+                    SessionEnd = b.Session.End,
+                    Subject = b.Session.Class.Subject,
+                    RoomNumber = b.Session.Room.RoomNumber,
+                    UserId = b.User.Id,
+                    UserName = $"{b.User.FirstName} {b.User.LastName}"
+                })
+                .ToListAsync();
+
+            return Ok(bookings);
         }
 
         [HttpPost]

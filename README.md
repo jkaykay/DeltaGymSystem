@@ -78,6 +78,12 @@ dotnet user-secrets set "SeedAdmin:Password" "Admin@123456"
 dotnet user-secrets set "QrCode:Secret" "YourQrSigningSecretThatIsAtLeast32Characters!"
 dotnet user-secrets set "QrCode:ExpiryMinutes" "2"
 
+# OpenRouter LLM integration (powers DeltaBot)
+dotnet user-secrets set "OpenRouter:ApiKey" "sk-or-v1-YourOpenRouterApiKeyHere"
+# Optional — defaults shown; override only if needed
+# dotnet user-secrets set "OpenRouter:BaseUrl" "https://openrouter.ai/api/v1/"
+# dotnet user-secrets set "OpenRouter:Model" "nvidia/nemotron-3-super-120b-a12b:free"
+
 #CORS configuration
 dotnet user-secrets set "Cors:AllowedOrigins:0" "https://localhost:7202"
 
@@ -115,7 +121,10 @@ or....
   },
   "QrCode": {
     "Secret": "YourQrSigningSecretThatIsAtLeast32Characters!",
-    "ExpiryMinutes": "2
+    "ExpiryMinutes": "2"
+  },
+  "OpenRouter": {
+    "ApiKey": "sk-or-v1-YourOpenRouterApiKeyHere"
   },
   "SeedAdmin": {
     "Password": "Admin@123456"
@@ -140,7 +149,7 @@ or....
 
 ---
 
-## 5. Apply Database Migrations
+## 5. Apply Database Migrations (If Working in a Local Server)
 
 Apply the existing migration to create the database:
 
@@ -148,7 +157,9 @@ Apply the existing migration to create the database:
 dotnet ef database update --project GymSystem.Api
 ```
 
-This creates the database specified in your connection string, applies the **Initial User Migration**, and the application will seed default roles (`Admin`, `Staff`, `Trainer`, `Member`) and a default admin account on first run.
+This creates the database specified in your connection string, applies all migrations (Initial User Migration, Full Model Creation, DbSetAdd, SubscriptionStateEnum, DatabaseDTOConstraints), and the application will seed default roles (`Admin`, `Staff`, `Trainer`, `Member`) and a default admin account on first run.
+
+**DO NOT DO THIS IF YOU HAVE BEEN GIVEN THE REMOTE SQL SERVER CONNECTION STRING**
 
 ### Default Admin Credentials
 
@@ -198,28 +209,31 @@ DeltaGymSystem/
 +-- GymSystem.Api/              # REST API
 |   +-- Controllers/            # API endpoints
 |   +-- Data/                   # DbContext and seed data
+|   +-- Extensions/             # LINQ / queryable helpers
 |   +-- Migrations/             # EF Core migrations
 |   +-- Models/                 # Domain models
-|   +-- Services/               # Token generation service
-+-- GymSystem.Shared/
-|   +--DTOs/                    # Shared request/response models (Translates Data between front and back)
+|   +-- Services/               # JWT, QR, token-revocation, LLM, background services
++-- GymSystem.Shared/           # Class library
+|   +-- DTOs/                   # Shared request/response models
+|   +-- Enums/                  # Shared enumerations
 +-- GymSystem.Web/              # MVC front-end
 |   +-- Areas/
 |   |   +-- Management/         # Admin/staff management area
 |   |   |   +-- Controllers/
-|   |   |   +-- Views/
 |   |   |   +-- ViewModels/
+|   |   |   +-- Views/
 |   |   +-- Member/             # Member-facing area
 |   |   |   +-- Controllers/
-|   |   |   +-- Views/
 |   |   |   +-- ViewModels/
+|   |   |   +-- Views/
 |   |   +-- Trainer/            # Trainer-facing area
 |   |   |   +-- Controllers/
-|   |   |   +-- Views/
+|   |   |   +-- Models/
 |   |   |   +-- ViewModels/
+|   |   |   +-- Views/
 |   +-- Controllers/            # Public controllers
 |   +-- Services/               # API consumption services
-|   +-- ViewModels/             # Shared view models
+|   +-- Views/                  # Public views (Home, About, Classes, etc.)
 +-- README.md
 ```
 
@@ -235,6 +249,7 @@ DeltaGymSystem/
 | API returns 401 Unauthorized | Check that `Jwt:Issuer` and `Jwt:Audience` match between the API config and the tokens being sent |
 | `dotnet ef` not found | Run `dotnet tool install --global dotnet-ef` |
 | Database migration fails | Verify your connection string points to a valid SQL Server instance |
+| `OpenRouter:ApiKey is not configured` | Ensure `OpenRouter:ApiKey` is set in API user secrets (see step 4). DeltaBot LLM features require a valid [OpenRouter](https://openrouter.ai/) API key |
 
 
 ---

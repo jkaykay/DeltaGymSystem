@@ -1,0 +1,9 @@
+﻿@model QRCodeResponse
+
+@{
+    ViewData["Title"] = "QR Code";
+}
+
+<div class="page">
+  <img src="data:image/jpeg;base64,@Model.QrCodeBase64" alt="QR Code" style="width: 60vh; aspect-ratio: 1/1"/>
+</div>

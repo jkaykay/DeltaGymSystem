@@ -1,0 +1,76 @@
+@model RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+@section Styles {
+  <link rel="stylesheet" href="~/css/members/login.css" asp-append-version="true"/>
+}
+
+<div class="page">
+<section id="register" class="min-vh-100 d-flex align-items-center justify-content-center">
+  <div class="container-user">
+
+    <h2>Create A New Account</h2>
+
+    <!-- Success message -->
+    @if (TempData["SuccessMessage"] is string msg)
+    {
+        <div class="alert alert-success">@msg</div>
+    }
+
+    <!-- Validation summary -->
+    <div asp-validation-summary="ModelOnly" class="error mb-2"></div>
+
+    <form asp-action="Register" asp-controller="Register" asp-area="Member" method="post">
+      @Html.AntiForgeryToken()
+
+      <!-- Username -->
+      <input asp-for="UserName" placeholder="Username" class="form-control mb-2"/>
+      <span asp-validation-for="UserName" class="error"></span>
+
+      <!-- Email -->
+      <input asp-for="Email" placeholder="Email" class="form-control mb-2"/>
+      <span asp-validation-for="Email" class="error"></span>
+
+      <!-- First Name -->
+      <input asp-for="FirstName" placeholder="First Name" class="form-control mb-2"/>
+      <span asp-validation-for="FirstName" class="error"></span>
+
+      <!-- Last Name -->
+      <input asp-for="LastName" placeholder="Last Name" class="form-control mb-2"/>
+      <span asp-validation-for="LastName" class="error"></span>
+
+      <!-- Password -->
+      <input asp-for="Password" type="password" placeholder="Password" class="form-control mb-2"/>
+      <span asp-validation-for="Password" class="error"></span>
+
+      <!-- Confirm Password (frontend only) -->
+      <input name="ConfirmPassword" type="password" placeholder="Confirm Password" class="form-control mb-2"/>
+
+      <!-- Submit -->
+      <button type="submit" class="register-btn w-100 mt-2">
+        Sign Up
+      </button>
+    </form>
+
+    <!-- Login link -->
+    <div class="mt-4 text-center">
+      <p class="text-muted">
+        Already have an account?
+        <a asp-action="Index" asp-controller="Login" asp-area="Member">
+          Login
+        </a>
+      </p>
+    </div>
+
+  </div>
+</section>
+</div>
+
+@section Scripts {
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

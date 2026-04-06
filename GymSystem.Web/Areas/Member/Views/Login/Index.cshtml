@@ -1,0 +1,55 @@
+﻿@model MemberLoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/members/login.css" asp-append-version="true"/>
+}
+
+
+     <!-- PAGE -->
+     <div class="page">
+
+    <section class="min-vh-100 d-flex align-items-center justify-content-center">
+
+        <div class="container-user">
+
+            <h2>Member Login</h2>
+
+            <form method="post" asp-area="Member" asp-controller="Login" asp-action="Index"
+                  asp-route-returnUrl="@ViewData["ReturnUrl"]">
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+                <input asp-for="EmailOrUserName" placeholder="Username or Email" />
+                <span asp-validation-for="EmailOrUserName" class="text-danger"></span>
+
+                <input asp-for="Password" type="password" placeholder="Password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+
+                <div class="form-check mt-2 mb-2" style="display: inline-block;">
+                    <label class="form-check-label" asp-for="RememberMe">Remember me</label>
+                    <input asp-for="RememberMe" />
+                </div>
+
+                <button type="submit" class="login-btn">Login</button>
+
+            </form>
+
+            <div style="margin-top:20px;">
+                <small>
+                    Don't have an account?
+                    <a asp-controller="Register" asp-action="Index" asp-area="Member">Register here</a>
+                </small>
+            </div>
+
+        </div>
+
+    </section>
+  </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

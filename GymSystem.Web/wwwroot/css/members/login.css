@@ -1,0 +1,80 @@
+  
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #000000;
+      --card-bg: #e4e4e0;
+      --dark: #111111;
+      --accent: #c21c1c;
+      --accent-orange: #ff6b00;
+      --text: #000000;
+      --muted: #555;
+      --border: #e2e2de;
+      --nav-h: 72px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+
+    /* Login and Register Container */
+.container-user {
+    max-width: 550px;
+    margin: 100px auto 30px; 
+    background: white;
+    padding: 80px;
+    border-radius: 20px;
+    border: black 2px solid;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+.container-user h2 {
+    color: var(--text-dark);  
+    margin-bottom: 25px;  
+    font-weight: 700;
+}
+
+.container-user input {
+    width: 100%;
+    padding: 12px 41px;
+    margin-bottom: 15px;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    font-size: 16px;
+    transition: all 0.2s ease; 
+    text-align: center;
+}
+
+.container-user input:focus {
+    border-color: var(--primary-color); 
+    outline: none;
+    background: #fff; 
+    text-align: center;
+  
+}
+
+.login-btn, .register-btn {
+    background:  #c21c1c;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 10px; 
+    border: none; 
+    font-weight: 600;
+    width: 100%;
+    margin-top: 10px;
+    transition: transform 0.3s; 
+}
+
+.login-btn:hover, .register-btn:hover {
+    transform: translateY(-3px); 
+    background: #fefeff;
+    color:rgb(0, 0, 0);
+    border: #000000 2px solid;
+}

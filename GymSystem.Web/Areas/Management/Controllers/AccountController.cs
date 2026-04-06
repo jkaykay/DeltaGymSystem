@@ -1,4 +1,5 @@
-﻿using GymSystem.Web.Areas.Management.ViewModels;
+﻿using GymSystem.Shared.DTOs;
+using GymSystem.Web.Areas.Management.ViewModels;
 using GymSystem.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
@@ -9,11 +10,11 @@ namespace GymSystem.Web.Areas.Management.Controllers;
 [Area("Management")]
 public class AccountController : Controller
 {
-    private readonly IManagementApiService _api;
+    private readonly IAuthApiService _authApi;
 
-    public AccountController(IManagementApiService api)
+    public AccountController(IAuthApiService authApi)
     {
-        _api = api;
+        _authApi = authApi;
     }
 
     [HttpGet]
@@ -37,7 +38,7 @@ public class AccountController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var response = await _api.LoginAsync(model.Email, model.Password);
+        var response = await _authApi.LoginAsync(new LoginRequest(model.Email, model.Password));
 
         if (response is null)
         {
@@ -90,7 +91,13 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
-        await _api.LogoutAsync();
+        var token = await HttpContext.GetTokenAsync("access_token");
+
+        if (!string.IsNullOrWhiteSpace(token))
+        {
+            await _authApi.LogoutAsync(token);
+        }
+
         await HttpContext.SignOutAsync("Cookies");
         return RedirectToAction("Login");
     }

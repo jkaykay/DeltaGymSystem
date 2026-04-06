@@ -1,0 +1,18 @@
+@{
+    ViewData["Title"] = "Access Denied";
+    Layout = "~/Areas/Trainer/Views/Shared/_TrainerLoginLayout.cshtml";
+}
+
+<main class="login-page">
+    <section class="login-card" aria-labelledby="access-denied-heading">
+        <h1 class="login-title" id="access-denied-heading">🚫 Access Denied</h1>
+        <p class="login-subtitle">You do not have permission to access this page.</p>
+        <p style="margin-top: 10px; color: #888; font-size: 14px;">
+            Please log in with an account that has the required permissions.
+        </p>
+        <a asp-controller="Auth" asp-action="Index" asp-area="Trainer" class="login-button"
+           style="display: inline-block; text-decoration: none; margin-top: 20px;">
+            Back to Login
+        </a>
+    </section>
+</main>

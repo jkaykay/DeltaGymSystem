@@ -1,0 +1,417 @@
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #000000;
+      --card-bg: #e4e4e0;
+      --dark: #111111;
+      --accent: #c21c1c;
+      --accent-orange: #ff6b00;
+      --text: #ffffff;
+      --muted: #555;
+      --border: #e2e2de;
+      --nav-h: 72px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+
+    /* ── PAGE ── */
+    .page {
+      margin-top: var(--nav-h);
+      padding: 48px 48px 80px;
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ── WELCOME ── */
+    .welcome {
+      margin-bottom: 40px;
+    }
+    .welcome h1 {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 900;
+      font-size: clamp(26px, 4vw, 36px);
+      letter-spacing: 0.01em;
+      color: var(--text);
+      line-height: 1.1;
+    }
+    .welcome p {
+      font-weight: 700;
+      font-size: 17px;
+      color: var(--text);
+      margin-top: 4px;
+    }
+
+    /* ── STAT CARDS ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+
+    .stat-block label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 10px;
+      letter-spacing: 0.01em;
+    }
+
+    .stat-box {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .stat-box .val {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .stat-box .stat-icon {
+      color: var(--dark);
+      flex-shrink: 0;
+    }
+    .stat-box .stat-icon svg {
+      width: 20px; height: 20px;
+      fill: none;
+      stroke: var(--dark);
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ── BOTTOM GRID ── */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ── VISIT HISTORY ── */
+    .section-title {
+      font-weight: 900;
+      font-size: 20px;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .attendance-count {
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--muted);
+      margin-left: 10px;
+    }
+
+    .log-card {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 24px 28px;
+    }
+
+    .log-month {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+
+    .log-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    .log-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .log-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .log-star {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .log-star svg {
+      width: 22px; height: 22px;
+      fill: none;
+      stroke: var(--dark);
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .log-info .log-name {
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--dark);
+      line-height: 1.2;
+    }
+    .log-info .log-time {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-top: 3px;
+    }
+
+    /* ── PAYMENT HISTORY ── */
+    .payment-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .payment-item {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .payment-month {
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--dark);
+      min-width: 70px;
+    }
+
+    .payment-dash {
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .payment-amount {
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--dark);
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── VIEW MORE LINK ── */
+    .view-more-link {
+      display: block;
+      text-align: center;
+      margin-top: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .view-more-link:hover {
+      opacity: 0.75;
+      text-decoration: underline;
+    }
+
+    /* ── UPCOMING BOOKINGS LIST ── */
+    .upcoming-block {
+      grid-column: span 1;
+    }
+
+    .upcoming-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .upcoming-item {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .upcoming-icon {
+      flex-shrink: 0;
+    }
+    .upcoming-icon svg {
+      width: 18px; height: 18px;
+      fill: none;
+      stroke: var(--dark);
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .upcoming-info .upcoming-name {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--dark);
+      line-height: 1.2;
+    }
+    .upcoming-info .upcoming-time {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    /* ── BACK LINK ── */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text);
+      text-decoration: none;
+      margin-bottom: 24px;
+      transition: opacity 0.2s;
+    }
+    .back-link:hover { opacity: 0.6; }
+
+    /* ── BOOKING HISTORY PAGE ── */
+    .history-page-title {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 900;
+      font-size: clamp(26px, 4vw, 36px);
+      letter-spacing: 0.01em;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .history-subtitle {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .history-item {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .history-date {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--dark);
+      min-width: 90px;
+      flex-shrink: 0;
+    }
+
+    .history-details {
+      flex: 1;
+    }
+
+    .history-subject {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--dark);
+      line-height: 1.2;
+    }
+
+    .history-time {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-top: 3px;
+    }
+
+    .history-status {
+      flex-shrink: 0;
+    }
+
+    .badge-past,
+    .badge-upcoming {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 5px 12px;
+      border-radius: 50px;
+    }
+
+    .badge-past {
+      background: #e2e2de;
+      color: var(--muted);
+    }
+
+    .badge-upcoming {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+
+    .history-empty {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* ── PAGINATION ── */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .page-link {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--accent);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .page-link:hover {
+      opacity: 0.75;
+      text-decoration: underline;
+    }
+
+    .page-info {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+  

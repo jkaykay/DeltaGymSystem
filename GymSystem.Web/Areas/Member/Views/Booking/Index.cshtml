@@ -1,0 +1,204 @@
+@model GymSystem.Web.Areas.Member.ViewModels.BookingViewModel
+@{
+    ViewData["Title"] = "Booking";
+}
+
+@section Styles {
+  <link rel="stylesheet" href="~/css/members/booking.css" asp-append-version="true"/>
+}
+
+  <!-- PAGE -->
+  <div class="page">
+    <a asp-area="" asp-controller="Classes" asp-action="Index" class="back-link reveal">
+        <i class="bi bi-arrow-left"></i> Back to Classes
+    </a>
+
+    <!-- Hero Banner -->
+    <div class="class-hero reveal">
+      <div class="class-hero-content">
+        <span class="class-type-tag">CLASSES</span>
+        <h1>Book a Session</h1>
+      </div>
+    </div>
+
+    <div class="booking-grid">
+
+      <!-- LEFT COLUMN -->
+      <div>
+
+        <!-- Description -->
+        <div class="info-card reveal">
+          <div class="card-title">Available Sessions</div>
+          <p class="class-description">
+            Browse upcoming sessions below and pick one to book your spot.
+            Each session shows the class subject, instructor, room, time, and available spots.
+          </p>
+        </div>
+
+        <!-- Time Slots -->
+        <div class="slots-card reveal">
+          <div class="card-title">Pick a Time Slot</div>
+          <div class="slots-grid">
+            @if (Model.Sessions.Any())
+            {
+              @foreach (var session in Model.Sessions)
+              {
+                var booked = Model.MyBookings.Any(b => b.SessionId == session.SessionId);
+                var full = session.AvailableSpots <= 0;
+                var cssClass = full ? "slot full" : "slot";
+                <div class="@cssClass"
+                     @if (!full && !booked)
+                     {
+                       <text>onclick="selectSlot(this, '@session.Start.ToLocalTime().ToString("dddd, dd MMM")', '@session.Start.ToLocalTime().ToString("HH:mm") – @session.End.ToLocalTime().ToString("HH:mm")', @session.BookingCount, @session.MaxCapacity, @session.SessionId, '@session.Subject', '@session.InstructorName', @((session.End - session.Start).TotalMinutes), '@session.RoomNumber')"</text>
+                     }>
+                  <div class="slot-time">@session.Start.ToLocalTime().ToString("hh:mm tt")</div>
+                  <div class="slot-date">@session.Start.ToLocalTime().ToString("ddd dd MMM")</div>
+                  <div class="slot-spots @(session.AvailableSpots <= 5 ? "low" : "")">
+                    @if (booked)
+                    {
+                      <text>✓ Booked</text>
+                    }
+                    else if (full)
+                    {
+                      <text>Full</text>
+                    }
+                    else
+                    {
+                      @($"{session.BookingCount}/{session.MaxCapacity} spots")
+                    }
+                  </div>
+                  <div style="font-size: 0.75rem; opacity: 0.7;">@session.Subject — @session.InstructorName</div>
+                </div>
+              }
+            }
+            else
+            {
+              <p>No upcoming sessions available.</p>
+            }
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: Summary -->
+      <div class="summary-card reveal">
+        <div class="summary-title">Booking Summary</div>
+
+        <div class="summary-row">
+          <span class="label">Class</span>
+          <span class="value" id="summary-class">— Select a slot</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Trainer</span>
+          <span class="value" id="summary-trainer">—</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Duration</span>
+          <span class="value" id="summary-duration">—</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Location / Room</span>
+          <span class="value" id="summary-room">—</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Date &amp; Time</span>
+          <span class="value" id="selected-slot">— Select a slot</span>
+        </div>
+
+        <hr class="summary-divider"/>
+
+        <div class="spots-bar-wrap">
+          <div class="spots-bar-label">
+            <span>Spots remaining</span>
+            <span id="spots-text">— </span>
+          </div>
+          <div class="spots-bar">
+            <div class="spots-bar-fill" id="spots-bar-fill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <form asp-area="Member" asp-controller="Booking" asp-action="Book" method="post" id="booking-form">
+          @Html.AntiForgeryToken()
+          <input type="hidden" name="sessionId" id="session-id-input" value="" />
+          <button type="submit" class="confirm-btn" id="confirm-btn" disabled>
+            Select a time slot
+          </button>
+        </form>
+        <p class="confirm-note">A confirmation will be sent and you'll be redirected to your Dashboard.</p>
+      </div>
+
+    </div>
+
+    @if (Model.MyBookings.Any())
+    {
+      <div class="info-card reveal" style="margin-top: 2rem;">
+        <div class="card-title">My Current Bookings</div>
+        @foreach (var booking in Model.MyBookings.OrderBy(b => b.SessionStart))
+        {
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <div>
+              <strong>@booking.Subject</strong> — Room @booking.RoomNumber<br/>
+              <small>@booking.SessionStart.ToLocalTime().ToString("ddd dd MMM, HH:mm") – @booking.SessionEnd.ToLocalTime().ToString("HH:mm")</small>
+            </div>
+            <form asp-area="Member" asp-controller="Booking" asp-action="Cancel" method="post">
+              @Html.AntiForgeryToken()
+              <input type="hidden" name="bookingId" value="@booking.BookingId" />
+              <button type="submit" class="plan-btn" style="background: #ff4444; border: none; padding: 0.4rem 1rem; border-radius: 6px; color: white; cursor: pointer;">Cancel</button>
+            </form>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- CONFIRMATION OVERLAY -->
+  <div class="overlay" id="overlay">
+    <div class="confirm-modal">
+      <div class="confirm-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <h2>You're Booked!</h2>
+      <p>Your class has been confirmed. See you in the studio!</p>
+      <form asp-area="Member" asp-controller="Dashboard" asp-action="Index" method="get">
+        <button type="submit" class="modal-btn">Go to Dashboard</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let selectedSessionId = null;
+
+    function selectSlot(el, date, time, filled, total, sessionId, subject, trainer, duration, room) {
+      document.querySelectorAll('.slot').forEach(s => s.classList.remove('selected'));
+      el.classList.add('selected');
+
+      selectedSessionId = sessionId;
+      document.getElementById('session-id-input').value = sessionId;
+
+      document.getElementById('selected-slot').textContent = `${date}, ${time}`;
+      document.getElementById('summary-class').textContent = subject;
+      document.getElementById('summary-trainer').textContent = trainer;
+      document.getElementById('summary-duration').textContent = `${Math.round(duration)} minutes`;
+      document.getElementById('summary-room').textContent = `Room ${room}`;
+
+      const remaining = total - filled;
+      const pct = (filled / total) * 100;
+      document.getElementById('spots-text').textContent = `${remaining} / ${total}`;
+      document.getElementById('spots-bar-fill').style.width = pct + '%';
+
+      const btn = document.getElementById('confirm-btn');
+      btn.disabled = false;
+      btn.textContent = 'Confirm Booking';
+    }
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+      <text>
+      document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('overlay').classList.add('show');
+      });
+      </text>
+    }
+  </script>

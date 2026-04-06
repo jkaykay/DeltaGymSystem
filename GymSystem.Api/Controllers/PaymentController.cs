@@ -38,9 +38,42 @@ namespace GymSystem.Api.Controllers
         [HttpGet]
         [Authorize(Roles = "Admin,Staff")]
         [OutputCache(PolicyName = "payments")]
-        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetAll([FromQuery] PaymentSearchRequest request)
         {
-            var payments = await _context.Payments
+            var query = _context.Payments.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                var term = request.Search.Trim().ToLower();
+                query = query.Where(p =>
+                    p.User.FirstName.ToLower().Contains(term) ||
+                    p.User.LastName.ToLower().Contains(term) ||
+                    p.User.Email!.ToLower().Contains(term));
+            }
+
+            if (request.DateFrom.HasValue)
+                query = query.Where(p => p.PaymentDate >= request.DateFrom.Value);
+
+            if (request.DateTo.HasValue)
+                query = query.Where(p => p.PaymentDate <= request.DateTo.Value);
+
+            if (request.MinAmount.HasValue)
+                query = query.Where(p => p.Amount >= request.MinAmount.Value);
+
+            if (request.MaxAmount.HasValue)
+                query = query.Where(p => p.Amount <= request.MaxAmount.Value);
+
+            var descending = string.Equals(request.SortDir, "desc", StringComparison.OrdinalIgnoreCase);
+
+            query = request.SortBy?.ToLower() switch
+            {
+                "amount" => descending ? query.OrderByDescending(p => p.Amount)      : query.OrderBy(p => p.Amount),
+                "member" => descending ? query.OrderByDescending(p => p.User.LastName) : query.OrderBy(p => p.User.LastName),
+                "subid"  => descending ? query.OrderByDescending(p => p.SubId)       : query.OrderBy(p => p.SubId),
+                _        => descending ? query.OrderByDescending(p => p.PaymentDate) : query.OrderBy(p => p.PaymentDate),
+            };
+
+            var payments = await query
                 .Select(p => new PaymentDTO
                 {
                     PaymentId = p.PaymentId,
@@ -49,7 +82,7 @@ namespace GymSystem.Api.Controllers
                     UserId = p.UserId,
                     SubId = p.SubId
                 })
-                .ToPagedResultAsync(page, pageSize);
+                .ToPagedResultAsync(request.Page, request.PageSize);
 
             return Ok(payments);
         }

@@ -19,5 +19,12 @@ namespace GymSystem.Web.Areas.Management.ViewModels
         [Display(Name = "Last Name")]
         [MaxLength(100)]
         public string LastName { get; set; } = string.Empty;
+
+        [MaxLength(50)]
+        [Display(Name = "Employee ID")]
+        public string? EmployeeId { get; set; }
+
+        [Display(Name = "Branch")]
+        public int? BranchId { get; set; }
     }
 }

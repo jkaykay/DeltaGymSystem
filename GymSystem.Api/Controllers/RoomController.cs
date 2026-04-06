@@ -11,7 +11,7 @@ namespace GymSystem.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin,Staff")]
+    [Authorize(Roles = "Admin,Staff,Trainer")]
     public class RoomController : ControllerBase
     {
         private readonly GymDbContext _context;
@@ -25,9 +25,28 @@ namespace GymSystem.Api.Controllers
 
         [HttpGet]
         [OutputCache(PolicyName = "rooms")]
-        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetAll([FromQuery] RoomSearchRequest request)
         {
-            var result = await _context.Rooms
+            var query = _context.Rooms.AsQueryable();
+
+            if (request.BranchId.HasValue)
+                query = query.Where(r => r.BranchId == request.BranchId.Value);
+
+            if (request.RoomNumber.HasValue)
+                query = query.Where(r => r.RoomNumber == request.RoomNumber.Value);
+
+            var descending = string.Equals(request.SortDir, "desc", StringComparison.OrdinalIgnoreCase);
+
+            query = request.SortBy?.ToLower() switch
+            {
+                "branch"    => descending ? query.OrderByDescending(r => r.BranchId)        : query.OrderBy(r => r.BranchId),
+                "capacity"  => descending ? query.OrderByDescending(r => r.MaxCapacity)     : query.OrderBy(r => r.MaxCapacity),
+                "sessions"  => descending ? query.OrderByDescending(r => r.Sessions.Count)  : query.OrderBy(r => r.Sessions.Count),
+                "equipment" => descending ? query.OrderByDescending(r => r.Equipments.Count): query.OrderBy(r => r.Equipments.Count),
+                _           => descending ? query.OrderByDescending(r => r.RoomNumber)      : query.OrderBy(r => r.RoomNumber),
+            };
+
+            var result = await query
                 .Select(r => new RoomDTO
                 {
                     RoomId = r.RoomId,
@@ -37,7 +56,7 @@ namespace GymSystem.Api.Controllers
                     SessionCount = r.Sessions.Count,
                     EquipmentCount = r.Equipments.Count
                 })
-                .ToPagedResultAsync(page, pageSize);
+                .ToPagedResultAsync(request.Page, request.PageSize);
 
             return Ok(result);
         }

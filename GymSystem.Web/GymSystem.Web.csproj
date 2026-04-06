@@ -12,11 +12,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Trainer\ViewModels\" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
+    <PackageReference Include="OpenAI" Version="2.10.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
+    <Folder Include="ViewModels\" />
   </ItemGroup>
 
 </Project>

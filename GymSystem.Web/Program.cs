@@ -12,6 +12,8 @@ builder.Services.AddTransient<TokenDelegatingHandler>();
 // --- API service ---
 builder.Services.AddScoped<IManagementApiService, ManagementApiService>();
 builder.Services.AddScoped<IMemberApiService, MemberApiService>();
+builder.Services.AddScoped<IAuthApiService, AuthApiService>();
+builder.Services.AddScoped<ITrainerApiService, TrainerApiService>();
 
 // --- Typed HttpClient for API consumption ---
 builder.Services.AddHttpClient("GymApi", client =>
@@ -26,13 +28,14 @@ builder.Services.AddHttpClient("GymApi", client =>
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies", options =>
     {
-        options.LoginPath = "/Account/Login";
-        options.LogoutPath = "/Account/Logout";
-        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.LoginPath = "/Member/Login/Index";
+        options.LogoutPath = "/Member/Logout";
+        options.AccessDeniedPath = "/Member/Login/AccessDenied";
 
         options.Events.OnRedirectToLogin = ctx =>
         {
             var returnUrl = ctx.Request.Path + ctx.Request.QueryString;
+
             if (ctx.Request.Path.StartsWithSegments("/Management", StringComparison.OrdinalIgnoreCase))
             {
                 var redirect = $"/Management/Account/Login?returnUrl={Uri.EscapeDataString(returnUrl)}";
@@ -40,12 +43,17 @@ builder.Services.AddAuthentication("Cookies")
             }
             else if (ctx.Request.Path.StartsWithSegments("/Member", StringComparison.OrdinalIgnoreCase))
             {
-                var redirect = $"/Member/Account/Login?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                var redirect = $"/Member/Login/Index?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                ctx.Response.Redirect(redirect);
+            }
+            else if (ctx.Request.Path.StartsWithSegments("/Trainer", StringComparison.OrdinalIgnoreCase))
+            {
+                var redirect = $"/Trainer/Auth?returnUrl={Uri.EscapeDataString(returnUrl)}";
                 ctx.Response.Redirect(redirect);
             }
             else
             {
-                var redirect = $"/Account/Login?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                var redirect = $"/Login/Index?returnUrl={Uri.EscapeDataString(returnUrl)}";
                 ctx.Response.Redirect(redirect);
             }
             return Task.CompletedTask;
@@ -61,12 +69,17 @@ builder.Services.AddAuthentication("Cookies")
             }
             else if (ctx.Request.Path.StartsWithSegments("/Member", StringComparison.OrdinalIgnoreCase))
             {
-                var redirect = $"/Member/Account/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                var redirect = $"/Member/Login/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                ctx.Response.Redirect(redirect);
+            }
+            else if (ctx.Request.Path.StartsWithSegments("/Trainer", StringComparison.OrdinalIgnoreCase))
+            {
+                var redirect = $"/Trainer/Auth/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
                 ctx.Response.Redirect(redirect);
             }
             else
             {
-                var redirect = $"/Account/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                var redirect = $"/Home/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
                 ctx.Response.Redirect(redirect);
             }
             return Task.CompletedTask;
@@ -93,13 +106,19 @@ app.UseAuthorization();
 // --- Area routing (must come before default) ---
 app.MapControllerRoute(
     name: "areas",
-    pattern: "{area:exists}/{controller=Account}/{action=Login}/{id?}")
+    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}")
     .WithStaticAssets();
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Auth}/{action=Index}/{id?}");
+    
 
 // --- Default route (public-facing) ---
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
 
 app.Run();

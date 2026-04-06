@@ -1,0 +1,174 @@
+/* ── ATTENDANCE HISTORY ── */
+
+.ah-header {
+    margin-bottom: 32px;
+}
+
+.ah-header h1 {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 900;
+    font-size: clamp(24px, 3.5vw, 32px);
+    color: var(--text);
+    margin: 8px 0 4px;
+}
+
+.ah-header p {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted);
+}
+
+.ah-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.ah-back:hover {
+    opacity: 0.8;
+}
+
+/* ── TABLE CARD ── */
+.ah-card {
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.ah-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ah-table thead {
+    background: var(--dark);
+}
+
+.ah-table th {
+    padding: 14px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    text-align: left;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.ah-table td {
+    padding: 14px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--dark);
+    border-top: 1px solid var(--border);
+}
+
+.ah-table tbody tr:hover {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.ah-row-num {
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 13px;
+}
+
+/* ── BADGES ── */
+.ah-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.ah-badge-active {
+    background: #e63946;
+    color: #fff;
+}
+
+.ah-badge-done {
+    background: #2d6a4f;
+    color: #fff;
+}
+
+/* ── EMPTY STATE ── */
+.ah-empty {
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 15px;
+}
+
+/* ── PAGINATION ── */
+.ah-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+}
+
+.ah-page-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.ah-page-link:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.ah-page-link.disabled {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.ah-page-numbers {
+    display: flex;
+    gap: 6px;
+}
+
+.ah-page-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background 0.2s;
+}
+
+.ah-page-num:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.ah-page-num.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}

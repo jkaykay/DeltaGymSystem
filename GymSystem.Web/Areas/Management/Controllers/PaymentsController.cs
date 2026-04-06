@@ -17,9 +17,23 @@ public class PaymentsController : Controller
         _api = api;
     }
 
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10,
+        string? search = null,
+        DateTime? dateFrom = null, DateTime? dateTo = null,
+        decimal? minAmount = null, decimal? maxAmount = null,
+        string? sortBy = null, string? sortDir = null)
     {
-        var result = await _api.GetPaymentsAsync(page, pageSize);
+        var result = await _api.GetPaymentsAsync(page, pageSize, search,
+            dateFrom, dateTo, minAmount, maxAmount, sortBy, sortDir);
+
+        ViewData["Search"] = search;
+        ViewData["DateFrom"] = dateFrom;
+        ViewData["DateTo"] = dateTo;
+        ViewData["MinAmount"] = minAmount;
+        ViewData["MaxAmount"] = maxAmount;
+        ViewData["SortBy"] = sortBy;
+        ViewData["SortDir"] = sortDir;
+
         return View(result);
     }
 

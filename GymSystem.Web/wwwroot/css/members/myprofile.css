@@ -1,0 +1,360 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #000000;
+      --card-bg: #ffffff;
+      --dark: #111111;
+      --accent: #c21c1c;
+      --text: #ffffff;
+      --muted: #e4e4e0;
+      --border: #e2e2de;
+      --green: #22c55e;
+      --green-bg: #dcfce7;
+      --nav-h: 72px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ── PROFILE PAGE TITLE ── */
+    .profile-page-title {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 900;
+      font-size: clamp(28px, 4vw, 38px);
+      letter-spacing: 0.08em;
+      color: var(--text);
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    /* ── PAGE ── */
+    .page {
+      margin-top: var(--nav-h);
+      padding: 48px 48px 80px;
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ── EDIT BUTTON ── */
+    .edit-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .edit-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 6px 0;
+      transition: opacity 0.2s;
+    }
+    .edit-btn:hover { opacity: 0.6; }
+
+    .edit-btn svg {
+      width: 20px; height: 20px;
+      fill: none;
+      stroke: var(--text);
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    
+
+    /* ── MAIN GRID ── */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 40px;
+      align-items: start;
+      margin-bottom: 40px;
+    }
+
+    /* ── LEFT: USER INFO ── */
+    .user-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(36px, 5vw, 52px);
+      letter-spacing: 0.04em;
+      color: var(--text);
+      margin-bottom: 14px;
+      line-height: 1;
+    }
+
+    .membership-badge {
+      display: inline-block;
+      background: var(--green-bg);
+      color: #16a34a;
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      padding: 7px 16px;
+      border-radius: 50px;
+      margin-bottom: 18px;
+    }
+
+    .membership-price {
+      display: flex;
+      align-items: flex-start;
+      line-height: 1;
+      margin-bottom: 24px;
+    }
+    .membership-price .dollar {
+      font-size: 22px;
+      font-weight: 900;
+      margin-top: 6px;
+    }
+    .membership-price .amount {
+      font-size: 54px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .full-name-label {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* ── RIGHT: MEMBER CODE CARD ── */
+    .member-code-card {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      padding: 30px 32px;
+    }
+
+    .member-code-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 30px;
+      letter-spacing: 0.05em;
+      color: var(--dark);
+      margin-bottom: 24px;
+    }
+
+    .member-code-body {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    /* QR code SVG placeholder */
+    .qr-wrap {
+      flex-shrink: 0;
+      width: 72px; height: 72px;
+    }
+
+    .member-code-info .code-value {
+      font-weight: 900;
+      font-size: 17px;
+      color: var(--dark);
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+    .member-code-info .code-hint {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* ── FIELDS GRID ── */
+    .fields-section { margin-bottom: 32px; }
+
+    .fields-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field-label {
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+
+   .field-box {
+  border: none;
+  background: #f5f5f5;
+  padding: 10px;
+  width: 100%;
+  border-radius: 8px;
+}
+
+.save-btn {
+  background: var(--accent);
+  color: var(--text);
+  border: none;
+  padding: 13px 34px;
+  border-radius: 50px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.15s;
+}
+.save-btn:hover { background-color: var(--muted); color: var(--bg); transform: translateY(-2px); }
+
+    /* ── BUTTON ROW ── */
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .save-btn,
+    .cancel-btn {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 28px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .save-btn:hover,
+    .cancel-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    .save-btn:active,
+    .cancel-btn:active { transform: translateY(0); }
+
+    .save-btn {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .cancel-btn {
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid var(--muted);
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── QR BUTTON ── */
+    .qr-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      background: none;
+      border: 1.5px solid var(--muted);
+      border-radius: 8px;
+      padding: 10px 18px;
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: opacity 0.2s, border-color 0.2s;
+    }
+    .qr-btn:hover {
+      opacity: 0.8;
+      border-color: var(--text);
+    }
+    .qr-btn svg {
+      width: 18px; height: 18px;
+      fill: none;
+      stroke: var(--text);
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ── QR MODAL ── */
+    .qr-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.65);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-modal {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 32px 36px 36px;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+    }
+
+    .qr-modal h2 {
+      font-weight: 900;
+      font-size: 20px;
+      color: var(--dark);
+      margin-bottom: 20px;
+    }
+
+    .qr-modal-img {
+      width: 100%;
+      max-width: 260px;
+      aspect-ratio: 1 / 1;
+      border-radius: 8px;
+    }
+
+    .qr-modal-close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: var(--muted);
+      cursor: pointer;
+      line-height: 1;
+    }
+    .qr-modal-close:hover {
+      color: var(--dark);
+    }
+
+    .qr-unavailable {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .qr-expires {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-top: 14px;
+    }
