@@ -172,3 +172,30 @@
     color: #fff;
     border-color: var(--accent);
 }
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+    .ah-card {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .ah-table {
+        min-width: 500px;
+    }
+
+    .ah-pagination {
+        gap: 8px;
+    }
+
+    .ah-page-link {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    .ah-page-num {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+    }
+}

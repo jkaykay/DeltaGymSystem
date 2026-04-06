@@ -518,3 +518,71 @@ body {
 
     color: black;
 }
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+    .topbar-inner {
+        padding: 10px 16px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .nav-links {
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .nav-links a {
+        font-size: 14px;
+    }
+
+    .logout-btn {
+        font-size: 14px;
+        padding: 6px 14px;
+    }
+
+    .page-content {
+        padding: 32px 16px 60px;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .schedule-page-card {
+        width: 100%;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .profile-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        max-width: 100%;
+    }
+
+    .login-card {
+        margin: 0 16px;
+    }
+
+    .profile-item-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}

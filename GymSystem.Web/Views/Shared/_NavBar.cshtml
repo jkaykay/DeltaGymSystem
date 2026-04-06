@@ -1,9 +1,14 @@
 <!-- NAV BAR -->
 <nav>
-  <div class="nav-logo">
-    <img src="~/images/logo.png" alt="Delta Gym Logo" class="nav-logo-img"/>
-  </div>
-  <ul class="nav-links">
+  <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-logo-link">
+    <div class="nav-logo">
+      <img src="~/images/logo.png" alt="Delta Gym Logo" class="nav-logo-img"/>
+    </div>
+  </a>
+  <button class="nav-hamburger" id="navHamburger" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="navLinks">
     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
     <li><a asp-area="" asp-controller="Classes" asp-action="Index">Classes</a></li>
     <li><a asp-area="" asp-controller="Memberships" asp-action="Index">Memberships</a></li>
