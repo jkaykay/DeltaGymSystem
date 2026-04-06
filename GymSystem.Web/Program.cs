@@ -64,7 +64,7 @@ builder.Services.AddAuthentication("Cookies")
             var returnUrl = ctx.Request.Path + ctx.Request.QueryString;
             if (ctx.Request.Path.StartsWithSegments("/Management", StringComparison.OrdinalIgnoreCase))
             {
-                var redirect = $"/Management/Login/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                var redirect = $"/Management/Account/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
                 ctx.Response.Redirect(redirect);
             }
             else if (ctx.Request.Path.StartsWithSegments("/Member", StringComparison.OrdinalIgnoreCase))
@@ -72,16 +72,14 @@ builder.Services.AddAuthentication("Cookies")
                 var redirect = $"/Member/Login/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
                 ctx.Response.Redirect(redirect);
             }
-
             else if (ctx.Request.Path.StartsWithSegments("/Trainer", StringComparison.OrdinalIgnoreCase))
             {
-                var redirect = $"/Trainer/Auth?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                var redirect = $"/Trainer/Auth/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
                 ctx.Response.Redirect(redirect);
             }
-
             else
             {
-                var redirect = $"/Login/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                var redirect = $"/Home/AccessDenied?returnUrl={Uri.EscapeDataString(returnUrl)}";
                 ctx.Response.Redirect(redirect);
             }
             return Task.CompletedTask;

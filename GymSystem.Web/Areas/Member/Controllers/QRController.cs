@@ -6,7 +6,7 @@ using System.Security.Claims;
 namespace GymSystem.Web.Areas.Member.Controllers
 {
     [Area("Member")]
-    [Authorize]
+    [Authorize(Roles = "Member")]
     public class QRController : Controller
     {
         private readonly IMemberApiService _api;
