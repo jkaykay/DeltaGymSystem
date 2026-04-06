@@ -14,6 +14,8 @@ namespace GymSystem.Shared.DTOs
         [Required, MaxLength(450)]
         public string UserId { get; set; } = string.Empty;
 
+        public string? UserFullName { get; set; }
+
         public int SubId { get; set; }
     }
 }

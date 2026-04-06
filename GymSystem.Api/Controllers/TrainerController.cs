@@ -86,6 +86,7 @@ public class TrainerController : ControllerBase
                 EmployeeId = m.EmployeeId,
                 Active = m.Active,
                 BranchId = m.BranchId,
+                PhoneNumber = m.PhoneNumber,
                 Roles = _context.UserRoles
                     .Where(ur => ur.UserId == m.Id)
                     .Join(_context.Roles,
@@ -127,7 +128,8 @@ public class TrainerController : ControllerBase
             HireDate = user.HireDate,
             EmployeeId = user.EmployeeId,
             Active = user.Active,
-            BranchId = user.BranchId
+            BranchId = user.BranchId,
+            PhoneNumber = user.PhoneNumber
         });
     }
 
@@ -155,7 +157,8 @@ public class TrainerController : ControllerBase
             HireDate = user.HireDate,
             EmployeeId = user.EmployeeId,
             Active = user.Active,
-            BranchId = user.BranchId
+            BranchId = user.BranchId,
+            PhoneNumber = user.PhoneNumber
         });
     }
 
@@ -186,6 +189,7 @@ public class TrainerController : ControllerBase
 
         if (request.FirstName is not null) user.FirstName = request.FirstName;
         if (request.LastName is not null) user.LastName = request.LastName;
+        if (request.PhoneNumber is not null) user.PhoneNumber = request.PhoneNumber;
 
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
@@ -235,6 +239,7 @@ public class TrainerController : ControllerBase
             FirstName = request.FirstName,
             LastName = request.LastName,
             EmployeeId = request.EmployeeId,
+            PhoneNumber = request.PhoneNumber,
             HireDate = DateTime.UtcNow,
             Active = true,
             BranchId = request.BranchId
@@ -257,7 +262,8 @@ public class TrainerController : ControllerBase
             EmployeeId = user.EmployeeId,
             HireDate = user.HireDate,
             Active = user.Active,
-            BranchId = user.BranchId
+            BranchId = user.BranchId,
+            PhoneNumber = user.PhoneNumber
         });
     }
 
@@ -310,6 +316,7 @@ public class TrainerController : ControllerBase
         user.FirstName = request.FirstName ?? user.FirstName;
         user.LastName = request.LastName ?? user.LastName;
         user.EmployeeId = request.EmployeeId ?? user.EmployeeId;
+        if (request.PhoneNumber is not null) user.PhoneNumber = request.PhoneNumber;
 
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)

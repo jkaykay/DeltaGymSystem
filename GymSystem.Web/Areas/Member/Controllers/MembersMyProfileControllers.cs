@@ -41,6 +41,7 @@ namespace GymSystem.Web.Areas.Member.Controllers
                     Email = profile.Email,
                     FirstName = profile.FirstName,
                     LastName = profile.LastName,
+                    PhoneNumber = profile.PhoneNumber,
                     JoinDate = profile.JoinDate,
                     Active = profile.Active,
                     QrCodeBase64 = qr?.QrCodeBase64,
@@ -73,7 +74,8 @@ namespace GymSystem.Web.Areas.Member.Controllers
                 var request = new UpdateMemberRequest(
                     Email: model.Email,
                     FirstName: model.FirstName,
-                    LastName: model.LastName
+                    LastName: model.LastName,
+                    PhoneNumber: model.PhoneNumber
                 );
 
                 var result = await _memberApiService.UpdateProfileAsync(memberId, request);

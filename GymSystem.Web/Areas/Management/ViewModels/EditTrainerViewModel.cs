@@ -27,5 +27,10 @@ namespace GymSystem.Web.Areas.Management.ViewModels
 
         [Display(Name = "Branch")]
         public int? BranchId { get; set; }
+
+        [Phone]
+        [MaxLength(20)]
+        [Display(Name = "Phone Number")]
+        public string? PhoneNumber { get; set; }
     }
 }

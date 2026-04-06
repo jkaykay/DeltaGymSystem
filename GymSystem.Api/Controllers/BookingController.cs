@@ -253,6 +253,9 @@ namespace GymSystem.Api.Controllers
             if (session is null)
                 return BadRequest("Session not found.");
 
+            if (session.Start <= DateTime.UtcNow)
+                return BadRequest("Cannot book a session that has already started.");
+
             if (session.Bookings.Count >= session.MaxCapacity)
                 return Conflict("This session is fully booked.");
 
@@ -272,8 +275,16 @@ namespace GymSystem.Api.Controllers
             };
 
             _context.Bookings.Add(booking);
-            var rowsAffected = await _context.SaveChangesAsync();
-            if (rowsAffected == 0) return BadRequest("Failed to create booking.");
+
+            try
+            {
+                var rowsAffected = await _context.SaveChangesAsync();
+                if (rowsAffected == 0) return BadRequest("Failed to create booking.");
+            }
+            catch (DbUpdateException)
+            {
+                return Conflict("User has already booked this session.");
+            }
 
             await _outputCache.EvictByTagAsync("bookings", default);
 

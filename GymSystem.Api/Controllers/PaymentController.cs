@@ -81,6 +81,7 @@ namespace GymSystem.Api.Controllers
                     Amount = p.Amount,
                     PaymentDate = p.PaymentDate,
                     UserId = p.UserId,
+                    UserFullName = p.User.FirstName + " " + p.User.LastName,
                     SubId = p.SubId
                 })
                 .ToPagedResultAsync(request.Page, request.PageSize);

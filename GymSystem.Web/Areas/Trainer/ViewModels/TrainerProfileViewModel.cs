@@ -12,6 +12,11 @@ namespace GymSystem.Web.Areas.Trainer.ViewModels
         [EmailAddress]
         public string Email { get; set; } = "";
 
+        [Phone]
+        [Display(Name = "Phone Number")]
+        [MaxLength(20)]
+        public string? PhoneNumber { get; set; }
+
         public string GymLocation { get; set; } = "";
         public bool IsEditing { get; set; }
     }
