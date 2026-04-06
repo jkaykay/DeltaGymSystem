@@ -106,6 +106,32 @@ namespace GymSystem.Api.Controllers
             return Ok(result);
         }
 
+        [HttpGet("{id}/bookings")]
+        public async Task<IActionResult> GetBookings(int id)
+        {
+            var sessionExists = await _context.Sessions.AnyAsync(s => s.SessionId == id);
+            if (!sessionExists)
+                return NotFound();
+
+            var bookings = await _context.Bookings
+                .Where(b => b.SessionId == id)
+                .Select(b => new BookingDTO
+                {
+                    BookingId = b.BookingId,
+                    BookDate = b.BookDate,
+                    SessionId = b.Session.SessionId,
+                    SessionStart = b.Session.Start,
+                    SessionEnd = b.Session.End,
+                    Subject = b.Session.Class.Subject,
+                    RoomNumber = b.Session.Room.RoomNumber,
+                    UserId = b.User.Id,
+                    UserName = $"{b.User.FirstName} {b.User.LastName}"
+                })
+                .ToListAsync();
+
+            return Ok(bookings);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AddSessionRequest request)
         {

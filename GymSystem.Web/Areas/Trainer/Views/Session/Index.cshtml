@@ -1,0 +1,81 @@
+﻿@model GymSystem.Web.Areas.Trainer.ViewModels.TrainerSessionViewModel
+
+@{
+    ViewData["Title"] = "Sessions";
+    DateTime? currentDate = null;
+}
+
+<section class="schedule-page-wrapper">
+    <div class="schedule-page-card">
+        <h2>All Sessions</h2>
+
+        <div class="detail-actions" style="margin-bottom: 1rem;">
+            <a asp-area="Trainer" asp-controller="Session" asp-action="Create" class="schedule-btn">Create Session</a>
+        </div>
+
+        @if (Model.WeeklySessions != null && Model.WeeklySessions.Any())
+        {
+            @foreach (var session in Model.WeeklySessions)
+            {
+                if (currentDate == null || currentDate.Value.Date != session.Start.Date)
+                {
+                    currentDate = session.Start.Date;
+
+                    <h3 class="schedule-date">@session.Start.ToString("dddd, dd MMMM yyyy")</h3>
+                }
+
+                <a asp-area="Trainer" asp-controller="Session" asp-action="Details" asp-route-id="@session.SessionId" class="schedule-row session-link">
+                    <span>@session.Subject</span>
+                    <span>
+                        @session.Start.ToString("hh:mm tt") - @session.End.ToString("hh:mm tt")
+                    </span>
+                    <span>Room @session.RoomNumber</span>
+                </a>
+            }
+
+            @if (Model.TotalPages > 1)
+            {
+                <nav class="pagination">
+                    @if (Model.HasPrevious)
+                    {
+                        <a asp-area="Trainer" asp-controller="Session" asp-action="Index"
+                           asp-route-page="@(Model.Page - 1)" class="page-link">&laquo; Previous</a>
+                    }
+                    else
+                    {
+                        <span class="page-link disabled">&laquo; Previous</span>
+                    }
+
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        if (i == Model.Page)
+                        {
+                            <span class="page-link active">@i</span>
+                        }
+                        else
+                        {
+                            <a asp-area="Trainer" asp-controller="Session" asp-action="Index"
+                               asp-route-page="@i" class="page-link">@i</a>
+                        }
+                    }
+
+                    @if (Model.HasNext)
+                    {
+                        <a asp-area="Trainer" asp-controller="Session" asp-action="Index"
+                           asp-route-page="@(Model.Page + 1)" class="page-link">Next &raquo;</a>
+                    }
+                    else
+                    {
+                        <span class="page-link disabled">Next &raquo;</span>
+                    }
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="schedule-row">
+                <span>No sessions found</span>
+            </div>
+        }
+    </div>
+</section>

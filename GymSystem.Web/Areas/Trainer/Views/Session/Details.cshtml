@@ -1,0 +1,63 @@
+@model GymSystem.Web.Areas.Trainer.ViewModels.SessionDetailViewModel
+
+@{
+    ViewData["Title"] = "Session Details";
+}
+
+<section class="schedule-page-wrapper">
+    <div class="schedule-page-card">
+        <div class="section-header">
+            <h2>@Model.Session.Subject</h2>
+        </div>
+
+        <div class="detail-grid">
+            <div class="detail-item">
+                <span class="detail-label">Date</span>
+                <span class="detail-value">@Model.Session.Start.ToString("dddd, dd MMMM yyyy")</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Time</span>
+                <span class="detail-value">@Model.Session.Start.ToString("hh:mm tt") - @Model.Session.End.ToString("hh:mm tt")</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Room</span>
+                <span class="detail-value">Room @Model.Session.RoomNumber</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Capacity</span>
+                <span class="detail-value">@Model.Session.BookingCount / @Model.Session.MaxCapacity</span>
+            </div>
+        </div>
+
+        <div class="section-header" style="margin-top: 2rem;">
+            <h2>Booked Members (@Model.Bookings.Count)</h2>
+        </div>
+
+        @if (Model.Bookings.Any())
+        {
+            @foreach (var booking in Model.Bookings)
+            {
+                <div class="schedule-row">
+                    <span>@booking.UserName</span>
+                    <span>Booked @booking.BookDate.ToString("dd MMM yyyy")</span>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="schedule-row">
+                <span>No members have booked this session</span>
+            </div>
+        }
+
+        <div class="detail-actions">
+            <a asp-area="Trainer" asp-controller="Session" asp-action="Index" class="cancel-btn">Back to Sessions</a>
+
+            <form asp-area="Trainer" asp-controller="Session" asp-action="Cancel" asp-route-id="@Model.Session.SessionId" method="post"
+                  onsubmit="return confirm('Are you sure you want to cancel this session? This cannot be undone.');">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="schedule-btn">Cancel Session</button>
+            </form>
+        </div>
+    </div>
+</section>

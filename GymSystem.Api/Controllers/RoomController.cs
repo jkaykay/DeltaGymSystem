@@ -11,7 +11,7 @@ namespace GymSystem.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin,Staff")]
+    [Authorize(Roles = "Admin,Staff,Trainer")]
     public class RoomController : ControllerBase
     {
         private readonly GymDbContext _context;

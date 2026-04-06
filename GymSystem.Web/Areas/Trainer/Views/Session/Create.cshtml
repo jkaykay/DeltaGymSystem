@@ -1,0 +1,75 @@
+@model GymSystem.Web.Areas.Trainer.ViewModels.CreateSessionViewModel
+
+@{
+    ViewData["Title"] = "Create Session";
+}
+
+<section class="schedule-page-wrapper">
+    <div class="schedule-page-card">
+        <div class="section-header">
+            <h2>Create New Session</h2>
+        </div>
+
+        <form asp-area="Trainer" asp-controller="Session" asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="field-validation-error" role="alert"></div>
+
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <label asp-for="ClassId" class="detail-label"></label>
+                    <select asp-for="ClassId" class="form-control">
+                        <option value="">— Select a Class —</option>
+                        @foreach (var gymClass in Model.Classes)
+                        {
+                            <option value="@gymClass.ClassId">@gymClass.Subject</option>
+                        }
+                    </select>
+                    <span asp-validation-for="ClassId" class="field-validation-error"></span>
+                </div>
+
+                <div class="detail-item">
+                    <label asp-for="RoomId" class="detail-label"></label>
+                    @if (Model.Rooms.Any())
+                    {
+                        <select asp-for="RoomId" class="form-control">
+                            <option value="">— Select a Room —</option>
+                            @foreach (var room in Model.Rooms)
+                            {
+                                <option value="@room.RoomId">Room @room.RoomNumber (Capacity: @room.MaxCapacity)</option>
+                            }
+                        </select>
+                    }
+                    else
+                    {
+                        <select asp-for="RoomId" class="form-control" disabled>
+                            <option value="">No rooms available for your branch</option>
+                        </select>
+                    }
+                    <span asp-validation-for="RoomId" class="field-validation-error"></span>
+                </div>
+
+                <div class="detail-item">
+                    <label asp-for="Start" class="detail-label"></label>
+                    <input asp-for="Start" class="form-control" type="datetime-local" />
+                    <span asp-validation-for="Start" class="field-validation-error"></span>
+                </div>
+
+                <div class="detail-item">
+                    <label asp-for="End" class="detail-label"></label>
+                    <input asp-for="End" class="form-control" type="datetime-local" />
+                    <span asp-validation-for="End" class="field-validation-error"></span>
+                </div>
+
+                <div class="detail-item">
+                    <label asp-for="MaxCapacity" class="detail-label"></label>
+                    <input asp-for="MaxCapacity" class="form-control" type="number" min="1" max="100" />
+                    <span asp-validation-for="MaxCapacity" class="field-validation-error"></span>
+                </div>
+            </div>
+
+            <div class="detail-actions">
+                <a asp-area="Trainer" asp-controller="Session" asp-action="Index" class="cancel-btn">Cancel</a>
+                <button type="submit" class="schedule-btn">Create Session</button>
+            </div>
+        </form>
+    </div>
+</section>
