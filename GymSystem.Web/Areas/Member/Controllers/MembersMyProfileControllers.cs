@@ -29,7 +29,10 @@ namespace GymSystem.Web.Areas.Member.Controllers
                     return RedirectToAction("Index", "Login", new { area = "Member" });
 
                 QRCodeResponse? qr = null;
-                try { qr = await _memberApiService.GetMyQRAsync(profile.Id); } catch { }
+                if (profile.Active)
+                {
+                    try { qr = await _memberApiService.GetMyQRAsync(profile.Id); } catch { }
+                }
 
                 var model = new ProfileViewModel
                 {

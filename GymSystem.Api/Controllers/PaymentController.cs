@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -151,6 +152,7 @@ namespace GymSystem.Api.Controllers
 
         [HttpPost("my")]
         [Authorize(Roles = "Member")]
+        [EnableRateLimiting("payment")]
         public async Task<IActionResult> PayMy([FromBody] AddMyPaymentRequest request)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;

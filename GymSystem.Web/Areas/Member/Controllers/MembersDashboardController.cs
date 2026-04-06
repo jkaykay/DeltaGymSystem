@@ -37,7 +37,7 @@ public class DashboardController : Controller
         var model = new DashboardViewModel
         {
             Username = firstName,
-            TotalBookings = bookings.TotalCount,
+            TotalBookings = bookings.Items.Count(b => b.SessionStart > now), // upcoming only
             TotalAttendances = attendances.Count,
             UpcomingBookings = upcomingBookings,
             LogHistory = attendances.OrderByDescending(a => a.CheckIn).Take(7).ToList(),

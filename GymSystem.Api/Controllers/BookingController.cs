@@ -2,10 +2,12 @@
 using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
+using GymSystem.Shared.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -195,6 +197,7 @@ namespace GymSystem.Api.Controllers
 
         [HttpPost("my")]
         [Authorize(Roles = "Member")]  // UserId comes from claims — members can only book for themselves
+        [EnableRateLimiting("booking")]
         public async Task<IActionResult> CreateMy([FromBody] AddMyBookingRequest request)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -203,6 +206,7 @@ namespace GymSystem.Api.Controllers
 
         [HttpDelete("my/{id}")]
         [Authorize(Roles = "Member")]
+        [EnableRateLimiting("booking")]
         public async Task<IActionResult> DeleteMy(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -227,55 +231,67 @@ namespace GymSystem.Api.Controllers
 
         private async Task<IActionResult> ProcessBookingAsync(string userId, int sessionId)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user is null)
-                return BadRequest("User not found.");
+            using var transaction = await _context.Database.BeginTransactionAsync(
+                System.Data.IsolationLevel.Serializable);
 
-            var session = await _context.Sessions
-                .Include(s => s.Class)
-                .Include(s => s.Room)
-                .Include(s => s.Bookings)
-                .FirstOrDefaultAsync(s => s.SessionId == sessionId);
-
-            if (session is null)
-                return BadRequest("Session not found.");
-
-            if (session.Bookings.Count >= session.MaxCapacity)
-                return Conflict("This session is fully booked.");
-
-            var alreadyBooked = await _context.Bookings.AnyAsync(b =>
-                b.SessionId == sessionId && b.UserId == userId);
-
-            if (alreadyBooked)
-                return Conflict("User has already booked this session.");
-
-            var booking = new Booking
+            try
             {
-                BookDate = DateTime.UtcNow,
-                SessionId = session.SessionId,
-                Session = session,
-                UserId = user.Id,
-                User = user
-            };
+                var session = await _context.Sessions
+                    .Include(s => s.Class)
+                    .Include(s => s.Room)
+                    .Include(s => s.Bookings)
+                    .FirstOrDefaultAsync(s => s.SessionId == sessionId);
 
-            _context.Bookings.Add(booking);
-            var rowsAffected = await _context.SaveChangesAsync();
-            if (rowsAffected == 0) return BadRequest("Failed to create booking.");
+                if (session is null) return BadRequest("Session not found.");
 
-            await _outputCache.EvictByTagAsync("bookings", default);
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user is null) return BadRequest("User not found.");
 
-            return CreatedAtAction(nameof(Get), new { id = booking.BookingId }, new BookingDTO
+                var hasActiveSub = await _context.Subscriptions
+                    .AnyAsync(s => s.UserId == userId && s.State == SubscriptionState.Active);
+
+                if (!hasActiveSub)
+                    return BadRequest("An active subscription is required to book sessions.");
+
+                if (session.Bookings.Count >= session.MaxCapacity)
+                    return Conflict("This session is fully booked.");
+
+                if (session.Bookings.Any(b => b.UserId == userId))
+                    return Conflict("User has already booked this session.");
+
+                var booking = new Booking
+                {
+                    BookDate = DateTime.UtcNow,
+                    SessionId = session.SessionId,
+                    Session = session,
+                    UserId = user.Id,
+                    User = user
+                };
+
+                _context.Bookings.Add(booking);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                await _outputCache.EvictByTagAsync("bookings", default);
+
+                return CreatedAtAction(nameof(Get), new { id = booking.BookingId }, new BookingDTO
+                {
+                    BookingId = booking.BookingId,
+                    BookDate = booking.BookDate,
+                    SessionId = session.SessionId,
+                    SessionStart = session.Start,
+                    SessionEnd = session.End,
+                    Subject = session.Class.Subject,
+                    RoomNumber = session.Room.RoomNumber,
+                    UserId = user.Id,
+                    UserName = $"{user.FirstName} {user.LastName}"
+                });
+            }
+            catch (DbUpdateException)
             {
-                BookingId = booking.BookingId,
-                BookDate = booking.BookDate,
-                SessionId = session.SessionId,
-                SessionStart = session.Start,
-                SessionEnd = session.End,
-                Subject = session.Class.Subject,
-                RoomNumber = session.Room.RoomNumber,
-                UserId = user.Id,
-                UserName = $"{user.FirstName} {user.LastName}"
-            });
+                await transaction.RollbackAsync();
+                return Conflict("Booking could not be completed. Please try again.");
+            }
         }
     }
 }

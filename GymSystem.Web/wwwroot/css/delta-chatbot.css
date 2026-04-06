@@ -1,0 +1,234 @@
+/* ── DELTA AI FLOATING CHATBOT ── */
+
+/* Toggle button (bottom-right, above scroll-to-top) */
+.delta-chat-toggle {
+  position: fixed;
+  bottom: 100px;
+  right: 36px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #b30000;
+  border: 2px solid #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.delta-chat-toggle:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+}
+
+.delta-chat-toggle-icon {
+  width: 28px;
+  height: 28px;
+  display: block;
+  pointer-events: none;
+}
+
+/* Hide toggle when popup is open */
+.delta-chat-toggle.hidden {
+  display: none;
+}
+
+/* Popup container */
+.delta-chat-popup {
+  position: fixed;
+  bottom: 100px;
+  right: 36px;
+  width: 370px;
+  max-height: 520px;
+  background: #fff;
+  border: 1.5px solid #e0e0dc;
+  border-radius: 22px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  z-index: 1051;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'Barlow', sans-serif;
+}
+
+.delta-chat-popup.open {
+  display: flex;
+}
+
+/* Header */
+.delta-chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: #111;
+  color: #fff;
+  border-bottom: 1px solid #222;
+}
+
+.delta-chat-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.delta-chat-avatar {
+  width: 34px;
+  height: 34px;
+  background: #222;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.delta-chat-avatar img {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.delta-chat-title {
+  font-weight: 900;
+  font-size: 16px;
+}
+
+.delta-chat-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 4px;
+  transition: opacity 0.2s;
+}
+
+.delta-chat-close:hover {
+  opacity: 0.7;
+}
+
+/* Chat body (scrollable message area) */
+.delta-chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 340px;
+  background: #fafaf8;
+}
+
+.delta-chat-welcome {
+  background: #f2f2ef;
+  border-radius: 16px;
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Chat bubbles */
+.delta-chat-msg {
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 500;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.delta-chat-msg.user {
+  align-self: flex-end;
+  background: #111;
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.delta-chat-msg.bot {
+  align-self: flex-start;
+  background: #f2f2ef;
+  color: #333;
+  border-bottom-left-radius: 4px;
+}
+
+.delta-chat-msg.bot.error {
+  color: #9f0000;
+}
+
+.delta-chat-msg.bot.loading {
+  color: #888;
+  font-style: italic;
+}
+
+/* Footer (input area) */
+.delta-chat-footer {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 12px 14px;
+  border-top: 1px solid #ecece7;
+  background: #fff;
+}
+
+.delta-chat-footer textarea {
+  flex: 1;
+  border: 1px solid #e0e0dc;
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #111;
+  resize: none;
+  outline: none;
+  min-height: 40px;
+  max-height: 80px;
+  background: #fafaf8;
+  transition: border-color 0.2s;
+}
+
+.delta-chat-footer textarea:focus {
+  border-color: #b30000;
+}
+
+.delta-chat-footer textarea::placeholder {
+  color: #aaa;
+}
+
+.delta-chat-send {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: #b30000;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s, transform 0.1s;
+  font-size: 16px;
+}
+
+.delta-chat-send:hover {
+  background: #111;
+}
+
+.delta-chat-send:active {
+  transform: scale(0.94);
+}
+
+.delta-chat-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

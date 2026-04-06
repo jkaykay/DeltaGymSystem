@@ -1,0 +1,31 @@
+<!-- Delta AI Floating Chatbot -->
+<button id="deltaChatToggle" class="delta-chat-toggle" title="Ask DELTA AI">
+  <img src="/images/LOGO.png" alt="DELTA" class="delta-chat-toggle-icon" />
+</button>
+
+<div id="deltaChatPopup" class="delta-chat-popup">
+  <div class="delta-chat-header">
+    <div class="delta-chat-header-left">
+      <div class="delta-chat-avatar">
+        <img src="/images/LOGO.png" alt="DELTA" />
+      </div>
+      <span class="delta-chat-title">Ask DELTA</span>
+    </div>
+    <button id="deltaChatClose" class="delta-chat-close" title="Close">&times;</button>
+  </div>
+
+  <div class="delta-chat-body" id="deltaChatBody">
+    <div class="delta-chat-welcome">
+      Hi! I'm <strong>DELTA</strong>, your AI assistant. Ask me anything about memberships, classes, or the gym.
+    </div>
+  </div>
+
+  <div class="delta-chat-footer">
+    <textarea id="deltaChatInput"
+              placeholder="Type your question..."
+              rows="1"></textarea>
+    <button id="deltaChatSend" class="delta-chat-send" title="Send">
+      <i class="bi bi-send-fill"></i>
+    </button>
+  </div>
+</div>
