@@ -56,9 +56,8 @@
         @foreach (var cls in classes)
         {
           var slug = cls.Subject.ToLower().Replace(" ", "-");
-          var icon = icons[pillIndex % icons.Length];
-          var activeClass = pillIndex == 0 ? "active" : "";
-          <div class="class-pill @activeClass" onclick="scrollToClass('@slug')">
+          var icon = icons[pillIndex % icons.Length] ?? icons[0];
+          <div class="class-pill" onclick="scrollToClass('@slug')">
             <div class="class-pill-icon">
               <i class="bi @icon"></i>
             </div>
