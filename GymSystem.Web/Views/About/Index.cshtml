@@ -24,24 +24,6 @@
   <!-- STATS BAND -->
   <div class="stats-band reveal">
     <div class="stat-item">
-      <div class="stat-num">50+</div>
-      <div class="stat-label">Classes Weekly</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">15K+</div>
-      <div class="stat-label">Active Members</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">10+</div>
-      <div class="stat-label">Expert Trainers</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">8</div>
-      <div class="stat-label">Years Running</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">2</div>
-      <div class="stat-label">Locations</div>
     </div>
   </div>
 
@@ -131,65 +113,35 @@
       <h2 class="section-title" style="margin-top: 10px;">Classes For<br>Every Goal</h2>
     </div>
     <div class="cards-grid">
-      <div class="info-card">
-        <div class="card-icon red">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-        </div>
-        <h3>Cardio</h3>
-        <p>High energy sessions focused on burning fat, boosting endurance and keeping your heart healthy.</p>
-      </div>
-      <div class="info-card">
-        <div class="card-icon">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M6 4v16M18 4v16M2 8h4M18 8h4M2 16h4M18 16h4M6 12h12"/>
-          </svg>
-        </div>
-        <h3>Strength Training</h3>
-        <p>Build muscle, increase power and transform your body with guided strength sessions.</p>
-      </div>
-      <div class="info-card">
-        <div class="card-icon red">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-          </svg>
-        </div>
-        <h3>HIIT</h3>
-        <p>Intense interval training that torches calories and builds strength at the same time.</p>
-      </div>
-      <div class="info-card">
-        <div class="card-icon">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="5" r="2"/>
-            <path d="M12 7c-2 2-4 3-4 6h8c0-3-2-4-4-6z"/>
-            <path d="M8 13l-3 5h14l-3-5"/>
-          </svg>
-        </div>
-        <h3>Yoga</h3>
-        <p>Improve flexibility, mindfulness and recovery with our experienced yoga sessions.</p>
-      </div>
-      <div class="info-card">
-        <div class="card-icon red">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <rect x="4" y="9" width="16" height="10" rx="3"/>
-            <path d="M8 9V6a4 4 0 0 1 8 0v3"/>
-            <line x1="4" y1="14" x2="20" y2="14"/>
-          </svg>
-        </div>
-        <h3>Boxing</h3>
-        <p>Learn technique, build power and relieve stress with our boxing training classes.</p>
-      </div>
-      <div class="info-card">
-        <div class="card-icon">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M12 8v4l3 3"/>
-          </svg>
-        </div>
-        <h3>Personal Training</h3>
-        <p>One-to-one sessions tailored completely to your goals, schedule, and fitness level. You can talk to your trainer about your specific needs and goals.</p>
-      </div>
+      @{ var classes = ViewBag.Classes as List<GymSystem.Shared.DTOs.ClassDTO>; }
+      @if (classes != null && classes.Any())
+      {
+          var index = 0;
+          foreach (var cls in classes)
+          {
+              <div class="info-card">
+                  <div class="card-icon @(index % 2 == 0 ? "red" : "")">
+                      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <circle cx="12" cy="12" r="10" />
+                          <path d="M8 12h8M12 8v8" />
+                      </svg>
+                  </div>
+                  <h3>@cls.Subject</h3>
+                  <p>
+                      Taught by <strong>@cls.TrainerName</strong>
+                      @if (cls.UpcomingSessionCount > 0)
+                      {
+                          <span> — @cls.UpcomingSessionCount session@(cls.UpcomingSessionCount != 1 ? "s" : "") available</span>
+                      }
+                  </p>
+              </div>
+              index++;
+          }
+      }
+      else
+      {
+          <p style="color: #aaa; text-align: center; grid-column: 1 / -1;">No classes available at the moment.</p>
+      }
     </div>
   </section>
 

@@ -7,6 +7,9 @@ public record ClassSearchRequest
     [MaxLength(256)]
     public string? Search { get; init; }
 
+    [MaxLength(450)]
+    public string? UserId { get; init; }
+
     [MaxLength(50)]
     public string? SortBy { get; init; }
 

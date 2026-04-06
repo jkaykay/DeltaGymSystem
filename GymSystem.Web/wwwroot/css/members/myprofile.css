@@ -354,7 +354,7 @@
 
     .qr-expires {
       font-size: 13px;
-      color: var(--muted);
+      color: #555;
       font-weight: 500;
       margin-top: 14px;
     }

@@ -1,0 +1,65 @@
+@model ChangePasswordViewModel
+
+@{
+    ViewData["Title"] = "Change Password";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/members/myprofile.css" asp-append-version="true" />
+}
+
+<div class="page">
+
+    <h1 class="profile-page-title">CHANGE PASSWORD</h1>
+
+    @if (TempData["SuccessMessage"] is string msg)
+    {
+        <div class="alert alert-success">@msg</div>
+    }
+
+    <form asp-area="Member" asp-controller="Password" asp-action="Index" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="fields-section">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+            <div class="fields-row">
+                <div class="field-group">
+                    <span class="field-label">Current Password</span>
+                    <input asp-for="CurrentPassword" type="password" class="field-box" />
+                    <span asp-validation-for="CurrentPassword" class="error"></span>
+                </div>
+            </div>
+
+            <div class="fields-row">
+                <div class="field-group">
+                    <span class="field-label">New Password</span>
+                    <input asp-for="NewPassword" type="password" class="field-box" />
+                    <span asp-validation-for="NewPassword" class="error"></span>
+                </div>
+            </div>
+
+            <div class="fields-row">
+                <div class="field-group">
+                    <span class="field-label">Confirm New Password</span>
+                    <input asp-for="ConfirmPassword" type="password" class="field-box" />
+                    <span asp-validation-for="ConfirmPassword" class="error"></span>
+                </div>
+            </div>
+
+            <div class="btn-row" style="display:flex;">
+                <button type="submit" class="save-btn">Change Password</button>
+                <a asp-area="Member" asp-controller="MyProfile" asp-action="Index" class="cancel-btn">Cancel</a>
+            </div>
+
+        </div>
+    </form>
+
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

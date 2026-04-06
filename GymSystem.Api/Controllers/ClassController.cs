@@ -33,6 +33,9 @@ namespace GymSystem.Api.Controllers
         {
             var query = _context.Classes.AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(request.UserId))
+                query = query.Where(c => c.UserId == request.UserId);
+
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
                 var term = request.Search.Trim().ToLower();
@@ -51,6 +54,8 @@ namespace GymSystem.Api.Controllers
                 _          => descending ? query.OrderByDescending(c => c.Subject)       : query.OrderBy(c => c.Subject),
             };
 
+            var now = DateTime.UtcNow;
+
             var result = await query
                 .Select(c => new ClassDTO
                 {
@@ -58,7 +63,8 @@ namespace GymSystem.Api.Controllers
                     Subject = c.Subject,
                     UserId = c.UserId,
                     TrainerName = $"{c.User.FirstName} {c.User.LastName}",
-                    SessionCount = c.Sessions.Count
+                    SessionCount = c.Sessions.Count,
+                    UpcomingSessionCount = c.Sessions.Count(s => s.Start >= now)
                 })
                 .ToPagedResultAsync(request.Page, request.PageSize);
 
@@ -70,6 +76,8 @@ namespace GymSystem.Api.Controllers
         [OutputCache(PolicyName = "classes")]
         public async Task<IActionResult> GetById(int id)
         {
+            var now = DateTime.UtcNow;
+
             var result = await _context.Classes
                 .Where(c => c.ClassId == id)
                 .Select(c => new ClassDTO
@@ -78,7 +86,8 @@ namespace GymSystem.Api.Controllers
                     Subject = c.Subject,
                     UserId = c.UserId,
                     TrainerName = $"{c.User.FirstName} {c.User.LastName}",
-                    SessionCount = c.Sessions.Count
+                    SessionCount = c.Sessions.Count,
+                    UpcomingSessionCount = c.Sessions.Count(s => s.Start >= now)
                 })
                 .FirstOrDefaultAsync();
 
@@ -133,13 +142,16 @@ namespace GymSystem.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateClassRequest request)
         {
+            var now = DateTime.UtcNow;
+
             var classData = await _context.Classes
                 .Include(c => c.User)
                 .Where(c => c.ClassId == id)
                 .Select(c => new
                 {
                     ClassObject = c,
-                    SessionCount = c.Sessions.Count
+                    SessionCount = c.Sessions.Count,
+                    UpcomingSessionCount = c.Sessions.Count(s => s.Start >= now)
                 })
                 .FirstOrDefaultAsync();
 
@@ -186,7 +198,8 @@ namespace GymSystem.Api.Controllers
                 Subject = classEntity.Subject,
                 UserId = classEntity.UserId,
                 TrainerName = $"{classEntity.User.FirstName} {classEntity.User.LastName}",
-                SessionCount = classData.SessionCount
+                SessionCount = classData.SessionCount,
+                UpcomingSessionCount = classData.UpcomingSessionCount
             });
         }
 

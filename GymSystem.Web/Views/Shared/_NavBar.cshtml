@@ -13,12 +13,26 @@
   </ul>
   @if (User.Identity != null && User.Identity.IsAuthenticated)
   {
-    <form asp-area="Member" asp-controller="Login" asp-action="Logout" method="post" class="nav-logout">
-      @Html.AntiForgeryToken()
-      <button type="submit" class="logout-btn">
-        Logout
-      </button>
-    </form>
+    <div class="nav-actions">
+      @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+      {
+        <a asp-area="Management" asp-controller="Dashboard" asp-action="Index" class="dashboard-btn">
+          Dashboard
+        </a>
+      }
+      else if (User.IsInRole("Trainer"))
+      {
+        <a asp-area="Trainer" asp-controller="Dashboard" asp-action="Index" class="dashboard-btn">
+          Dashboard
+        </a>
+      }
+      <form asp-area="Member" asp-controller="Login" asp-action="Logout" method="post" class="nav-logout">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="logout-btn">
+          Logout
+        </button>
+      </form>
+    </div>
   }
   else
   {

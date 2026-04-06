@@ -28,6 +28,9 @@ namespace GymSystem.Api.Controllers
         {
             var query = _context.Sessions.AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(request.InstructorId))
+                query = query.Where(s => s.Class.UserId == request.InstructorId);
+
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
                 var term = request.Search.Trim().ToLower();

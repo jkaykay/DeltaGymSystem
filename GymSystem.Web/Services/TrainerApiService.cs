@@ -54,21 +54,21 @@ namespace GymSystem.Web.Services
 
 
         //dashboard service
-        public async Task<List<SessionDTO>> GetSessionsAsync(string token, CancellationToken cancellationToken = default)
+        public async Task<TrainerPagedResult<SessionDTO>> GetSessionsAsync(string instructorId, int page, int pageSize, string token, CancellationToken cancellationToken = default)
         {
             var client = _httpClientFactory.CreateClient("GymApi");
 
             client.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await client.GetAsync("api/session?page=1&pageSize=1000", cancellationToken);
+            var response = await client.GetAsync($"api/session?instructorId={Uri.EscapeDataString(instructorId)}&page={page}&pageSize={pageSize}", cancellationToken);
 
             if (!response.IsSuccessStatusCode)
-                return new List<SessionDTO>();
+                return new TrainerPagedResult<SessionDTO>();
 
             var result = await response.Content.ReadFromJsonAsync<TrainerPagedResult<SessionDTO>>(cancellationToken: cancellationToken);
 
-            return result?.Items ?? new List<SessionDTO>();
+            return result ?? new TrainerPagedResult<SessionDTO>();
         }
 
 
@@ -142,16 +142,14 @@ namespace GymSystem.Web.Services
             client.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await client.GetAsync("api/class?page=1&pageSize=999", cancellationToken);
+            var response = await client.GetAsync($"api/class?userId={Uri.EscapeDataString(trainerId)}&page=1&pageSize=999", cancellationToken);
 
             if (!response.IsSuccessStatusCode)
                 return new List<ClassDTO>();
 
             var result = await response.Content.ReadFromJsonAsync<TrainerPagedResult<ClassDTO>>(cancellationToken: cancellationToken);
 
-            var allClasses = result?.Items ?? new List<ClassDTO>();
-
-            return allClasses.Where(c => c.UserId == trainerId).ToList();
+            return result?.Items ?? new List<ClassDTO>();
         }
 
 
@@ -165,6 +163,32 @@ namespace GymSystem.Web.Services
             var response = await client.PostAsJsonAsync("api/session", request, cancellationToken);
 
             return response.IsSuccessStatusCode;
+        }
+
+
+        public async Task<TrainerPagedResult<SessionDTO>> GetSessionsByTrainerAsync(string instructorId, DateTime? dateFrom, DateTime? dateTo, int page, int pageSize, string token, CancellationToken cancellationToken = default)
+        {
+            var client = _httpClientFactory.CreateClient("GymApi");
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var url = $"api/session?instructorId={Uri.EscapeDataString(instructorId)}&page={page}&pageSize={pageSize}";
+
+            if (dateFrom.HasValue)
+                url += $"&dateFrom={dateFrom.Value:o}";
+
+            if (dateTo.HasValue)
+                url += $"&dateTo={dateTo.Value:o}";
+
+            var response = await client.GetAsync(url, cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+                return new TrainerPagedResult<SessionDTO>();
+
+            var result = await response.Content.ReadFromJsonAsync<TrainerPagedResult<SessionDTO>>(cancellationToken: cancellationToken);
+
+            return result ?? new TrainerPagedResult<SessionDTO>();
         }
     }
 }

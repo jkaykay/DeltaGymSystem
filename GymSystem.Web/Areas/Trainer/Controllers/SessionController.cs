@@ -33,30 +33,15 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
             var trainerId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
             var trainerName = User.FindFirst("firstName")?.Value ?? "Trainer";
 
-            var sessions = await _trainerApiService.GetSessionsAsync(token);
-
-            var trainerSessions = new List<SessionDTO>();
-
-            foreach (var session in sessions)
-            {
-                if (session.InstructorId == trainerId)
-                {
-                    trainerSessions.Add(session);
-                }
-            }
-
-            trainerSessions = trainerSessions.OrderBy(s => s.Start).ToList();
-
-            var totalCount = trainerSessions.Count;
-            var paged = trainerSessions.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            var result = await _trainerApiService.GetSessionsAsync(trainerId, page, pageSize, token);
 
             var model = new TrainerSessionViewModel
             {
                 TrainerName = trainerName,
-                WeeklySessions = paged,
-                Page = page,
-                PageSize = pageSize,
-                TotalCount = totalCount
+                WeeklySessions = result.Items,
+                Page = result.Page,
+                PageSize = result.PageSize,
+                TotalCount = result.TotalCount
             };
 
             return View(model);

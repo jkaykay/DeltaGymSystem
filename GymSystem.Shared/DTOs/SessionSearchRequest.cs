@@ -7,6 +7,9 @@ public record SessionSearchRequest
     [MaxLength(256)]
     public string? Search { get; init; }
 
+    [MaxLength(450)]
+    public string? InstructorId { get; init; }
+
     public DateTime? DateFrom { get; init; }
 
     public DateTime? DateTo { get; init; }
