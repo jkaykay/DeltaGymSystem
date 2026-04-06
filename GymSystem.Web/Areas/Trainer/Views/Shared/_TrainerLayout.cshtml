@@ -10,9 +10,11 @@
 <body>
     <header class="topbar">
         <div class="topbar-inner">
-            <div class="logo-box">
-                <img src="~/images/logo.png" alt="Delta Gym Logo" class="nav-logo-img" />
-            </div>
+            <a asp-area="" asp-controller="Home" asp-action="Index" style="text-decoration:none;">
+                <div class="logo-box">
+                    <img src="~/images/logo.png" alt="Delta Gym Logo" class="nav-logo-img" />
+                </div>
+            </a>
 
             <nav class="nav-links">
                 <a asp-area="Trainer" asp-controller="Dashboard" asp-action="Index">Dashboard</a>

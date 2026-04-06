@@ -253,3 +253,62 @@
     .class-row.info-right .class-bg-panel   { order: 1; }
     .class-row.info-right .class-info-panel { order: 2; }
 
+    /* ── MOBILE RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .top-section {
+        padding: 24px 20px 20px;
+      }
+
+      .page-title {
+        margin-top: -24px;
+        font-size: 26px;
+      }
+
+      .class-type-row {
+        gap: 14px;
+        justify-content: center;
+      }
+
+      .personal-training-row {
+        gap: 16px;
+        justify-content: center;
+      }
+
+      .class-row {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+
+      .class-row.info-left .class-bg-panel,
+      .class-row.info-right .class-bg-panel {
+        order: 1;
+        min-height: 200px;
+      }
+
+      .class-row.info-left .class-info-panel,
+      .class-row.info-right .class-info-panel {
+        order: 2;
+      }
+
+      .class-info-panel {
+        padding: 32px 24px;
+      }
+
+      .class-info-panel .class-desc {
+        max-width: 100%;
+      }
+
+      .faq-title {
+        margin-top: 36px;
+      }
+
+      .faq-question {
+        font-size: 16px;
+      }
+
+      .faq-answer {
+        padding-left: 36px;
+        font-size: 14px;
+      }
+    }
+

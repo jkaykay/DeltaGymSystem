@@ -304,3 +304,34 @@
       transition: background-color 0.2s, transform 0.15s;
     }
     .modal-btn:hover { background-color: #cc2200; transform: translateY(-1px); }
+
+    /* ── MOBILE RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .page {
+        padding: 24px 12px;
+      }
+
+      .card-banner {
+        padding: 28px 24px 24px;
+      }
+
+      .card-body {
+        padding: 24px 20px 28px;
+      }
+
+      .banner-title {
+        font-size: 36px;
+      }
+
+      .modal-top {
+        padding: 36px 24px 44px;
+      }
+
+      .modal-top h2 {
+        font-size: 42px;
+      }
+
+      .modal-bottom {
+        padding: 0 24px 28px;
+      }
+    }

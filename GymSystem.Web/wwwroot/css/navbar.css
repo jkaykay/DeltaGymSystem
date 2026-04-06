@@ -100,3 +100,99 @@ nav {
 }
 
 .dashboard-btn:hover { background: #c21c1c; color: white; }
+
+/* ── LOGO LINK ── */
+.nav-logo-link {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* ── HAMBURGER TOGGLE ── */
+.nav-hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    z-index: 1100;
+}
+
+.nav-hamburger span {
+    display: block;
+    width: 24px;
+    height: 2.5px;
+    background: #111;
+    border-radius: 2px;
+    transition: transform 0.3s, opacity 0.3s;
+}
+
+.nav-hamburger span + span { margin-top: 5px; }
+
+.nav-hamburger.open span:nth-child(1) {
+    transform: translateY(7.5px) rotate(45deg);
+}
+.nav-hamburger.open span:nth-child(2) { opacity: 0; }
+.nav-hamburger.open span:nth-child(3) {
+    transform: translateY(-7.5px) rotate(-45deg);
+}
+
+/* ── MOBILE NAV ── */
+@media (max-width: 768px) {
+    nav {
+        padding: 0 20px;
+        gap: 12px;
+    }
+
+    .nav-hamburger {
+        display: block;
+        margin-left: auto;
+        position: relative;
+    }
+
+    .nav-links {
+        position: fixed;
+        top: var(--nav-h);
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 254, 0.97);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        flex-direction: column;
+        gap: 0;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(0,0,0,0.07);
+        transform: translateY(-120%);
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 0.35s ease, opacity 0.3s ease;
+        z-index: 1050;
+    }
+
+    .nav-links.open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    .nav-links li {
+        list-style: none;
+    }
+
+    .nav-links a {
+        display: block;
+        padding: 14px 24px;
+        font-size: 16px;
+    }
+
+    .nav-actions {
+        gap: 8px;
+    }
+
+    .nav-logout a,
+    .dashboard-btn,
+    .logout-btn {
+        font-size: 13px;
+        padding: 6px 14px;
+    }
+}

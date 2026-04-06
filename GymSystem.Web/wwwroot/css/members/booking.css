@@ -401,3 +401,42 @@
       transition: background-color 0.2s;
     }
     .modal-btn:hover { background-color: #333; }
+
+    /* ── MOBILE RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .page {
+        padding: 32px 16px 60px;
+      }
+
+      .class-hero {
+        height: 180px;
+        border-radius: 14px;
+        padding: 22px 20px;
+      }
+
+      .class-hero h1 {
+        font-size: 36px;
+      }
+
+      .booking-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-card {
+        position: static;
+      }
+
+      .slots-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .info-card,
+      .trainer-card,
+      .slots-card {
+        padding: 20px;
+      }
+
+      .confirm-modal {
+        padding: 28px 24px;
+      }
+    }

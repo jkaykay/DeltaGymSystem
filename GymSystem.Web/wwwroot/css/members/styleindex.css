@@ -421,3 +421,76 @@
     .social-icon {
       margin-left: 26px;
     }
+
+    /* ── MOBILE RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .hero {
+        padding: 36px 20px 32px;
+      }
+
+      .hero-top {
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .hero-headline {
+        max-width: 100%;
+      }
+
+      .hero-cta {
+        width: 100%;
+      }
+
+      .hero-cta .btn-primary,
+      .hero-cta .btn-outline {
+        width: 100%;
+        text-align: center;
+      }
+
+      .hero-stats {
+        gap: 28px;
+      }
+
+      .section {
+        padding: 0 20px;
+        margin: 40px auto;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .trainers-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .membership-section {
+        padding: 0 20px;
+      }
+
+      .plans-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-box:nth-child(2) {
+        margin-left: 0;
+        align-items: center;
+        text-align: center;
+      }
+
+      .social-icon {
+        margin-left: 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .trainers-grid {
+        grid-template-columns: 1fr;
+      }
+    }

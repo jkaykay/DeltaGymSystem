@@ -544,3 +544,32 @@ transition: opacity 0.5s ease, transform 0.5s ease;
     opacity: 1;
     transform: none;
 }
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+    .page {
+        padding: 40px 16px 60px;
+    }
+
+    .plans-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .faq-question {
+        font-size: 16px;
+    }
+
+    .faq-answer {
+        padding-left: 36px;
+        font-size: 14px;
+    }
+
+    .ask-delta-wrap {
+        justify-content: center;
+    }
+
+    .ask-delta {
+        width: 100%;
+        max-width: 100%;
+    }
+}
