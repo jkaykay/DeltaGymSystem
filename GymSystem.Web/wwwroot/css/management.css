@@ -237,6 +237,11 @@ body {
     background-color: var(--floralwhite);
 }
 
+.form-card > .card-header {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
     .card-header h5 {
         font-size: 0.75rem;
         font-weight: 700;
@@ -574,9 +579,8 @@ body {
     background-color: var(--offwhite);
     border: 1px solid var(--alabastergrey);
     border-radius: 8px;
-    overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    max-width: 560px;
+    max-width: 640px;
 }
 
 .form-body {
@@ -659,6 +663,8 @@ body {
     padding: 16px 24px;
     border-top: 1px solid var(--alabastergrey);
     background-color: var(--floralwhite);
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
 }
 
 /* -- Validation -- */

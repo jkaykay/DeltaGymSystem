@@ -16,6 +16,21 @@ public class TrainersController : Controller
         _api = api;
     }
 
+    private static string? StripUkPrefix(string? phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone)) return phone;
+        phone = phone.Replace(" ", "");
+        if (phone.StartsWith("+44")) phone = phone[3..];
+        return phone;
+    }
+
+    private static string? PrependUkPrefix(string? phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone)) return phone;
+        phone = phone.Replace(" ", "").TrimStart('0');
+        return "+44" + phone;
+    }
+
     public async Task<IActionResult> Index(int page = 1, int pageSize = 10,
     string? search = null,
     DateTime? hiredFrom = null, DateTime? hiredTo = null,
@@ -61,6 +76,8 @@ public class TrainersController : Controller
             return View(model);
         }
 
+        model.PhoneNumber = PrependUkPrefix(model.PhoneNumber);
+
         var success = await _api.CreateTrainerAsync(model);
 
         if (!success)
@@ -92,7 +109,7 @@ public class TrainersController : Controller
             LastName = trainer.LastName,
             EmployeeId = trainer.EmployeeId,
             BranchId = trainer.BranchId,
-            PhoneNumber = trainer.PhoneNumber
+            PhoneNumber = StripUkPrefix(trainer.PhoneNumber)
         };
 
         return View(vm);
@@ -108,6 +125,8 @@ public class TrainersController : Controller
             ViewBag.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
+
+        model.PhoneNumber = PrependUkPrefix(model.PhoneNumber);
 
         var success = await _api.UpdateTrainerAsync(model.Id, model);
 

@@ -19,9 +19,11 @@ namespace GymSystem.Web.Controllers
         {
             var sessions = await _api.GetUpcomingSessionsAsync(1, 3);
             var tiers = await _api.GetAllTiersAsync();
+            var trainers = await _api.GetRandomTrainersAsync(3);
 
             ViewBag.Sessions = sessions.Items;
             ViewBag.Tiers = tiers;
+            ViewBag.Trainers = trainers;
 
             return View();
         }
