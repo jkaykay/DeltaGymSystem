@@ -1,3 +1,10 @@
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    bool isAboutPage = string.Equals(currentController, "About", StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(currentAction, "Index", StringComparison.OrdinalIgnoreCase);
+}
+
 <!-- FOOTER -->
 <footer class="site-footer reveal">
   <div class="footer-inner">
@@ -21,11 +28,22 @@
     <div class="footer-box">
       <div class="footer-col-title">About the "GYM"</div>
       <ul class="footer-links">
-        <li><a asp-area="" asp-controller="About" asp-action="Index" asp-fragment="hero-title">Gym Info</a></li>
-        <li><a asp-area="" asp-controller="About" asp-action="Index" asp-fragment="contact-section">Contact Us</a></li>
-        <li><a asp-area="" asp-controller="About" asp-action="Index" asp-fragment="machines-section">Gym Machines</a></li>
-        <li><a asp-area="" asp-controller="About" asp-action="Index" asp-fragment="opening-hours">Gym Opening hours</a></li>
-        <li><a asp-area="" asp-controller="About" asp-action="Index" asp-fragment="membership-rules">Membership rules</a></li>
+        @if (isAboutPage)
+        {
+          <li><a href="#hero-title">Gym Info</a></li>
+          <li><a href="#contact-section">Contact Us</a></li>
+          <li><a href="#machines-section">Gym Machines</a></li>
+          <li><a href="#opening-hours">Gym Opening hours</a></li>
+          <li><a href="#membership-rules">Membership rules</a></li>
+        }
+        else
+        {
+          <li><a asp-area="" asp-controller="About" asp-action="Index" asp-fragment="hero-title">Gym Info</a></li>
+          <li><a asp-area="" asp-controller="About" asp-action="Index" asp-fragment="contact-section">Contact Us</a></li>
+          <li><a asp-area="" asp-controller="About" asp-action="Index" asp-fragment="machines-section">Gym Machines</a></li>
+          <li><a asp-area="" asp-controller="About" asp-action="Index" asp-fragment="opening-hours">Gym Opening hours</a></li>
+          <li><a asp-area="" asp-controller="About" asp-action="Index" asp-fragment="membership-rules">Membership rules</a></li>
+        }
       </ul>
     </div>
 
