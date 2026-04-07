@@ -22,9 +22,9 @@ namespace GymSystem.Web.Areas.Member.ViewModels
         [MaxLength(100)]
         public string LastName { get; set; } = string.Empty;
 
-        [Phone]
+        [RegularExpression(@"^0?7\d{9}$", ErrorMessage = "Enter a valid UK mobile number (e.g. 7911123456).")]
         [Display(Name = "Phone Number")]
-        [MaxLength(20)]
+        [MaxLength(15)]
         public string? PhoneNumber { get; set; }
 
         [Display(Name = "Join Date")]
