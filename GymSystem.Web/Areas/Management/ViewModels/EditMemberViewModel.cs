@@ -25,8 +25,8 @@ namespace GymSystem.Web.Areas.Management.ViewModels
         [Display(Name = "Active")]
         public bool Active { get; set; }
 
-        [Phone]
-        [MaxLength(20)]
+        [RegularExpression(@"^0?7\d{9}$", ErrorMessage = "Enter a valid UK mobile number (e.g. 7911123456).")]
+        [MaxLength(15)]
         [Display(Name = "Phone Number")]
         public string? PhoneNumber { get; set; }
     }

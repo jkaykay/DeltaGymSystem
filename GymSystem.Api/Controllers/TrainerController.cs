@@ -327,6 +327,26 @@ public class TrainerController : ControllerBase
         return NoContent();
     }
 
+    [HttpGet("random")]
+    [AllowAnonymous]
+    [OutputCache(PolicyName = "trainers")]
+    public async Task<IActionResult> GetRandom([FromQuery] int count = 3)
+    {
+        var trainers = await TrainersQuery()
+            .Where(t => t.Active)
+            .OrderBy(_ => Guid.NewGuid())
+            .Take(count)
+            .Select(m => new UserDTO
+            {
+                Id = m.Id,
+                FirstName = m.FirstName,
+                LastName = m.LastName
+            })
+            .ToListAsync();
+
+        return Ok(trainers);
+    }
+
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(string id)

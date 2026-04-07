@@ -1,4 +1,5 @@
-﻿using GymSystem.Shared.DTOs;
+﻿using System.Text.Json;
+using GymSystem.Shared.DTOs;
 
 namespace GymSystem.Web.Services;
 
@@ -33,8 +34,28 @@ public class MemberApiService : IMemberApiService
 
         if (!response.IsSuccessStatusCode)
         {
-            var error = await response.Content.ReadAsStringAsync();
-            return (false, error);
+            var raw = await response.Content.ReadAsStringAsync();
+
+            // Try to parse as a JSON array of identity errors and extract descriptions
+            try
+            {
+                using var doc = JsonDocument.Parse(raw);
+                if (doc.RootElement.ValueKind == JsonValueKind.Array)
+                {
+                    var descriptions = doc.RootElement
+                        .EnumerateArray()
+                        .Where(e => e.TryGetProperty("description", out _))
+                        .Select(e => e.GetProperty("description").GetString())
+                        .Where(d => !string.IsNullOrEmpty(d));
+
+                    var joined = string.Join(" ", descriptions);
+                    if (!string.IsNullOrEmpty(joined))
+                        return (false, joined);
+                }
+            }
+            catch (JsonException) { }
+
+            return (false, raw);
         }
 
         return (true, null);
@@ -179,6 +200,12 @@ public class MemberApiService : IMemberApiService
     {
         var result = await _http.GetFromJsonAsync<PagedResult<TierDTO>>("api/tier?page=1&pageSize=50");
         return result?.Items ?? [];
+    }
+
+    public async Task<List<UserDTO>> GetRandomTrainersAsync(int count = 3)
+    {
+        var result = await _http.GetFromJsonAsync<List<UserDTO>>($"api/trainer/random?count={count}");
+        return result ?? [];
     }
 
     public async Task<PagedResult<ClassDTO>> GetClassesAsync(int page = 1, int pageSize = 100)
