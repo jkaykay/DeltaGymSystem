@@ -363,6 +363,19 @@
       stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
     }
 
+    .error-icon {
+      width: 64px; height: 64px;
+      background: rgba(255, 68, 68, 0.15);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .error-icon svg {
+      width: 32px; height: 32px;
+      fill: none; stroke: #ff4444;
+      stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+    }
+
     .confirm-modal h2 {
       font-weight: 900;
       font-size: 22px;
