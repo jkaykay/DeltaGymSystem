@@ -1,4 +1,10 @@
-﻿using GymSystem.Api.Data;
+﻿// ============================================================
+// ClassController.cs — CRUD endpoints for gym classes.
+// Classes represent subjects (e.g. "Yoga") taught by trainers.
+// Public users can view classes; authorized users can manage them.
+// ============================================================
+
+using GymSystem.Api.Data;
 using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
@@ -26,6 +32,7 @@ namespace GymSystem.Api.Controllers
             _outputCache = outputCache;
         }
 
+        // GET api/class — List all classes (public — no login required).
         [HttpGet]
         [AllowAnonymous]
         [OutputCache(PolicyName = "classes")]
@@ -71,6 +78,7 @@ namespace GymSystem.Api.Controllers
             return Ok(result);
         }
 
+        // GET api/class/{id} — Get a single class by ID (public).
         [HttpGet("{id}")]
         [AllowAnonymous]
         [OutputCache(PolicyName = "classes")]
@@ -99,6 +107,7 @@ namespace GymSystem.Api.Controllers
             return Ok(result);
         }
 
+        // POST api/class — Create a new class. Prevents duplicates (same subject + trainer).
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AddClassRequest request)
         {
@@ -139,6 +148,7 @@ namespace GymSystem.Api.Controllers
             });
         }
 
+        // PUT api/class/{id} — Update a class's subject or assigned trainer.
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateClassRequest request)
         {
@@ -203,6 +213,7 @@ namespace GymSystem.Api.Controllers
             });
         }
 
+        // DELETE api/class/{id} — Delete a class and all its sessions.
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

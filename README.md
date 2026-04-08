@@ -1,4 +1,4 @@
-# Delta Gym System
+# Delta Gym System [View Here](https://deltagymsystem.azurewebsites.net)
 
 A gym management system built with ASP.NET Core (.NET 10). The solution consists of three projects:
 
@@ -305,7 +305,7 @@ git push -u origin feature/your-feature-name
 1. **Push your feature branch** to the remote repository (see Step 4 above)
 
 2. **Open a Pull Request on GitHub:**
-   - Go to [https://github.com/jkaykay/delta-gym-system](https://github.com/jkaykay/delta-gym-system)
+   - Go to [https://github.com/jkaykay/DeltaGymSystem](https://github.com/jkaykay/DeltaGymSystem)
    - Click the **"Pull requests"** tab
    - Click **"New pull request"**
    - Set the base branch to **development** and compare branch to **feature/your-feature-name**

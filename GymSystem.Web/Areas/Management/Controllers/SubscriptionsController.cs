@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
+// Management controller for member subscriptions.
+// A subscription links a member to a membership tier (e.g. Gold).
+// Subscriptions can be filtered by state (Pending, Active, Expired) and tier name.
+// Delete is Admin-only.
 [Area("Management")]
 [Authorize(Roles = "Admin,Staff")]
 public class SubscriptionsController : Controller

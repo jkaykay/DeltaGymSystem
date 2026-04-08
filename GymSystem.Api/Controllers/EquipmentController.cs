@@ -1,3 +1,9 @@
+// ============================================================
+// EquipmentController.cs — CRUD endpoints for gym equipment.
+// Admin/Staff can view equipment; Admin can create, update, delete.
+// Each piece of equipment belongs to a specific room.
+// ============================================================
+
 using GymSystem.Api.Data;
 using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
@@ -23,6 +29,7 @@ namespace GymSystem.Api.Controllers
             _outputCache = outputCache;
         }
 
+        // GET api/equipment — List all equipment with search, filters, and pagination.
         [HttpGet]
         [OutputCache(PolicyName = "equipment")]
         public async Task<IActionResult> GetAll([FromQuery] EquipmentSearchRequest request)
@@ -73,6 +80,7 @@ namespace GymSystem.Api.Controllers
             return Ok(result);
         }
 
+        // GET api/equipment/{id} — Get a single equipment item by ID.
         [HttpGet("{id}")]
         [OutputCache(PolicyName = "equipment")]
         public async Task<IActionResult> Get(int id)
@@ -95,6 +103,7 @@ namespace GymSystem.Api.Controllers
             return Ok(result);
         }
 
+        // POST api/equipment — Add new equipment to a room (Admin only).
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] AddEquipmentRequest request)
@@ -129,6 +138,7 @@ namespace GymSystem.Api.Controllers
             });
         }
 
+        // PUT api/equipment/{id} — Update equipment details (Admin only).
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateEquipmentRequest request)
@@ -173,6 +183,7 @@ namespace GymSystem.Api.Controllers
             });
         }
 
+        // DELETE api/equipment/{id} — Remove equipment (Admin only).
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
@@ -189,6 +200,7 @@ namespace GymSystem.Api.Controllers
             return NoContent();
         }
 
+        // GET api/equipment/total — Returns the total number of equipment items.
         [HttpGet("total")]
         [OutputCache(PolicyName = "equipment")]
         public async Task<IActionResult> GetTotal()

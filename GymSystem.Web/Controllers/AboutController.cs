@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Controllers
 {
+    // Public-facing controller for the About page.
+    // Displays general information about the gym and lists the available classes.
     public class AboutController : Controller
     {
         private readonly IMemberApiService _api;
@@ -12,6 +14,7 @@ namespace GymSystem.Web.Controllers
             _api = api;
         }
 
+        // GET /About — Fetches all gym classes and passes them to the view.
         public async Task<IActionResult> Index()
         {
             var classes = await _api.GetClassesAsync();

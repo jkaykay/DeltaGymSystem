@@ -1,4 +1,11 @@
-﻿using GymSystem.Api.Data;
+﻿// ============================================================
+// PaymentController.cs — Manages subscription payments.
+// Admin/Staff can create and view payments for any member.
+// Members can make and view their own payments via "my" endpoints.
+// Payments are immutable — they cannot be edited after creation.
+// ============================================================
+
+using GymSystem.Api.Data;
 using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
@@ -29,6 +36,7 @@ namespace GymSystem.Api.Controllers
             _outputCache = outputCache;
         }
 
+        // POST api/payment — Admin/Staff records a payment for a member.
         [HttpPost]
         [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Pay([FromBody] AddPaymentRequest request)
@@ -36,6 +44,7 @@ namespace GymSystem.Api.Controllers
             return await ProcessPaymentAsync(request.UserId, request.SubId, request.Amount);
         }
 
+        // GET api/payment — List all payments with search, filters, and pagination.
         [HttpGet]
         [Authorize(Roles = "Admin,Staff")]
         [OutputCache(PolicyName = "payments")]
@@ -89,6 +98,7 @@ namespace GymSystem.Api.Controllers
             return Ok(payments);
         }
 
+        // GET api/payment/{id} — Get a single payment by ID.
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,Staff")]
         [OutputCache(PolicyName = "payments")]
@@ -112,6 +122,7 @@ namespace GymSystem.Api.Controllers
         // To correct a mistake: DELETE the incorrect payment, then create
         // a new one through the validated Pay endpoint.
 
+        // DELETE api/payment/{id} — Delete a payment record (Admin only).
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
@@ -127,6 +138,7 @@ namespace GymSystem.Api.Controllers
             return NoContent();
         }
 
+        // GET api/payment/my — A member views their own payment history.
         // GetMy is intentionally not cached — the "payments" policy has no
         // user-aware vary strategy, so caching here would serve one member's
         // payment history to another. Same reasoning as BookingController.GetMy.
@@ -151,6 +163,7 @@ namespace GymSystem.Api.Controllers
             return Ok(payments);
         }
 
+        // POST api/payment/my — A member makes a payment for their own subscription.
         [HttpPost("my")]
         [Authorize(Roles = "Member")]
         [EnableRateLimiting("payment")]
@@ -162,6 +175,10 @@ namespace GymSystem.Api.Controllers
 
         // --- Shared logic ---
 
+        // Core payment logic shared by both admin and member endpoints.
+        // Validates the user, subscription, and amount. If the subscription is
+        // already active, a new "queued" subscription is created for the next month.
+        // If pending, the subscription is activated immediately.
         private async Task<IActionResult> ProcessPaymentAsync(string userId, int subId, decimal amount)
         {
             var user = await _userManager.FindByIdAsync(userId);

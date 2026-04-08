@@ -1,4 +1,11 @@
-﻿using GymSystem.Api.Data;
+﻿// ============================================================
+// AutoCheckoutService.cs — Background service that automatically
+// checks out members who forgot to scan out. Runs every 60 minutes
+// and closes any attendance sessions older than 4 hours.
+// This prevents "stuck" check-ins from appearing indefinitely.
+// ============================================================
+
+using GymSystem.Api.Data;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,11 +13,11 @@ namespace GymSystem.Api.Services;
 
 public class AutoCheckoutService : BackgroundService
 {
-    private readonly IServiceScopeFactory _scopeFactory;
-    private readonly ILogger<AutoCheckoutService> _logger;
-    private readonly IOutputCacheStore _outputCache;
-    private readonly TimeSpan _checkInterval = TimeSpan.FromMinutes(60);
-    private readonly TimeSpan _maxSessionDuration = TimeSpan.FromHours(4);
+    private readonly IServiceScopeFactory _scopeFactory;           // Creates DI scopes for database access
+    private readonly ILogger<AutoCheckoutService> _logger;         // Writes log messages
+    private readonly IOutputCacheStore _outputCache;               // Clears cached attendance responses
+    private readonly TimeSpan _checkInterval = TimeSpan.FromMinutes(60);  // Run every 60 minutes
+    private readonly TimeSpan _maxSessionDuration = TimeSpan.FromHours(4); // Max 4 hours per visit
 
     public AutoCheckoutService(
         IServiceScopeFactory scopeFactory,
@@ -22,6 +29,7 @@ public class AutoCheckoutService : BackgroundService
         _outputCache = outputCache;
     }
 
+    // Runs in a loop for the lifetime of the application.
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("AutoCheckoutService started.");
@@ -41,6 +49,8 @@ public class AutoCheckoutService : BackgroundService
         }
     }
 
+    // Finds attendance records that have been "checked in" for longer
+    // than the max duration and automatically checks them out.
     private async Task ProcessStaleCheckInsAsync(CancellationToken ct)
     {
         using var scope = _scopeFactory.CreateScope();

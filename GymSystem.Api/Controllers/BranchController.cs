@@ -1,4 +1,9 @@
-﻿using GymSystem.Api.Data;
+﻿// ============================================================
+// BranchController.cs — CRUD endpoints for gym branches (locations).
+// Admin/Staff can view branches; Admin can create, update, delete.
+// ============================================================
+
+using GymSystem.Api.Data;
 using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
@@ -23,6 +28,7 @@ public class BranchController : ControllerBase
         _outputCache = outputCache;
     }
 
+    // GET api/branch — List all branches with search, sorting, and pagination.
     [HttpGet]
     [OutputCache(PolicyName = "branches")]
     public async Task<IActionResult> GetAll([FromQuery] BranchSearchRequest request)
@@ -65,6 +71,7 @@ public class BranchController : ControllerBase
         return Ok(result);
     }
 
+    // GET api/branch/{id} — Get a single branch by ID.
     [HttpGet("{id}")]
     [OutputCache(PolicyName = "branches")]
     public async Task<IActionResult> Get(int id)
@@ -83,6 +90,7 @@ public class BranchController : ControllerBase
         });
     }
 
+    // POST api/branch — Create a new gym branch (Admin only).
     [HttpPost]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] AddBranchRequest request)
@@ -115,6 +123,7 @@ public class BranchController : ControllerBase
         });
     }
 
+    // DELETE api/branch/{id} — Delete a gym branch (Admin only).
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
@@ -132,6 +141,7 @@ public class BranchController : ControllerBase
         return NoContent();
     }
 
+    // PUT api/branch/{id} — Update a branch's details (Admin only).
     [HttpPut("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateBranchRequest request)
@@ -159,6 +169,7 @@ public class BranchController : ControllerBase
         });
     }
 
+    // GET api/branch/total — Returns the total number of branches.
     [HttpGet("total")]
     [OutputCache(PolicyName = "branches")]
     public async Task<IActionResult> GetTotalBranches()

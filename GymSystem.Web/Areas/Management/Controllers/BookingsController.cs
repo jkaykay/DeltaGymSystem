@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
+// Management controller for session bookings.
+// A booking reserves a spot for a member in a session.
+// Staff can view, create, and cancel bookings on behalf of members.
 [Area("Management")]
 [Authorize(Roles = "Admin,Staff")]
 public class BookingsController : Controller

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using GymSystem.Web.Areas.Member.ViewModels;
 using GymSystem.Web.Services;
 using GymSystem.Shared.DTOs;
@@ -7,6 +7,10 @@ using System.Security.Claims;
 
 namespace GymSystem.Web.Areas.Member.Controllers;
 
+// The member’s personal dashboard.
+// Shows a summary (upcoming bookings, recent attendance, payment history)
+// and provides sub-pages for full attendance history, booking history, and payment history.
+// Requires the Member role.
 [Authorize(Roles = "Member")]
 [Area("Member")]
 public class DashboardController : Controller
