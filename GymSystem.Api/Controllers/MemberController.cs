@@ -1,4 +1,10 @@
-﻿using GymSystem.Api.Data;
+﻿// ============================================================
+// MemberController.cs — CRUD endpoints for gym members.
+// Admin/Staff can list, create, update, and delete members.
+// Members can view and update their own profile.
+// ============================================================
+
+using GymSystem.Api.Data;
 using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
@@ -13,12 +19,12 @@ namespace GymSystem.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+[Authorize]  // All endpoints require authentication by default
 public class MemberController : ControllerBase
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly GymDbContext _context;
-    private readonly IOutputCacheStore _outputCache;
+    private readonly UserManager<ApplicationUser> _userManager;  // Manages user accounts
+    private readonly GymDbContext _context;                      // Database context
+    private readonly IOutputCacheStore _outputCache;             // Invalidates cached responses
 
     public MemberController(UserManager<ApplicationUser> userManager, GymDbContext context, IOutputCacheStore outputCache)
     {
@@ -27,6 +33,8 @@ public class MemberController : ControllerBase
         _outputCache = outputCache;
     }
 
+    // Helper: builds a query that returns only users in the "Member" role.
+    // Uses a join between UserRoles and Roles tables to filter.
     private IQueryable<ApplicationUser> MembersQuery()
     {
         return _context.Users
@@ -38,9 +46,11 @@ public class MemberController : ControllerBase
                 .Any(x => x.UserId == u.Id && x.Name == "Member"));
     }
 
+    // GET api/member — List all members with search, filtering, sorting, and pagination.
+    // Only Admin and Staff can access this endpoint.
     [HttpGet]
     [Authorize(Roles = "Admin,Staff")]
-    [OutputCache(PolicyName = "members")]
+    [OutputCache(PolicyName = "members")]  // Cache the response for 30 seconds
     public async Task<IActionResult> GetAll([FromQuery] MemberSearchRequest request)
     {
         var query = MembersQuery();
@@ -87,6 +97,7 @@ public class MemberController : ControllerBase
         return Ok(result);
     }
 
+    // GET api/member/total — Returns the total count of members (for dashboard stats).
     [HttpGet("total")]
     [Authorize(Roles = "Admin,Staff")]
     [OutputCache(PolicyName = "members")]
@@ -96,6 +107,7 @@ public class MemberController : ControllerBase
         return Ok(new CountResponse { Count = count });
     }
 
+    // GET api/member/recents — Returns the 5 most recently joined members.
     [HttpGet("recents")]
     [Authorize(Roles = "Admin,Staff")]
     [OutputCache(PolicyName = "members")]
@@ -120,6 +132,8 @@ public class MemberController : ControllerBase
         return Ok(result);
     }
 
+    // POST api/member — Admin/Staff creates a new member account.
+    // The member starts as inactive until they get a subscription.
     [HttpPost]
     [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Create([FromBody] CreateMemberRequest request)
@@ -166,6 +180,8 @@ public class MemberController : ControllerBase
         });
     }
 
+    // GET api/member/{id} — Get a single member's profile.
+    // Admin/Staff can view anyone; members can only view themselves.
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(string id)
     {
@@ -193,6 +209,9 @@ public class MemberController : ControllerBase
         });
     }
 
+    // PUT api/member/{id} — Update a member's profile.
+    // Admin/Staff can update anyone; members can update themselves
+    // (but only Admin/Staff can change the Active status).
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, [FromBody] UpdateMemberRequest request)
     {
@@ -234,6 +253,7 @@ public class MemberController : ControllerBase
         return NoContent();
     }
 
+    // DELETE api/member/{id} — Permanently delete a member (Admin only).
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(string id)
@@ -255,6 +275,7 @@ public class MemberController : ControllerBase
         return NoContent();
     }
 
+    // Applies dynamic sorting based on query parameters.
     private static IQueryable<ApplicationUser> ApplySorting(
         IQueryable<ApplicationUser> query, string? sortBy, string? sortDir)
     {
@@ -271,9 +292,11 @@ public class MemberController : ControllerBase
         };
     }
 
+    // Checks if the current user is requesting their own data.
     private bool IsSelf(string id) =>
         User.FindFirstValue(ClaimTypes.NameIdentifier) == id;
 
+    // Checks if the current user is an Admin or Staff member.
     private bool IsAdminOrStaff() =>
         User.IsInRole("Admin") || User.IsInRole("Staff");
 }

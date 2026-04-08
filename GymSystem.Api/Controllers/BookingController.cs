@@ -1,4 +1,10 @@
-﻿using GymSystem.Api.Data;
+﻿// ============================================================
+// BookingController.cs — Manages session bookings (reservations).
+// Admin/Staff can manage all bookings; Members can book and
+// cancel their own sessions via the "my" endpoints.
+// ============================================================
+
+using GymSystem.Api.Data;
 using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
@@ -31,6 +37,7 @@ namespace GymSystem.Api.Controllers
 
         // --- Admin/Staff endpoints ---
 
+        // GET api/booking — List all bookings with search, sorting, and pagination.
         [HttpGet]
         [Authorize(Roles = "Admin,Staff")]
         [OutputCache(PolicyName = "bookings")]
@@ -81,6 +88,7 @@ namespace GymSystem.Api.Controllers
             return Ok(result);
         }
 
+        // GET api/booking/{id} — Get a single booking by ID.
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,Staff")]
         [OutputCache(PolicyName = "bookings")]
@@ -108,6 +116,7 @@ namespace GymSystem.Api.Controllers
             return Ok(result);
         }
 
+        // GET api/booking/user/{userId} — Get all bookings for a specific user.
         [HttpGet("user/{userId}")]
         [Authorize(Roles = "Admin,Staff")]  // Restricted — members use GET my instead
         [OutputCache(PolicyName = "bookings")]
@@ -136,6 +145,7 @@ namespace GymSystem.Api.Controllers
             return Ok(result);
         }
 
+        // POST api/booking — Admin/Staff books a session on behalf of a user.
         [HttpPost]
         [Authorize(Roles = "Admin,Staff")]  // Admin/Staff book on behalf of a user
         public async Task<IActionResult> Create([FromBody] AddBookingRequest request)
@@ -143,6 +153,7 @@ namespace GymSystem.Api.Controllers
             return await ProcessBookingAsync(request.UserId, request.SessionId);
         }
 
+        // DELETE api/booking/{id} — Admin/Staff deletes any booking.
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin,Staff")]  // Admin/Staff can delete any booking
         public async Task<IActionResult> Delete(int id)
@@ -159,6 +170,7 @@ namespace GymSystem.Api.Controllers
             return NoContent();
         }
 
+        // GET api/booking/total — Returns the total number of bookings.
         [HttpGet("total")]
         [Authorize(Roles = "Admin,Staff")]
         [OutputCache(PolicyName = "bookings")]
@@ -170,6 +182,7 @@ namespace GymSystem.Api.Controllers
 
         // --- Member self-service endpoints ---
 
+        // GET api/booking/my — A member views their own bookings.
         [HttpGet("my")]
         [Authorize(Roles = "Member")]
         public async Task<IActionResult> GetMy([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null)
@@ -204,6 +217,8 @@ namespace GymSystem.Api.Controllers
             return Ok(result);
         }
 
+        // POST api/booking/my — A member books a session for themselves.
+        // Rate-limited to prevent spam. UserId is taken from the JWT token.
         [HttpPost("my")]
         [Authorize(Roles = "Member")]  // UserId comes from claims — members can only book for themselves
         [EnableRateLimiting("booking")]
@@ -213,6 +228,7 @@ namespace GymSystem.Api.Controllers
             return await ProcessBookingAsync(userId, request.SessionId);
         }
 
+        // DELETE api/booking/my/{id} — A member cancels their own booking.
         [HttpDelete("my/{id}")]
         [Authorize(Roles = "Member")]
         [EnableRateLimiting("booking")]
@@ -238,6 +254,8 @@ namespace GymSystem.Api.Controllers
 
         // --- Shared logic ---
 
+        // Shared booking creation logic used by both admin and member endpoints.
+        // Validates the user, session, capacity, and duplicate booking rules.
         private async Task<IActionResult> ProcessBookingAsync(string userId, int sessionId)
         {
             var user = await _userManager.FindByIdAsync(userId);

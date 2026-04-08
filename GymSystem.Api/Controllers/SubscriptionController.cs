@@ -1,4 +1,11 @@
-﻿using GymSystem.Api.Data;
+﻿// ============================================================
+// SubscriptionController.cs — Manages member subscriptions.
+// Subscriptions link a member to a membership tier (e.g. Gold).
+// They start as "Pending" and become "Active" after payment.
+// Admin/Staff manage all subscriptions; members use "my" endpoints.
+// ============================================================
+
+using GymSystem.Api.Data;
 using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
@@ -28,6 +35,7 @@ public class SubscriptionController : ControllerBase
         _outputCache = outputCache;
     }
 
+    // GET api/subscription — List all subscriptions with search, filters, and pagination.
     [HttpGet]
     [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> GetAll([FromQuery] SubscriptionSearchRequest request)
@@ -82,6 +90,7 @@ public class SubscriptionController : ControllerBase
         return Ok(result);
     }
 
+    // GET api/subscription/{id} — Get a single subscription by ID.
 
     [HttpGet("{id}")]
     [Authorize(Roles = "Admin,Staff")]
@@ -163,6 +172,7 @@ public class SubscriptionController : ControllerBase
         });
     }
 
+    // PUT api/subscription/{id} — Update a subscription's tier, state, or dates.
     [HttpPut("{id}")]
     [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Edit(int id, [FromBody] UpdateSubscriptionRequest request)
@@ -194,6 +204,7 @@ public class SubscriptionController : ControllerBase
         return NoContent();
     }
 
+    // DELETE api/subscription/{id} — Delete a subscription.
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Delete(int id)
@@ -212,6 +223,7 @@ public class SubscriptionController : ControllerBase
         return NoContent();
     }
 
+    // GET api/subscription/my — A member views their own subscriptions.
     [HttpGet("my")]
     [Authorize(Roles = "Member")]
     public async Task<IActionResult> GetMy([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
@@ -235,6 +247,8 @@ public class SubscriptionController : ControllerBase
         return Ok(subscriptions);
     }
 
+    // POST api/subscription/my — A member creates a pending subscription for themselves.
+    // It stays "Pending" until a payment is made via the PaymentController.
     [HttpPost("my")]
     [Authorize(Roles = "Member")]
     public async Task<IActionResult> CreateMy([FromBody] AddMySubscriptionRequest request)

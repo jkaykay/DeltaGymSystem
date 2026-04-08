@@ -1,4 +1,10 @@
-﻿using GymSystem.Api.Data;
+﻿// ============================================================
+// TierController.cs — CRUD endpoints for membership tiers.
+// Tiers define pricing levels (e.g. "Gold" at £49.99/month).
+// Public users can view tiers; Admin can create, update, delete.
+// ============================================================
+
+using GymSystem.Api.Data;
 using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
@@ -11,7 +17,7 @@ namespace GymSystem.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin")]  // Most endpoints are Admin-only
 public class TierController : ControllerBase
 {
     private readonly GymDbContext _context;
@@ -23,6 +29,7 @@ public class TierController : ControllerBase
         _outputCache = outputCache;
     }
 
+    // GET api/tier — List all tiers (public — no login required).
     [HttpGet]
     [AllowAnonymous]
     [OutputCache(PolicyName = "tiers")]
@@ -57,6 +64,7 @@ public class TierController : ControllerBase
         return Ok(result);
     }
 
+    // GET api/tier/{tierName} — Get a single tier by name.
     [HttpGet("{tierName}")]
     [OutputCache(PolicyName = "tiers")]
     public async Task<IActionResult> Get(string tierName)
@@ -75,6 +83,7 @@ public class TierController : ControllerBase
         return Ok(result);
     }
 
+    // DELETE api/tier/{tierName} — Delete a tier.
     [HttpDelete("{tierName}")]
     public async Task<IActionResult> Delete(string tierName)
     {
@@ -91,6 +100,7 @@ public class TierController : ControllerBase
         return NoContent();
     }
 
+    // POST api/tier — Create a new membership tier.
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] AddTierRequest request)
     {
@@ -117,6 +127,7 @@ public class TierController : ControllerBase
         });
     }
 
+    // PUT api/tier/{tierName} — Update a tier's price.
     [HttpPut("{tierName}")]
     public async Task<IActionResult> Update(string tierName, [FromBody] UpdateTierRequest request)
     {

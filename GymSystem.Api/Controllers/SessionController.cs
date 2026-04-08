@@ -1,4 +1,11 @@
-﻿using GymSystem.Api.Data;
+﻿// ============================================================
+// SessionController.cs — CRUD endpoints for class sessions.
+// A session is a specific occurrence of a class in a room at a time.
+// Public users can view sessions; authorized users can manage them.
+// Sessions enforce room and class conflict detection.
+// ============================================================
+
+using GymSystem.Api.Data;
 using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
@@ -16,12 +23,14 @@ namespace GymSystem.Api.Controllers
     {
         private readonly GymDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+
         public SessionController(GymDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
         }
 
+        // GET api/session — List all sessions (public) with search, filters, and pagination.
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> GetAll([FromQuery] SessionSearchRequest request)
@@ -82,6 +91,7 @@ namespace GymSystem.Api.Controllers
             return Ok(result);
         }
 
+        // GET api/session/{id} — Get a single session by ID.
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -111,6 +121,7 @@ namespace GymSystem.Api.Controllers
             return Ok(result);
         }
 
+        // GET api/session/{id}/bookings — Get all bookings for a specific session.
         [HttpGet("{id}/bookings")]
         public async Task<IActionResult> GetBookings(int id)
         {
@@ -137,6 +148,8 @@ namespace GymSystem.Api.Controllers
             return Ok(bookings);
         }
 
+        // POST api/session — Create a new session.
+        // Validates that the room and class are not double-booked.
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AddSessionRequest request)
         {
@@ -210,6 +223,7 @@ namespace GymSystem.Api.Controllers
             });
         }
 
+        // DELETE api/session/{id} — Delete a session.
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -226,6 +240,7 @@ namespace GymSystem.Api.Controllers
             return NoContent();
         }
 
+        // PUT api/session/{id} — Update a session's time, room, or capacity.
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateSessionRequest request)
         {
@@ -319,6 +334,7 @@ namespace GymSystem.Api.Controllers
             });
         }
 
+        // GET api/session/total — Returns the total number of sessions.
         [HttpGet("total")]
         public async Task<IActionResult> GetTotalSessions()
         {

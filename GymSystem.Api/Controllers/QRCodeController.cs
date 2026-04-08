@@ -1,4 +1,11 @@
-﻿using System.Security.Claims;
+﻿// ============================================================
+// QRCodeController.cs — QR code generation and scanning endpoints.
+// Members get a time-limited QR code; staff scan it to check
+// the member in or out. The QR token is HMAC-signed to prevent
+// tampering and cached to avoid regenerating on every request.
+// ============================================================
+
+using System.Security.Claims;
 using GymSystem.Api.Data;
 using GymSystem.Api.Models;
 using GymSystem.Api.Services;
@@ -18,11 +25,11 @@ namespace GymSystem.Api.Controllers;
 [Route("api/[controller]")]
 public class QRCodeController : ControllerBase
 {
-    private readonly IQRTokenService _qrTokenService;
-    private readonly GymDbContext _context;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IMemoryCache _memoryCache;
-    private readonly IOutputCacheStore _outputCache;
+    private readonly IQRTokenService _qrTokenService;          // Generates/validates QR tokens
+    private readonly GymDbContext _context;                     // Database context
+    private readonly UserManager<ApplicationUser> _userManager; // Manages user lookups
+    private readonly IMemoryCache _memoryCache;                // Caches generated QR images
+    private readonly IOutputCacheStore _outputCache;           // Invalidates attendance cache
 
     public QRCodeController(
         IQRTokenService qrTokenService,
@@ -38,6 +45,9 @@ public class QRCodeController : ControllerBase
         _outputCache = outputCache;
     }
 
+    // GET api/qrcode/generate/{memberId} — Generate a QR code for a member.
+    // Members can only generate their own; Staff/Admin can generate for anyone.
+    // The QR code is cached until its token expires.
     [Authorize]
     [HttpGet("generate/{memberId}")]
     [EnableRateLimiting("qr")]
@@ -81,6 +91,8 @@ public class QRCodeController : ControllerBase
         return Ok(new QRCodeResponse(qrBase64, result.ExpiresAt));
     }
 
+    // POST api/qrcode/scan — Staff scans a member's QR code.
+    // Automatically checks them in (if not already in) or out (if already in).
     /// Staff scans a member's QR code — automatically checks them in or out.
     [Authorize(Roles = "Staff,Admin")]
     [HttpPost("scan")]
@@ -140,6 +152,7 @@ public class QRCodeController : ControllerBase
             CheckIn: attendance.CheckIn, CheckOut: null));
     }
 
+    // Renders the token string into a QR code PNG image and returns it as Base64.
     private static string RenderQrCodeBase64(string content)
     {
         using var generator = new QRCodeGenerator();
