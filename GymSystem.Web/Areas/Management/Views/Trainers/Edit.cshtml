@@ -41,7 +41,10 @@
 
             <div class="form-group">
                 <label asp-for="PhoneNumber"></label>
-                <input asp-for="PhoneNumber" class="form-control" type="tel" placeholder="e.g. +44 7911 123456" />
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <span style="font-weight:600;white-space:nowrap;">+44</span>
+                    <input asp-for="PhoneNumber" class="form-control" type="tel" placeholder="7911123456" />
+                </div>
                 <span asp-validation-for="PhoneNumber" class="field-validation-error"></span>
             </div>
 

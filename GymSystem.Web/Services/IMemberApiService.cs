@@ -32,6 +32,7 @@ public interface IMemberApiService
 
     // Public data (anonymous-safe)
     Task<List<TierDTO>> GetAllTiersAsync();
+    Task<List<UserDTO>> GetRandomTrainersAsync(int count = 3);
     Task<PagedResult<ClassDTO>> GetClassesAsync(int page = 1, int pageSize = 100);
     Task<PagedResult<SessionDTO>> GetSessionsAsync(int page = 1, int pageSize = 100);
 

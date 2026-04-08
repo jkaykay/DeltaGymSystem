@@ -132,6 +132,7 @@ namespace GymSystem.Api.Controllers
                 EmployeeId = user.EmployeeId,
                 BranchId = user.BranchId,
                 Active = user.Active,
+                PhoneNumber = user.PhoneNumber,
                 Roles = [.. roles]
             });
         }
