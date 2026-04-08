@@ -838,11 +838,28 @@ namespace GymSystem.Web.Services
                 model.SessionId,
                 model.UserId
             });
-            if (response.IsSuccessStatusCode)
-                return (true, null);
+            if (!response.IsSuccessStatusCode)
+            {
+                string? message = null;
+                try
+                {
+                    var errorBody = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                    errorBody?.TryGetValue("message", out message);
+                }
+                catch { }
 
-            var error = await response.Content.ReadAsStringAsync();
-            return (false, error);
+                if (string.IsNullOrWhiteSpace(message))
+                {
+                    var rawError = await response.Content.ReadAsStringAsync();
+                    message = rawError.Trim().Trim('"');
+                }
+
+                return (false, string.IsNullOrWhiteSpace(message)
+                    ? "Failed to create booking. The session may be full or the member may already be booked."
+                    : message);
+            }
+
+            return (true, null);
         }
 
         public async Task<bool> DeleteBookingAsync(int id)

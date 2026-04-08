@@ -18,7 +18,7 @@
           <a asp-area="" asp-controller="Classes" asp-action="Index" class="btn-outline">Browse Classes</a>
         </div>
       </div>
-      <p class="hero-sub">World-class facilities, expert trainers, and a community<br>that pushes you to be your best every single day.</p>
+      <p class="hero-sub">World class facilities, expert trainers, and a community<br>that pushes you to be your best every single day.</p>
     </div>
   </section>
 
@@ -44,7 +44,7 @@
               <div class="card-trainer">@session.InstructorName</div>
               <div class="card-meta">
                 <span>@duration min</span>
-                <span class="spots"><span class="smiley">😊</span> @session.BookingCount/@session.MaxCapacity</span>
+                <span class="spots"><span class="smiley"><i class="bi bi-emoji-smile"></i></span> @session.BookingCount/@session.MaxCapacity</span>
               </div>
             </div>
             <a asp-area="Member" asp-controller="Booking" asp-action="Index" class="card-footer">JOIN CLASS</a>
@@ -121,7 +121,7 @@
       }
       else
       {
-        <p>Membership plans coming soon.</p>
+        <p>Membership plans coming soon , stay tuned champ!</p>
       }
     </div>
   </section>
