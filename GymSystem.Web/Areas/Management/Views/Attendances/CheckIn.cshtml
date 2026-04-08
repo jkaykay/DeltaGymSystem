@@ -1,9 +1,7 @@
 ﻿@model CheckInViewModel
-@using GymSystem.Shared.DTOs
 
 @{
     ViewData["Title"] = "Check In Member";
-    var members = ViewBag.Members as List<UserDTO> ?? new List<UserDTO>();
 }
 
 <div class="page-header">
@@ -23,7 +21,7 @@
                 <label asp-for="UserId"></label>
                 <select asp-for="UserId" class="form-control">
                     <option value="">— Select a Member —</option>
-                    @foreach (var member in members)
+                    @foreach (var member in Model.Members)
                     {
                         <option value="@member.Id">@member.FirstName @member.LastName (@member.Email)</option>
                     }

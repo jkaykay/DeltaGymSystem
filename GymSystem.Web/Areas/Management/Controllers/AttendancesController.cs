@@ -52,8 +52,11 @@ public class AttendancesController : Controller
     [HttpGet]
     public async Task<IActionResult> CheckIn()
     {
-        ViewBag.Members = await _api.GetAllMembersAsync();
-        return View(new CheckInViewModel());
+        var model = new CheckInViewModel
+        {
+            Members = await _api.GetAllMembersAsync()
+        };
+        return View(model);
     }
 
     [HttpPost]
@@ -62,7 +65,7 @@ public class AttendancesController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.Members = await _api.GetAllMembersAsync();
+            model.Members = await _api.GetAllMembersAsync();
             return View(model);
         }
 
@@ -71,7 +74,7 @@ public class AttendancesController : Controller
         if (!success)
         {
             ModelState.AddModelError(string.Empty, "Failed to check in member. They may already have an active session or their account is inactive.");
-            ViewBag.Members = await _api.GetAllMembersAsync();
+            model.Members = await _api.GetAllMembersAsync();
             return View(model);
         }
 

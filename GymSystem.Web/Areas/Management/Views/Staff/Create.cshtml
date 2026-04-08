@@ -61,7 +61,7 @@
                 <label asp-for="BranchId"></label>
                 <select asp-for="BranchId" class="form-control">
                     <option value="">Select branch</option>
-                    @foreach (var branch in ViewBag.Branches)
+                    @foreach (var branch in Model.Branches)
                     {
                         <option value="@branch.BranchId">@branch.City — @branch.Address</option>
                     }
