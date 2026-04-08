@@ -70,11 +70,11 @@ public class PaymentsController : Controller
             return View(model);
         }
 
-        var success = await _api.CreatePaymentAsync(model);
+        var (success, error) = await _api.CreatePaymentAsync(model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to record payment. Ensure the amount matches the tier price exactly.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to record payment. Ensure the amount matches the tier price exactly.");
             var allSubscriptions = await _api.GetAllSubscriptionsAsync();
             ViewBag.PendingSubscriptions = allSubscriptions
                 .Where(s => s.State == SubscriptionState.Pending)
