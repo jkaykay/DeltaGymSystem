@@ -1,10 +1,14 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using GymSystem.Web.Areas.Member.ViewModels;
 using GymSystem.Shared.DTOs;
 using GymSystem.Web.Services;
 
 namespace GymSystem.Web.Areas.Member.Controllers
 {
+    // Handles new member self-registration.
+    // GET shows the registration form; POST validates the form data,
+    // maps it to a DTO, and calls the backend auth/register API.
+    // On success, the user is redirected to the login page.
     [Area("Member")]
     public class RegisterController : Controller
     {

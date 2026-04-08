@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using GymSystem.Shared.DTOs;
 
 namespace GymSystem.Web.Areas.Management.ViewModels
 {
@@ -11,5 +12,8 @@ namespace GymSystem.Web.Areas.Management.ViewModels
         [Required]
         [Display(Name = "Session")]
         public int SessionId { get; set; }
+
+        public List<UserDTO> Members { get; set; } = [];
+        public List<SessionDTO> Sessions { get; set; } = [];
     }
 }

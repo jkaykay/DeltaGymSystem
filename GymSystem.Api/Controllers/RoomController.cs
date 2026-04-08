@@ -1,4 +1,10 @@
-﻿using GymSystem.Api.Data;
+﻿// ============================================================
+// RoomController.cs — CRUD endpoints for gym rooms.
+// Rooms belong to branches and host sessions. Admin can create,
+// update, and delete rooms; Staff and Trainers can view them.
+// ============================================================
+
+using GymSystem.Api.Data;
 using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
@@ -23,6 +29,7 @@ namespace GymSystem.Api.Controllers
             _outputCache = outputCache;
         }
 
+        // GET api/room — List all rooms with optional branch/number filters and pagination.
         [HttpGet]
         [OutputCache(PolicyName = "rooms")]
         public async Task<IActionResult> GetAll([FromQuery] RoomSearchRequest request)
@@ -61,6 +68,7 @@ namespace GymSystem.Api.Controllers
             return Ok(result);
         }
 
+        // GET api/room/{id} — Get a single room by ID.
         [HttpGet("{id}")]
         [OutputCache(PolicyName = "rooms")]
         public async Task<IActionResult> Get(int id)
@@ -83,6 +91,8 @@ namespace GymSystem.Api.Controllers
             return Ok(result);
         }
 
+        // POST api/room — Create a new room in a branch (Admin only).
+        // Room numbers must be unique within a branch.
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] AddRoomRequest roomRequest)
@@ -124,6 +134,7 @@ namespace GymSystem.Api.Controllers
             });
         }
 
+        // PUT api/room/{id} — Update room details (Admin only).
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateRoomRequest roomRequest)
@@ -178,6 +189,7 @@ namespace GymSystem.Api.Controllers
             });
         }
 
+        // DELETE api/room/{id} — Delete a room (Admin only).
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
@@ -194,6 +206,7 @@ namespace GymSystem.Api.Controllers
             return NoContent();
         }
 
+        // GET api/room/total — Returns the total number of rooms.
         [HttpGet("total")]
         [OutputCache(PolicyName = "rooms")]
         public async Task<IActionResult> GetTotal()

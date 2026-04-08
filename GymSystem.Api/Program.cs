@@ -1,3 +1,9 @@
+// ============================================================
+// Program.cs — Application entry point and configuration.
+// This file sets up all services (dependency injection),
+// middleware (the request pipeline), and starts the web server.
+// ============================================================
+
 using GymSystem.Api.Data;
 using GymSystem.Api.Models;
 using GymSystem.Api.Services;
@@ -11,11 +17,19 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.RateLimiting;
 
+// Create the web application builder — this is where we configure
+// all services before the app is built and started.
 var builder = WebApplication.CreateBuilder(args);
 
+// --- Database Configuration ---
+// Read the database connection string from appsettings.json.
+// If it's missing, the app throws an error immediately on startup.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
+// Register the Entity Framework database context with connection pooling.
+// EnableRetryOnFailure makes the app automatically retry if the SQL Server
+// connection drops temporarily (up to 5 times, waiting up to 30 seconds).
 builder.Services.AddDbContextPool<GymDbContext>(options =>
     options.UseSqlServer(
         connectionString,
@@ -24,6 +38,10 @@ builder.Services.AddDbContextPool<GymDbContext>(options =>
             maxRetryDelay: TimeSpan.FromSeconds(30),
             errorNumbersToAdd: null)));
 
+// --- ASP.NET Identity Configuration ---
+// Identity handles user accounts, passwords, and roles.
+// Here we set password rules (must contain uppercase, lowercase, digit, symbol)
+// and restrict which characters are allowed in usernames.
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = true;
@@ -36,21 +54,29 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._";
     options.User.RequireUniqueEmail = true;
 })
+// Store user data in the database via Entity Framework
 .AddEntityFrameworkStores<GymDbContext>()
+// Add default token providers for password resets, email confirmation, etc.
 .AddDefaultTokenProviders();
 
-builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddHostedService<SubscriptionExpiryService>();
-builder.Services.AddHostedService<AutoCheckoutService>();
-builder.Services.AddScoped<IQRTokenService, QRTokenService>();
+// --- Custom Service Registration (Dependency Injection) ---
+// "Scoped" means a new instance is created per HTTP request.
+// "HostedService" means a background task that runs continuously.
+builder.Services.AddScoped<ITokenService, TokenService>();           // Generates JWT tokens for login
+builder.Services.AddHostedService<SubscriptionExpiryService>();      // Background job: expires old subscriptions
+builder.Services.AddHostedService<AutoCheckoutService>();            // Background job: auto-checks out members who forgot
+builder.Services.AddScoped<IQRTokenService, QRTokenService>();      // Generates and validates QR code tokens
 
 // Singleton — shares the same IMemoryCache instance already registered below
 builder.Services.AddSingleton<ITokenRevocationService, TokenRevocationService>();
 
-// JWT authentication
+// --- JWT (JSON Web Token) Authentication ---
+// JWT is a stateless way to authenticate API requests.
+// The client sends a token in the "Authorization" header; the server validates it.
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("Jwt:Key not found in configuration.");
 
+// Tell ASP.NET Core to use JWT Bearer as the default authentication method.
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -58,6 +84,9 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
+    // These rules define what makes a token valid:
+    // - It must come from our issuer, be intended for our audience,
+    //   not be expired, and be signed with our secret key.
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
@@ -68,6 +97,8 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
     };
+    // After a token passes validation, check if it was revoked (e.g. user logged out).
+    // This lets us invalidate tokens before they naturally expire.
     options.Events = new JwtBearerEvents
     {
         OnTokenValidated = ctx =>
@@ -111,6 +142,10 @@ builder.Services.AddCors(options =>
 });
 
 // --- Caching ---
+// MemoryCache stores data in RAM (used by token revocation and QR codes).
+// OutputCache caches entire HTTP responses so repeated requests are served
+// faster without hitting the database again. Each policy below defines
+// how long a particular type of response is cached.
 builder.Services.AddMemoryCache();
 builder.Services.AddOutputCache(options =>
 {
@@ -168,15 +203,23 @@ builder.Services.AddOutputCache(options =>
         .Tag("subscriptions"));
 });
 
+// Register MVC controllers (our API endpoints live in Controller classes).
 builder.Services.AddControllers();
+// Enable the OpenAPI (Swagger) endpoint for API documentation.
 builder.Services.AddOpenApi();
+// Register a typed HttpClient for the OpenRouter LLM service.
+// AddHttpClient automatically manages the underlying HTTP connections.
 builder.Services.AddHttpClient<IOpenRouterService, OpenRouterService>();
 
 // --- Rate Limiting ---
+// Rate limiting prevents clients from making too many requests in a short time.
+// Each "limiter" below uses a fixed window: e.g. "llm" allows 5 requests per minute.
+// If the limit is exceeded, the server responds with HTTP 429 (Too Many Requests).
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
+    // LLM chatbot: 5 requests per minute (AI calls are expensive)
     options.AddFixedWindowLimiter("llm", limiter =>
     {
         limiter.PermitLimit = 5;
@@ -185,6 +228,7 @@ builder.Services.AddRateLimiter(options =>
         limiter.QueueLimit = 0;
     });
 
+    // Authentication (login/register): 10 requests per minute
     options.AddFixedWindowLimiter("auth", limiter =>
     {
         limiter.PermitLimit = 10;
@@ -193,6 +237,7 @@ builder.Services.AddRateLimiter(options =>
         limiter.QueueLimit = 0;
     });
 
+    // Booking endpoints: 10 requests per minute
     options.AddFixedWindowLimiter("booking", limiter =>
     {
         limiter.PermitLimit = 10;
@@ -201,6 +246,7 @@ builder.Services.AddRateLimiter(options =>
         limiter.QueueLimit = 0;
     });
 
+    // Payment endpoints: 5 requests per minute
     options.AddFixedWindowLimiter("payment", limiter =>
     {
         limiter.PermitLimit = 5;
@@ -209,6 +255,7 @@ builder.Services.AddRateLimiter(options =>
         limiter.QueueLimit = 0;
     });
 
+    // QR code endpoints: 15 requests per minute
     options.AddFixedWindowLimiter("qr", limiter =>
     {
         limiter.PermitLimit = 15;
@@ -218,21 +265,29 @@ builder.Services.AddRateLimiter(options =>
     });
 });
 
+// Build the application — all services are now registered and locked in.
 var app = builder.Build();
 
+// Seed the database with default roles (Admin, Staff, Trainer, Member)
+// and create the initial admin account if one doesn't already exist.
 await GymSystem.Api.Data.SeedData.EnsureRolesAndAdminAsync(app.Services);
 
+// In development mode, expose the OpenAPI (Swagger) documentation endpoint.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
-app.UseCors();
-app.UseRateLimiter();
-app.UseAuthentication();
-app.UseAuthorization();
-app.UseOutputCache();
-app.MapControllers();
+// --- Middleware Pipeline ---
+// Middleware runs in order for every HTTP request.
+// The order matters — e.g. authentication must come before authorization.
+app.UseHttpsRedirection();   // Redirect HTTP requests to HTTPS
+app.UseCors();               // Apply Cross-Origin Resource Sharing rules
+app.UseRateLimiter();        // Enforce request rate limits
+app.UseAuthentication();     // Identify who the user is (via JWT token)
+app.UseAuthorization();      // Check if the user has permission for the endpoint
+app.UseOutputCache();        // Serve cached responses when available
+app.MapControllers();        // Map controller routes (e.g. api/auth, api/member)
 
+// Start the web server and begin listening for requests.
 app.Run();

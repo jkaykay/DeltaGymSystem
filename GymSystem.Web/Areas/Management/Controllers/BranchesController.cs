@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
+// Management controller for gym branches (physical locations).
+// Provides list (with paging/search/sort), details, create, edit, and delete.
+// Create, Edit, and Delete are restricted to Admin-only.
 [Area("Management")]
 [Authorize(Roles = "Admin,Staff")]
 public class BranchesController : Controller

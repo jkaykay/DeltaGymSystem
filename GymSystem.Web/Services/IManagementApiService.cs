@@ -4,6 +4,12 @@ using GymSystem.Shared.Enums;
 
 namespace GymSystem.Web.Services
 {
+    // Interface for the Management API service.
+    // Defines every operation the Management area controllers can perform:
+    // CRUD (Create, Read, Update, Delete) for members, staff, trainers, branches,
+    // tiers, rooms, classes, sessions, subscriptions, payments, bookings,
+    // equipment, schedules, attendances, and QR code scanning.
+    // Each method calls the backend REST API and returns data or success/failure.
     public interface IManagementApiService
     {
         // Members
@@ -119,7 +125,7 @@ namespace GymSystem.Web.Services
             decimal? minAmount = null, decimal? maxAmount = null,
             string? sortBy = null, string? sortDir = null);
         Task<PaymentDTO?> GetPaymentAsync(int id);
-        Task<bool> CreatePaymentAsync(CreatePaymentViewModel model);
+        Task<(bool Success, string? Error)> CreatePaymentAsync(CreatePaymentViewModel model);
         Task<bool> DeletePaymentAsync(int id);
 
         // Bookings

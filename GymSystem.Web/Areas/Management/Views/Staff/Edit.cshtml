@@ -1,9 +1,7 @@
 ﻿@model EditStaffViewModel
-@using GymSystem.Shared.DTOs
 
 @{
     ViewData["Title"] = "Edit Staff";
-    var branches = ViewBag.Branches as List<BranchDTO> ?? new List<BranchDTO>();
 }
 
 <div class="page-header">
@@ -55,7 +53,7 @@
                     <label asp-for="BranchId"></label>
                     <select asp-for="BranchId" class="form-control">
                         <option value="">— No Branch —</option>
-                        @foreach (var branch in branches)
+                        @foreach (var branch in Model.Branches)
                         {
                             <option value="@branch.BranchId" selected="@(Model.BranchId == branch.BranchId)">
                                 @branch.City — @branch.Address

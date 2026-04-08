@@ -1,10 +1,7 @@
 ﻿@model CreateBookingViewModel
-@using GymSystem.Shared.DTOs
 
 @{
     ViewData["Title"] = "Create Booking";
-    var members = ViewBag.Members as List<UserDTO> ?? new List<UserDTO>();
-    var sessions = ViewBag.Sessions as List<SessionDTO> ?? new List<SessionDTO>();
 }
 
 <div class="page-header">
@@ -24,7 +21,7 @@
                 <label asp-for="UserId"></label>
                 <select asp-for="UserId" class="form-control">
                     <option value="">— Select a Member —</option>
-                    @foreach (var member in members)
+                    @foreach (var member in Model.Members)
                     {
                         <option value="@member.Id">@member.FirstName @member.LastName (@member.Email)</option>
                     }
@@ -36,7 +33,7 @@
                 <label asp-for="SessionId"></label>
                 <select asp-for="SessionId" class="form-control">
                     <option value="">— Select a Session —</option>
-                    @foreach (var session in sessions)
+                    @foreach (var session in Model.Sessions)
                     {
                         var spotsLabel = session.AvailableSpots > 0
                             ? $"{session.AvailableSpots} spot(s) left"
