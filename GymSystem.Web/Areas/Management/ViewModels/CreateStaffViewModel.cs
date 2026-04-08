@@ -23,6 +23,9 @@ namespace GymSystem.Web.Areas.Management.ViewModels
         [Required]
         public string Role { get; set; } = "Staff"; // "Staff" or "Admin"
 
+        [Display(Name = "Branch")]
+        public int? BranchId { get; set; }
+
         [MaxLength(50)]
         [Display(Name = "Employee ID (e.g., GYM-2026-001)")]
         public string? EmployeeId { get; set; }

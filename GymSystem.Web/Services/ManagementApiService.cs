@@ -149,6 +149,7 @@ namespace GymSystem.Web.Services
                 model.Password,
                 model.EmployeeId,
                 model.Role,
+                model.BranchId,
                 model.PhoneNumber
             });
             return response.IsSuccessStatusCode;

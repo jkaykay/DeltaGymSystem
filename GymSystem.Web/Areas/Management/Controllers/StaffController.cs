@@ -45,8 +45,9 @@ public class StaffController : Controller
 
     [HttpGet]
     [Authorize(Roles = "Admin")]
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
+        ViewBag.Branches = await _api.GetAllBranchesAsync();
         return View(new CreateStaffViewModel());
     }
 
@@ -56,13 +57,17 @@ public class StaffController : Controller
     public async Task<IActionResult> Create(CreateStaffViewModel model)
     {
         if (!ModelState.IsValid)
+        {
+            ViewBag.Branches = await _api.GetAllBranchesAsync();
             return View(model);
+        }
 
         var success = await _api.CreateStaffAsync(model);
 
         if (!success)
         {
             ModelState.AddModelError(string.Empty, "Failed to create staff member. Check password requirements.");
+            ViewBag.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
 
