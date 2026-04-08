@@ -31,5 +31,7 @@ namespace GymSystem.Web.Areas.Management.ViewModels
         [MaxLength(20)]
         [Display(Name = "Phone Number")]
         public string? PhoneNumber { get; set; }
+
+        public List<GymSystem.Shared.DTOs.BranchDTO> Branches { get; set; } = [];
     }
 }

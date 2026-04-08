@@ -6,14 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
-/// <summary>
-/// Management controller for gym members.
-/// Provides CRUD operations: list (with paging/filtering), details, create, edit,
-/// toggle active/inactive, and delete.
-/// Only Admin and Staff roles can access this controller.
-/// Phone numbers are stored with a +44 UK prefix in the database but displayed
-/// without it in the UI, using the helper methods below.
-/// </summary>
+// Management controller for gym members.
+// Provides CRUD operations: list (with paging/filtering), details, create, edit,
+// toggle active/inactive, and delete.
+// Only Admin and Staff roles can access this controller.
+// Phone numbers are stored with a +44 UK prefix in the database but displayed
+// without it in the UI, using the helper methods below.
 [Area("Management")]
 [Authorize(Roles = "Admin,Staff")]
 public class MembersController : Controller
@@ -25,7 +23,7 @@ public class MembersController : Controller
         _api = api;
     }
 
-    /// <summary>Removes the +44 UK prefix for display in the edit form.</summary>
+    // Removes the +44 UK prefix for display in the edit form.
     private static string? StripUkPrefix(string? phone)
     {
         if (string.IsNullOrWhiteSpace(phone)) return phone;
@@ -34,7 +32,7 @@ public class MembersController : Controller
         return phone;
     }
 
-    /// <summary>Adds back the +44 UK prefix before saving to the API.</summary>
+    // Adds back the +44 UK prefix before saving to the API.
     private static string? PrependUkPrefix(string? phone)
     {
         if (string.IsNullOrWhiteSpace(phone)) return phone;
@@ -42,10 +40,8 @@ public class MembersController : Controller
         return "+44" + phone;
     }
 
-    /// <summary>
-    /// GET /Management/Members — Lists members with paging, search, and filtering.
-    /// Filter values are stored in ViewData so the view can re-populate the filter form.
-    /// </summary>
+    // GET /Management/Members — Lists members with paging, search, and filtering.
+    // Filter values are stored in ViewData so the view can re-populate the filter form.
     public async Task<IActionResult> Index(int page = 1, int pageSize = 10,
     string? search = null, bool? active = null,
     DateTime? joinedFrom = null, DateTime? joinedTo = null,

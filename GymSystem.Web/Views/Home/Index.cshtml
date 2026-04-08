@@ -1,9 +1,6 @@
-﻿@using GymSystem.Shared.DTOs
+﻿@model GymSystem.Web.ViewModels.HomeViewModel
 @{
     ViewData["Title"] = "Home";
-    var sessions = ViewBag.Sessions as List<SessionDTO> ?? new List<SessionDTO>();
-    var tiers = ViewBag.Tiers as List<TierDTO> ?? new List<TierDTO>();
-    var trainers = ViewBag.Trainers as List<UserDTO> ?? new List<UserDTO>();
 }
 
 @section Styles {
@@ -32,9 +29,9 @@
       <a asp-area="" asp-controller="Classes" asp-action="Index" class="view-all">View All &gt;&gt;&gt;</a>
     </div>
     <div class="cards-grid">
-      @if (sessions.Any())
+      @if (Model.Sessions.Any())
       {
-        @foreach (var session in sessions)
+        @foreach (var session in Model.Sessions)
         {
           var duration = (int)(session.End - session.Start).TotalMinutes;
           <div class="class-card">
@@ -68,12 +65,12 @@
       <a asp-area="" asp-controller="Classes" asp-action="Index" asp-fragment="class-type" class="view-all"> View All &gt;&gt;&gt; </a>
     </div>
     <div class="trainers-grid">
-      @if (trainers.Any())
+      @if (Model.Trainers.Any())
       {
         var colors = new[] { "#2a2a2a", "#2a1a00", "#001a0e", "#0a001a" };
         var accents = new[] { "#444", "#554422", "#224433", "#332244" };
         var i = 0;
-        @foreach (var trainer in trainers)
+        @foreach (var trainer in Model.Trainers)
         {
           var bg = colors[i % colors.Length];
           var accent = accents[i % accents.Length];
@@ -102,10 +99,10 @@
   <section class="membership-section reveal">
     <h2 class="membership-title">MEMBERSHIP PLANS</h2>
     <div class="plans-grid">
-      @if (tiers.Any())
+      @if (Model.Tiers.Any())
       {
-        var featured = tiers.OrderByDescending(t => t.Price).First();
-        @foreach (var tier in tiers)
+        var featured = Model.Tiers.OrderByDescending(t => t.Price).First();
+        @foreach (var tier in Model.Tiers)
         {
           var isFeatured = tier.TierName == featured.TierName;
           <div class="plan-card @(isFeatured ? "featured" : "")">

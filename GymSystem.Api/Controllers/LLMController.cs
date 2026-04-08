@@ -23,7 +23,7 @@ namespace GymSystem.Api.Controllers
         }
 
         // POST api/llm/chat — Send a prompt to the AI chatbot and get a response.
-        /// <summary>POST api/llm/chat — sends a prompt to the LLM and returns the response.</summary>
+        // POST api/llm/chat — sends a prompt to the LLM and returns the response.
         [HttpPost("chat")]
         [EnableRateLimiting("llm")]
         public async Task<IActionResult> Chat([FromBody] PromptRequest request, CancellationToken cancellationToken)

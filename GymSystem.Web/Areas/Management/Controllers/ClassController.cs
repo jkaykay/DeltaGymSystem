@@ -5,10 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
-/// <summary>
-/// Management controller for gym classes (e.g. Yoga, Boxing, Spin).
-/// Each class is assigned to a trainer. Create, Edit, and Delete are Admin-only.
-/// </summary>
+// Management controller for gym classes (e.g. Yoga, Boxing, Spin).
+// Each class is assigned to a trainer. Create, Edit, and Delete are Admin-only.
 [Area("Management")]
 [Authorize(Roles = "Admin,Staff")]
 public class ClassesController : Controller

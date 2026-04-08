@@ -6,12 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
-/// <summary>
-/// Management controller for payments.
-/// Staff can view and create payments. Payments are linked to pending subscriptions —
-/// when a payment is recorded, the subscription becomes active.
-/// Delete is Admin-only.
-/// </summary>
+// Management controller for payments.
+// Staff can view and create payments. Payments are linked to pending subscriptions —
+// when a payment is recorded, the subscription becomes active.
+// Delete is Admin-only.
 [Area("Management")]
 [Authorize(Roles = "Admin,Staff")]
 public class PaymentsController : Controller
@@ -76,11 +74,11 @@ public class PaymentsController : Controller
             return View(model);
         }
 
-        var success = await _api.CreatePaymentAsync(model);
+        var (success, error) = await _api.CreatePaymentAsync(model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to record payment. Ensure the amount matches the tier price exactly.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to record payment. Ensure the amount matches the tier price exactly.");
             var allSubscriptions = await _api.GetAllSubscriptionsAsync();
             ViewBag.PendingSubscriptions = allSubscriptions
                 .Where(s => s.State == SubscriptionState.Pending)

@@ -116,10 +116,8 @@ public class SubscriptionController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
-    /// Creates a pending subscription. The subscription becomes active
-    /// only after a payment is recorded via the PaymentController.
-    /// </summary>
+    // Creates a pending subscription. The subscription becomes active
+    // only after a payment is recorded via the PaymentController.
     [HttpPost]
     [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Create([FromBody] AddSubscriptionRequest request)

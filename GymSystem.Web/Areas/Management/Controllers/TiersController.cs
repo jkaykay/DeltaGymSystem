@@ -5,11 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
-/// <summary>
-/// Management controller for membership tiers (pricing plans like Gold, Silver, etc.).
-/// Admin-only — all actions require the Admin role.
-/// Provides list, details, create, edit, and delete.
-/// </summary>
+// Management controller for membership tiers (pricing plans like Gold, Silver, etc.).
+// Admin-only — all actions require the Admin role.
+// Provides list, details, create, edit, and delete.
 [Area("Management")]
 [Authorize(Roles = "Admin")]
 public class TiersController : Controller

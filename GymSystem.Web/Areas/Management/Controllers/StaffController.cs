@@ -6,11 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
-/// <summary>
-/// Management controller for staff members.
-/// Provides list (with paging/filtering), details, create, edit, and delete.
-/// Create, Edit, and Delete require the Admin role specifically.
-/// </summary>
+// Management controller for staff members.
+// Provides list (with paging/filtering), details, create, edit, and delete.
+// Create, Edit, and Delete require the Admin role specifically.
 [Area("Management")]
 [Authorize(Roles = "Admin,Staff")]
 public class StaffController : Controller
@@ -50,9 +48,13 @@ public class StaffController : Controller
 
     [HttpGet]
     [Authorize(Roles = "Admin")]
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        return View(new CreateStaffViewModel());
+        var model = new CreateStaffViewModel
+        {
+            Branches = await _api.GetAllBranchesAsync()
+        };
+        return View(model);
     }
 
     [HttpPost]
@@ -61,13 +63,17 @@ public class StaffController : Controller
     public async Task<IActionResult> Create(CreateStaffViewModel model)
     {
         if (!ModelState.IsValid)
+        {
+            model.Branches = await _api.GetAllBranchesAsync();
             return View(model);
+        }
 
         var success = await _api.CreateStaffAsync(model);
 
         if (!success)
         {
             ModelState.AddModelError(string.Empty, "Failed to create staff member. Check password requirements.");
+            model.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
 
@@ -83,8 +89,6 @@ public class StaffController : Controller
         if (staff is null)
             return NotFound();
 
-        ViewBag.Branches = await _api.GetAllBranchesAsync();
-
         var vm = new EditStaffViewModel
         {
             Id = staff.Id,
@@ -93,7 +97,8 @@ public class StaffController : Controller
             LastName = staff.LastName,
             EmployeeId = staff.EmployeeId,
             BranchId = staff.BranchId,
-            PhoneNumber = staff.PhoneNumber
+            PhoneNumber = staff.PhoneNumber,
+            Branches = await _api.GetAllBranchesAsync()
         };
 
         return View(vm);
@@ -106,7 +111,7 @@ public class StaffController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.Branches = await _api.GetAllBranchesAsync();
+            model.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
 
@@ -115,7 +120,7 @@ public class StaffController : Controller
         if (!success)
         {
             ModelState.AddModelError(string.Empty, "Failed to update staff member.");
-            ViewBag.Branches = await _api.GetAllBranchesAsync();
+            model.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
 

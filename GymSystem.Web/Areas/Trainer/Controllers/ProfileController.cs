@@ -8,12 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Trainer.Controllers
 {
-    /// <summary>
-    /// Lets the logged-in trainer view and edit their own profile.
-    /// GET shows the profile; when edit=true the fields become editable.
-    /// POST saves the updated fields (email, phone) via the API.
-    /// Phone numbers use the +44 UK prefix convention.
-    /// </summary>
+    // Lets the logged-in trainer view and edit their own profile.
+    // GET shows the profile; when edit=true the fields become editable.
+    // POST saves the updated fields (email, phone) via the API.
+    // Phone numbers use the +44 UK prefix convention.
     [Area("Trainer")]
     [Authorize(Roles = "Trainer,Admin")]
     public class ProfileController : Controller

@@ -5,11 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
-/// <summary>
-/// Management controller for sessions (a specific time-slot of a class in a room).
-/// Sessions can be filtered by date range and room.
-/// Members book into sessions to attend classes.
-/// </summary>
+// Management controller for sessions (a specific time-slot of a class in a room).
+// Sessions can be filtered by date range and room.
+// Members book into sessions to attend classes.
 [Area("Management")]
 [Authorize(Roles = "Admin,Staff")]
 public class SessionsController : Controller

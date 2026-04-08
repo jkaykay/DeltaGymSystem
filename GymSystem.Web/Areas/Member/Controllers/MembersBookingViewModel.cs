@@ -1,16 +1,14 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using GymSystem.Web.Areas.Member.ViewModels;
 using GymSystem.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 
 namespace GymSystem.Web.Areas.Member.Controllers;
 
-/// <summary>
-/// Lets the logged-in member browse upcoming sessions, book into a session,
-/// and cancel existing bookings.
-/// Index loads all upcoming sessions plus the member's current bookings
-/// so the view can show which sessions are already booked.
-/// </summary>
+// Lets the logged-in member browse upcoming sessions, book into a session,
+// and cancel existing bookings.
+// Index loads all upcoming sessions plus the member's current bookings
+// so the view can show which sessions are already booked.
 [Authorize(Roles = "Member")]
 [Area("Member")]
 public class BookingController : Controller

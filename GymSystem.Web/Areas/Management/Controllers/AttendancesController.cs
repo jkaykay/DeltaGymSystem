@@ -5,11 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
-/// <summary>
-/// Management controller for attendance records (check-in / check-out).
-/// Staff can view all attendance records, see who is currently checked in (Active),
-/// manually check members in and out, and delete records.
-/// </summary>
+// Management controller for attendance records (check-in / check-out).
+// Staff can view all attendance records, see who is currently checked in (Active),
+// manually check members in and out, and delete records.
 [Area("Management")]
 [Authorize(Roles = "Admin,Staff")]
 public class AttendancesController : Controller
@@ -57,8 +55,11 @@ public class AttendancesController : Controller
     [HttpGet]
     public async Task<IActionResult> CheckIn()
     {
-        ViewBag.Members = await _api.GetAllMembersAsync();
-        return View(new CheckInViewModel());
+        var model = new CheckInViewModel
+        {
+            Members = await _api.GetAllMembersAsync()
+        };
+        return View(model);
     }
 
     [HttpPost]
@@ -67,7 +68,7 @@ public class AttendancesController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.Members = await _api.GetAllMembersAsync();
+            model.Members = await _api.GetAllMembersAsync();
             return View(model);
         }
 
@@ -76,7 +77,7 @@ public class AttendancesController : Controller
         if (!success)
         {
             ModelState.AddModelError(string.Empty, "Failed to check in member. They may already have an active session or their account is inactive.");
-            ViewBag.Members = await _api.GetAllMembersAsync();
+            model.Members = await _api.GetAllMembersAsync();
             return View(model);
         }
 

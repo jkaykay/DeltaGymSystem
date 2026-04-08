@@ -93,7 +93,7 @@ public class QRCodeController : ControllerBase
 
     // POST api/qrcode/scan — Staff scans a member's QR code.
     // Automatically checks them in (if not already in) or out (if already in).
-    /// Staff scans a member's QR code — automatically checks them in or out.
+    // Staff scans a member's QR code — automatically checks them in or out.
     [Authorize(Roles = "Staff,Admin")]
     [HttpPost("scan")]
     [EnableRateLimiting("qr")]

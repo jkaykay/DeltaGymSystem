@@ -2,19 +2,16 @@
 
 namespace GymSystem.Web.Services
 {
-    /// <summary>
-    /// A custom HTTP message handler that automatically attaches the user's JWT
-    /// (access_token) to every outgoing API request.
-    /// 
-    /// How it works:
-    ///  1. The user logs in and the JWT is stored inside the authentication cookie.
-    ///  2. When any service makes an HTTP call via the named "GymApi" client,
-    ///     this handler intercepts the request before it leaves the app.
-    ///  3. It reads the JWT from the cookie and adds an "Authorization: Bearer {token}"
-    ///     header so the backend API can authenticate the call.
-    ///  4. If the API responds with 401 Unauthorized (e.g. token expired), it
-    ///     automatically signs the user out so they are redirected to the login page.
-    /// </summary>
+    // A custom HTTP message handler that automatically attaches the user's JWT
+    // (access_token) to every outgoing API request.
+    // How it works:
+    //  1. The user logs in and the JWT is stored inside the authentication cookie.
+    //  2. When any service makes an HTTP call via the named "GymApi" client,
+    //     this handler intercepts the request before it leaves the app.
+    //  3. It reads the JWT from the cookie and adds an "Authorization: Bearer {token}"
+    //     header so the backend API can authenticate the call.
+    //  4. If the API responds with 401 Unauthorized (e.g. token expired), it
+    //     automatically signs the user out so they are redirected to the login page.
     public class TokenDelegatingHandler : DelegatingHandler
     {
         // Provides access to the current HTTP request/response context.
@@ -25,10 +22,8 @@ namespace GymSystem.Web.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        /// <summary>
-        /// Intercepts every outgoing HTTP request, attaches the JWT token,
-        /// sends the request, and handles 401 responses.
-        /// </summary>
+        // Intercepts every outgoing HTTP request, attaches the JWT token,
+        // sends the request, and handles 401 responses.
         protected override async Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request, CancellationToken cancellationToken)
         {
