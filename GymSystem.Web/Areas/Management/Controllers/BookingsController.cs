@@ -67,11 +67,11 @@ public class BookingsController : Controller
             return View(model);
         }
 
-        var success = await _api.CreateBookingAsync(model);
+        var (success, error) = await _api.CreateBookingAsync(model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to create booking. The session may be full or the member may already be booked.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to create booking. The session may be full or the member may already be booked.");
             model.Members = await _api.GetAllMembersAsync();
             model.Sessions = await _api.GetAllSessionsAsync();
             return View(model);

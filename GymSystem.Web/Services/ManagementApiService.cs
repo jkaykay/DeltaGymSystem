@@ -831,14 +831,18 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<BookingDTO>();
         }
 
-        public async Task<bool> CreateBookingAsync(CreateBookingViewModel model)
+        public async Task<(bool Success, string? Error)> CreateBookingAsync(CreateBookingViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/booking", new
             {
                 model.SessionId,
                 model.UserId
             });
-            return response.IsSuccessStatusCode;
+            if (response.IsSuccessStatusCode)
+                return (true, null);
+
+            var error = await response.Content.ReadAsStringAsync();
+            return (false, error);
         }
 
         public async Task<bool> DeleteBookingAsync(int id)
