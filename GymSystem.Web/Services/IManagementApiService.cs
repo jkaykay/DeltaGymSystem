@@ -134,7 +134,7 @@ namespace GymSystem.Web.Services
             DateTime? dateFrom = null, DateTime? dateTo = null,
             string? sortBy = null, string? sortDir = null);
         Task<BookingDTO?> GetBookingAsync(int id);
-        Task<bool> CreateBookingAsync(CreateBookingViewModel model);
+        Task<(bool Success, string? Error)> CreateBookingAsync(CreateBookingViewModel model);
         Task<bool> DeleteBookingAsync(int id);
 
         // Equipment
