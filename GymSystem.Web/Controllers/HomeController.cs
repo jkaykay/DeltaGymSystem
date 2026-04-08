@@ -1,4 +1,5 @@
 using GymSystem.Web.Services;
+using GymSystem.Web.ViewModels;
 using GymSystem.Web.Areas.Trainer.ViewModels;
 using GymSystem.Shared.DTOs;
 using Microsoft.AspNetCore.Mvc;
@@ -21,11 +22,14 @@ namespace GymSystem.Web.Controllers
             var tiers = await _api.GetAllTiersAsync();
             var trainers = await _api.GetRandomTrainersAsync(3);
 
-            ViewBag.Sessions = sessions.Items;
-            ViewBag.Tiers = tiers;
-            ViewBag.Trainers = trainers;
+            var model = new HomeViewModel
+            {
+                Sessions = sessions.Items,
+                Tiers = tiers,
+                Trainers = trainers
+            };
 
-            return View();
+            return View(model);
         }
 
         public IActionResult Privacy()
