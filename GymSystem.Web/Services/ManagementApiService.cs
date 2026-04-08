@@ -698,7 +698,7 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<PaymentDTO>();
         }
 
-        public async Task<bool> CreatePaymentAsync(CreatePaymentViewModel model)
+        public async Task<(bool Success, string? Error)> CreatePaymentAsync(CreatePaymentViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/payment", new
             {
@@ -706,7 +706,14 @@ namespace GymSystem.Web.Services
                 model.UserId,
                 model.SubId
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         public async Task<bool> DeletePaymentAsync(int id)

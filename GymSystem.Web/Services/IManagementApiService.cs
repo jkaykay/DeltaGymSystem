@@ -119,7 +119,7 @@ namespace GymSystem.Web.Services
             decimal? minAmount = null, decimal? maxAmount = null,
             string? sortBy = null, string? sortDir = null);
         Task<PaymentDTO?> GetPaymentAsync(int id);
-        Task<bool> CreatePaymentAsync(CreatePaymentViewModel model);
+        Task<(bool Success, string? Error)> CreatePaymentAsync(CreatePaymentViewModel model);
         Task<bool> DeletePaymentAsync(int id);
 
         // Bookings

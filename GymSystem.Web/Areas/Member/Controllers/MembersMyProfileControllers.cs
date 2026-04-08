@@ -18,6 +18,21 @@ namespace GymSystem.Web.Areas.Member.Controllers
             _memberApiService = memberApiService;
         }
 
+        private static string? StripUkPrefix(string? phone)
+        {
+            if (string.IsNullOrWhiteSpace(phone)) return phone;
+            phone = phone.Replace(" ", "");
+            if (phone.StartsWith("+44")) phone = phone[3..];
+            return phone;
+        }
+
+        private static string? PrependUkPrefix(string? phone)
+        {
+            if (string.IsNullOrWhiteSpace(phone)) return phone;
+            phone = phone.Replace(" ", "").TrimStart('0');
+            return "+44" + phone;
+        }
+
         // GET: Member/MyProfile
         public async Task<IActionResult> Index()
         {
@@ -41,7 +56,7 @@ namespace GymSystem.Web.Areas.Member.Controllers
                     Email = profile.Email,
                     FirstName = profile.FirstName,
                     LastName = profile.LastName,
-                    PhoneNumber = profile.PhoneNumber,
+                    PhoneNumber = StripUkPrefix(profile.PhoneNumber),
                     JoinDate = profile.JoinDate,
                     Active = profile.Active,
                     QrCodeBase64 = qr?.QrCodeBase64,
@@ -75,7 +90,7 @@ namespace GymSystem.Web.Areas.Member.Controllers
                     Email: model.Email,
                     FirstName: model.FirstName,
                     LastName: model.LastName,
-                    PhoneNumber: model.PhoneNumber
+                    PhoneNumber: PrependUkPrefix(model.PhoneNumber)
                 );
 
                 var result = await _memberApiService.UpdateProfileAsync(memberId, request);

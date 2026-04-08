@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 using GymSystem.Shared.DTOs;
 
 namespace GymSystem.Web.Services
@@ -56,7 +57,36 @@ namespace GymSystem.Web.Services
                 return (true, null);
 
             var error = await response.Content.ReadAsStringAsync(cancellationToken);
-            return (false, error);
+            return (false, ExtractChangePasswordError(error));
+        }
+
+        private static string ExtractChangePasswordError(string error)
+        {
+            if (string.IsNullOrWhiteSpace(error))
+                return "Password change failed.";
+
+            try
+            {
+                var identityErrors = JsonSerializer.Deserialize<List<IdentityErrorResponse>>(error);
+                var descriptions = identityErrors?
+                    .Select(e => e.Description)
+                    .Where(d => !string.IsNullOrWhiteSpace(d))
+                    .ToList();
+
+                if (descriptions is { Count: > 0 })
+                    return string.Join(" ", descriptions);
+            }
+            catch (JsonException)
+            {
+                // Fall back to the raw API response when it isn't an Identity error array.
+            }
+
+            return error;
+        }
+
+        private sealed class IdentityErrorResponse
+        {
+            public string Description { get; set; } = string.Empty;
         }
     }
 }
