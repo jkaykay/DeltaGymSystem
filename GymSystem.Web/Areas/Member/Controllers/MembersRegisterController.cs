@@ -69,9 +69,9 @@ namespace GymSystem.Web.Areas.Member.Controllers
                 ModelState.AddModelError("", result.Error ?? "Registration failed.");
                 return View("Index", model);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                ModelState.AddModelError("", "Something went wrong: " + ex.Message);
+                ModelState.AddModelError("", "Something went wrong. Please try again.");
                 return View("Index", model);
             }
         }

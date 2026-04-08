@@ -88,9 +88,9 @@ namespace GymSystem.Web.Areas.Member.Controllers
                 TempData["SuccessMessage"] = "Profile updated successfully!";
                 return RedirectToAction("Index");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                ModelState.AddModelError("", "Something went wrong: " + ex.Message);
+                ModelState.AddModelError("", "Something went wrong. Please try again.");
                 return View("Index", model);
             }
         }
