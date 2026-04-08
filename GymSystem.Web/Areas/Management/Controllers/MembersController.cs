@@ -6,6 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
+// Management controller for gym members.
+// Provides CRUD operations: list (with paging/filtering), details, create, edit,
+// toggle active/inactive, and delete.
+// Only Admin and Staff roles can access this controller.
+// Phone numbers are stored with a +44 UK prefix in the database but displayed
+// without it in the UI, using the helper methods below.
 [Area("Management")]
 [Authorize(Roles = "Admin,Staff")]
 public class MembersController : Controller
@@ -17,6 +23,25 @@ public class MembersController : Controller
         _api = api;
     }
 
+    // Removes the +44 UK prefix for display in the edit form.
+    private static string? StripUkPrefix(string? phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone)) return phone;
+        phone = phone.Replace(" ", "");
+        if (phone.StartsWith("+44")) phone = phone[3..];
+        return phone;
+    }
+
+    // Adds back the +44 UK prefix before saving to the API.
+    private static string? PrependUkPrefix(string? phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone)) return phone;
+        phone = phone.Replace(" ", "").TrimStart('0');
+        return "+44" + phone;
+    }
+
+    // GET /Management/Members — Lists members with paging, search, and filtering.
+    // Filter values are stored in ViewData so the view can re-populate the filter form.
     public async Task<IActionResult> Index(int page = 1, int pageSize = 10,
     string? search = null, bool? active = null,
     DateTime? joinedFrom = null, DateTime? joinedTo = null,
@@ -58,7 +83,7 @@ public class MembersController : Controller
             FirstName = member.FirstName,
             LastName = member.LastName,
             Active = member.Active,
-            PhoneNumber = member.PhoneNumber
+            PhoneNumber = StripUkPrefix(member.PhoneNumber)
         };
 
         return View(vm);
@@ -70,6 +95,8 @@ public class MembersController : Controller
     {
         if (!ModelState.IsValid)
             return View(model);
+
+        model.PhoneNumber = PrependUkPrefix(model.PhoneNumber);
 
         var success = await _api.UpdateMemberAsync(model.Id, model);
 
@@ -116,6 +143,8 @@ public class MembersController : Controller
     {
         if (!ModelState.IsValid)
             return View(model);
+
+        model.PhoneNumber = PrependUkPrefix(model.PhoneNumber);
 
         var success = await _api.CreateMemberAsync(model);
 

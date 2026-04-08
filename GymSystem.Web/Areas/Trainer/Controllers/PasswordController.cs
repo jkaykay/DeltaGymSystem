@@ -1,10 +1,12 @@
-using GymSystem.Web.Areas.Trainer.ViewModels;
+﻿using GymSystem.Web.Areas.Trainer.ViewModels;
 using GymSystem.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Trainer.Controllers;
 
+// Lets the logged-in trainer change their own password.
+// GET shows the form; POST validates and calls the auth API.
 [Area("Trainer")]
 [Authorize(Roles = "Trainer,Admin")]
 public class PasswordController : Controller
@@ -33,7 +35,7 @@ public class PasswordController : Controller
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Password change failed. Please check your current password and try again.");
+            ModelState.AddModelError(string.Empty, error ?? "Password change failed. Please check your current password and try again.");
             return View(model);
         }
 

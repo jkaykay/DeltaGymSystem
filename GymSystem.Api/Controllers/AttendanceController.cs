@@ -1,4 +1,10 @@
-﻿using GymSystem.Api.Data;
+﻿// ============================================================
+// AttendanceController.cs — Manages gym check-in / check-out records.
+// Staff can check members in/out, view all attendance, and delete records.
+// Members can view their own attendance history.
+// ============================================================
+
+using GymSystem.Api.Data;
 using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
@@ -27,6 +33,7 @@ public class AttendanceController : ControllerBase
         _outputCache = outputCache;
     }
 
+    // GET api/attendance — List all attendance records with search, filtering, and pagination.
     [HttpGet]
     [Authorize(Roles = "Staff,Admin")]
     [OutputCache(PolicyName = "attendance")]
@@ -77,6 +84,7 @@ public class AttendanceController : ControllerBase
         return Ok(result);
     }
 
+    // GET api/attendance/active — Get all members currently checked in.
     [HttpGet("active")]
     [Authorize(Roles = "Staff,Admin")]
     [OutputCache(PolicyName = "attendance")]
@@ -98,6 +106,7 @@ public class AttendanceController : ControllerBase
         return Ok(active);
     }
 
+    // GET api/attendance/{id} — Get a specific attendance record by ID.
     [HttpGet("{id}")]
     [OutputCache(PolicyName = "attendance")]
     public async Task<IActionResult> GetById(int id)
@@ -123,6 +132,7 @@ public class AttendanceController : ControllerBase
         return Ok(attendance);
     }
 
+    // GET api/attendance/member/{memberId} — Get all attendance records for a specific member.
     [HttpGet("member/{memberId}")]
     [OutputCache(PolicyName = "attendance")]
     public async Task<IActionResult> GetMemberAttendances(string memberId)
@@ -152,6 +162,8 @@ public class AttendanceController : ControllerBase
         return Ok(memberAttendances);
     }
 
+    // POST api/attendance/checkin/{memberId} — Check a member into the gym.
+    // Fails if the member is inactive or already has an open session.
     [HttpPost("checkin/{memberId}")]
     [Authorize(Roles = "Staff,Admin")]
     public async Task<IActionResult> CheckIn(string memberId)
@@ -192,6 +204,8 @@ public class AttendanceController : ControllerBase
         });
     }
 
+    // PUT api/attendance/checkout/{memberId} — Check a member out of the gym.
+    // Sets the CheckOut time and marks InFlag as false.
     [HttpPut("checkout/{memberId}")]
     [Authorize(Roles = "Staff,Admin")]
     public async Task<IActionResult> CheckOut(string memberId)
@@ -221,6 +235,7 @@ public class AttendanceController : ControllerBase
         });
     }
 
+    // DELETE api/attendance/{id} — Delete an attendance record.
     [HttpDelete("{id}")]
     [Authorize(Roles = "Staff,Admin")]
     public async Task<IActionResult> Delete(int id)

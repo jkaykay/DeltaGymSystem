@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
+// Management controller for trainers.
+// Provides list (with paging/filtering), details, create, edit, and delete.
+// Uses the same +44 phone-number helpers as the Members controller.
 [Area("Management")]
 [Authorize(Roles = "Admin,Staff")]
 public class TrainersController : Controller
@@ -14,6 +17,21 @@ public class TrainersController : Controller
     public TrainersController(IManagementApiService api)
     {
         _api = api;
+    }
+
+    private static string? StripUkPrefix(string? phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone)) return phone;
+        phone = phone.Replace(" ", "");
+        if (phone.StartsWith("+44")) phone = phone[3..];
+        return phone;
+    }
+
+    private static string? PrependUkPrefix(string? phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone)) return phone;
+        phone = phone.Replace(" ", "").TrimStart('0');
+        return "+44" + phone;
     }
 
     public async Task<IActionResult> Index(int page = 1, int pageSize = 10,
@@ -46,8 +64,11 @@ public class TrainersController : Controller
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create()
     {
-        ViewBag.Branches = await _api.GetAllBranchesAsync();
-        return View(new CreateTrainerViewModel());
+        var model = new CreateTrainerViewModel
+        {
+            Branches = await _api.GetAllBranchesAsync()
+        };
+        return View(model);
     }
 
     [HttpPost]
@@ -57,16 +78,18 @@ public class TrainersController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.Branches = await _api.GetAllBranchesAsync();
+            model.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
+
+        model.PhoneNumber = PrependUkPrefix(model.PhoneNumber);
 
         var success = await _api.CreateTrainerAsync(model);
 
         if (!success)
         {
             ModelState.AddModelError(string.Empty, "Failed to create trainer. Check password requirements or duplicate email/employee ID.");
-            ViewBag.Branches = await _api.GetAllBranchesAsync();
+            model.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
 
@@ -82,8 +105,6 @@ public class TrainersController : Controller
         if (trainer is null)
             return NotFound();
 
-        ViewBag.Branches = await _api.GetAllBranchesAsync();
-
         var vm = new EditTrainerViewModel
         {
             Id = trainer.Id,
@@ -92,7 +113,8 @@ public class TrainersController : Controller
             LastName = trainer.LastName,
             EmployeeId = trainer.EmployeeId,
             BranchId = trainer.BranchId,
-            PhoneNumber = trainer.PhoneNumber
+            PhoneNumber = StripUkPrefix(trainer.PhoneNumber),
+            Branches = await _api.GetAllBranchesAsync()
         };
 
         return View(vm);
@@ -105,16 +127,18 @@ public class TrainersController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.Branches = await _api.GetAllBranchesAsync();
+            model.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
+
+        model.PhoneNumber = PrependUkPrefix(model.PhoneNumber);
 
         var success = await _api.UpdateTrainerAsync(model.Id, model);
 
         if (!success)
         {
             ModelState.AddModelError(string.Empty, "Failed to update trainer.");
-            ViewBag.Branches = await _api.GetAllBranchesAsync();
+            model.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
 

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using GymSystem.Web.Areas.Member.ViewModels;
 using GymSystem.Web.Services;
@@ -7,6 +7,10 @@ using System.Security.Claims;
 
 namespace GymSystem.Web.Areas.Member.Controllers
 {
+    // Lets the logged-in member view and update their own profile.
+    // GET loads the profile (including QR code if the member is active).
+    // POST (Update) saves the changed fields (email, name, phone) via the API.
+    // Phone numbers are stored with +44 prefix but shown without it in the form.
     [Authorize(Roles = "Member")]
     [Area("Member")]
     public class MyProfileController : Controller
@@ -16,6 +20,21 @@ namespace GymSystem.Web.Areas.Member.Controllers
         public MyProfileController(IMemberApiService memberApiService)
         {
             _memberApiService = memberApiService;
+        }
+
+        private static string? StripUkPrefix(string? phone)
+        {
+            if (string.IsNullOrWhiteSpace(phone)) return phone;
+            phone = phone.Replace(" ", "");
+            if (phone.StartsWith("+44")) phone = phone[3..];
+            return phone;
+        }
+
+        private static string? PrependUkPrefix(string? phone)
+        {
+            if (string.IsNullOrWhiteSpace(phone)) return phone;
+            phone = phone.Replace(" ", "").TrimStart('0');
+            return "+44" + phone;
         }
 
         // GET: Member/MyProfile
@@ -41,7 +60,7 @@ namespace GymSystem.Web.Areas.Member.Controllers
                     Email = profile.Email,
                     FirstName = profile.FirstName,
                     LastName = profile.LastName,
-                    PhoneNumber = profile.PhoneNumber,
+                    PhoneNumber = StripUkPrefix(profile.PhoneNumber),
                     JoinDate = profile.JoinDate,
                     Active = profile.Active,
                     QrCodeBase64 = qr?.QrCodeBase64,
@@ -75,7 +94,7 @@ namespace GymSystem.Web.Areas.Member.Controllers
                     Email: model.Email,
                     FirstName: model.FirstName,
                     LastName: model.LastName,
-                    PhoneNumber: model.PhoneNumber
+                    PhoneNumber: PrependUkPrefix(model.PhoneNumber)
                 );
 
                 var result = await _memberApiService.UpdateProfileAsync(memberId, request);

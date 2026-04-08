@@ -1,4 +1,12 @@
-﻿using GymSystem.Api.Data;
+﻿// ============================================================
+// OpenRouterService.cs — LLM (AI chatbot) integration service.
+// This service implements an "agentic loop": it sends messages
+// to an AI model, and if the model requests data (via tool calls),
+// this service fetches the data from the database and sends it
+// back to the AI for a final response. This powers "DeltaBot".
+// ============================================================
+
+using GymSystem.Api.Data;
 using GymSystem.Shared.DTOs;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
@@ -8,10 +16,11 @@ namespace GymSystem.Api.Services
 {
     public class OpenRouterService : IOpenRouterService
     {
-        private readonly HttpClient _httpClient;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly string _model;
+        private readonly HttpClient _httpClient;          // Sends HTTP requests to the AI API
+        private readonly IServiceProvider _serviceProvider; // Resolves scoped services (like DbContext)
+        private readonly string _model;                    // Which AI model to use
 
+        // Safety limit: stop after 6 back-and-forth rounds with the AI
         private const int MaxToolRounds = 6;
 
         private const string SystemPrompt = """
@@ -71,6 +80,7 @@ namespace GymSystem.Api.Services
             }
         ];
 
+        // Constructor — configures the HTTP client with the API key and base URL.
         public OpenRouterService(HttpClient httpClient, IConfiguration config, IServiceProvider serviceProvider)
         {
             _httpClient = httpClient;
@@ -85,6 +95,10 @@ namespace GymSystem.Api.Services
             _model = config["OpenRouter:Model"] ?? "nvidia/nemotron-3-super-120b-a12b:free";
         }
 
+        // --- Agentic loop ---
+        // Sends the user's prompt to the LLM. If the LLM requests tools
+        // (e.g. "get_classes"), we execute them locally and feed the results
+        // back. This continues until the LLM gives a final text response.
         // ── Agentic loop ────────────────────────────────────────────
         public async Task<string> GetCompletionAsync(string prompt, CancellationToken cancellationToken = default)
         {
@@ -142,6 +156,9 @@ namespace GymSystem.Api.Services
             return "I wasn't able to finish processing. Please try a simpler question.";
         }
 
+        // --- Tool dispatcher ---
+        // When the LLM calls a tool by name (e.g. "get_classes"), this method
+        // maps the name to a handler that queries the database and returns JSON.
         // ── Tool dispatcher ─────────────────────────────────────────
         private async Task<string> ExecuteToolAsync(string toolName, string? argsJson, CancellationToken ct)
         {
@@ -159,6 +176,7 @@ namespace GymSystem.Api.Services
             };
         }
 
+        // Fetches all gym classes with trainer name and branch info.
         private static async Task<string> HandleGetClasses(GymDbContext db, CancellationToken ct)
         {
             var classes = await db.Classes
@@ -177,6 +195,7 @@ namespace GymSystem.Api.Services
             return JsonSerializer.Serialize(classes);
         }
 
+        // Fetches all gym branch locations.
         private static async Task<string> HandleGetBranches(GymDbContext db, CancellationToken ct)
         {
             var branches = await db.Branches
@@ -186,6 +205,7 @@ namespace GymSystem.Api.Services
             return JsonSerializer.Serialize(branches);
         }
 
+        // Fetches all membership tiers with prices.
         private static async Task<string> HandleGetTiers(GymDbContext db, CancellationToken ct)
         {
             var tiers = await db.Tiers
@@ -195,6 +215,7 @@ namespace GymSystem.Api.Services
             return JsonSerializer.Serialize(tiers);
         }
 
+        // Fetches upcoming sessions, optionally filtered by class subject.
         private static async Task<string> HandleGetSchedules(GymDbContext db, string? argsJson, CancellationToken ct)
         {
             string? classSubject = null;

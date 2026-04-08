@@ -8,11 +8,17 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Trainer.Controllers
 {
+    // Handles login, logout, and access-denied for the Trainer area.
+    // [AllowAnonymous] lets unauthenticated users reach the login page.
+    // On successful login the controller creates claims (identity info),
+    // stores the JWT in the authentication cookie, and redirects to the
+    // trainer dashboard. If the user is already logged in with a different
+    // role they are redirected to the appropriate area.
     [Area("Trainer")]
     [AllowAnonymous]
     public class AuthController : Controller
     {
-        
+        // Service for calling the backend auth API (login, logout).
         private readonly IAuthApiService _authApiService;
 
         public AuthController(IAuthApiService authApiService)
@@ -20,6 +26,8 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
             _authApiService = authApiService;
         }
         
+        // GET /Trainer/Auth — Shows the login page.
+        // If already authenticated, redirects to the correct area based on role.
         [HttpGet]
         public IActionResult Index()
         {
@@ -37,6 +45,8 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
             return View(new TrainerLoginViewModel());
         }
 
+        // POST /Trainer/Auth — Processes the trainer login form.
+        // Validates credentials, builds claims, stores the JWT, and signs in.
         //login method
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -113,6 +123,8 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
         }
 
 
+        // POST /Trainer/Auth/Logout — Invalidates the JWT, clears the session,
+        // and signs the user out of the cookie scheme.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()

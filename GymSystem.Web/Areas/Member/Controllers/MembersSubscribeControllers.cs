@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using GymSystem.Web.Areas.Member.ViewModels;
 using GymSystem.Web.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -6,6 +6,10 @@ using System.Security.Claims;
 
 namespace GymSystem.Web.Areas.Member.Controllers;
 
+// Handles the self-service subscription and payment flow for members.
+// GET Index shows the chosen tier with its price.
+// POST ConfirmPayment creates a subscription under the selected tier,
+// then immediately records a payment to activate it.
 [Authorize(Roles = "Member")]
 [Area("Member")]
 public class SubscribeController : Controller

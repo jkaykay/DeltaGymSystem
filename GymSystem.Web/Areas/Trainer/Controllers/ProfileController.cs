@@ -8,6 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Trainer.Controllers
 {
+    // Lets the logged-in trainer view and edit their own profile.
+    // GET shows the profile; when edit=true the fields become editable.
+    // POST saves the updated fields (email, phone) via the API.
+    // Phone numbers use the +44 UK prefix convention.
     [Area("Trainer")]
     [Authorize(Roles = "Trainer,Admin")]
     public class ProfileController : Controller
@@ -18,6 +22,21 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
         public ProfileController(ITrainerApiService trainerApiService)
         {
             _trainerApiService = trainerApiService;
+        }
+
+        private static string? StripUkPrefix(string? phone)
+        {
+            if (string.IsNullOrWhiteSpace(phone)) return phone;
+            phone = phone.Replace(" ", "");
+            if (phone.StartsWith("+44")) phone = phone[3..];
+            return phone;
+        }
+
+        private static string? PrependUkPrefix(string? phone)
+        {
+            if (string.IsNullOrWhiteSpace(phone)) return phone;
+            phone = phone.Replace(" ", "").TrimStart('0');
+            return "+44" + phone;
         }
 
         //load profile page
@@ -48,7 +67,7 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
                 RoleLabel = "Trainer",
                 UserName = trainer.UserName ?? "",
                 Email = trainer.Email ?? "",
-                PhoneNumber = trainer.PhoneNumber,
+                PhoneNumber = StripUkPrefix(trainer.PhoneNumber),
                 GymLocation = gymLocation,
                 IsEditing = edit
 
@@ -93,7 +112,7 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
                 Email: model.Email,
                 FirstName: null,
                 LastName: null,
-                PhoneNumber: model.PhoneNumber
+                PhoneNumber: PrependUkPrefix(model.PhoneNumber)
                 );
 
             var success = await _trainerApiService.UpdateTrainerProfileAsync(request, token);

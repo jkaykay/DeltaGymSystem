@@ -1,10 +1,14 @@
-using GymSystem.Web.Areas.Management.ViewModels;
+﻿using GymSystem.Web.Areas.Management.ViewModels;
 using GymSystem.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
+// Management controller for employee work schedules.
+// An admin assigns a schedule (start/end time) to a staff member or trainer.
+// The EmployeesByBranch endpoint is an AJAX helper used by the Create form
+// to populate the employee dropdown when a branch is selected.
 [Area("Management")]
 [Authorize(Roles = "Admin,Staff")]
 public class SchedulesController : Controller

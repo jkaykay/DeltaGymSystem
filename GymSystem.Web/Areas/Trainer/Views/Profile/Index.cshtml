@@ -36,6 +36,7 @@
                         @if (Model.IsEditing)
                         {
                             <input asp-for="Email" class="value" />
+                            <span asp-validation-for="Email" class="field-validation-error"></span>
                         }
                         else
                         {
@@ -47,11 +48,15 @@
                         <span class="label">Phone Number</span>
                         @if (Model.IsEditing)
                         {
-                            <input asp-for="PhoneNumber" class="value" />
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <span style="font-weight:600;white-space:nowrap;">+44</span>
+                                <input asp-for="PhoneNumber" class="value" placeholder="7911123456" />
+                            </div>
+                            <span asp-validation-for="PhoneNumber" class="field-validation-error"></span>
                         }
                         else
                         {
-                            <span class="value">@(Model.PhoneNumber ?? "—")</span>
+                            <span class="value">@(string.IsNullOrWhiteSpace(Model.PhoneNumber) ? "—" : "+44 " + Model.PhoneNumber)</span>
                         }
                     </div>
                 </div>

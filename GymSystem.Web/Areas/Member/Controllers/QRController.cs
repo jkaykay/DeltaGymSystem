@@ -5,6 +5,9 @@ using System.Security.Claims;
 
 namespace GymSystem.Web.Areas.Member.Controllers
 {
+    // Displays a QR code that the member can show at the gym entrance
+    // for check-in. Only active members get a QR code; inactive members
+    // are redirected back to the dashboard with an error message.
     [Area("Member")]
     [Authorize(Roles = "Member")]
     public class QRController : Controller

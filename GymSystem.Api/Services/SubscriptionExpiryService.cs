@@ -1,4 +1,13 @@
-﻿using GymSystem.Api.Data;
+﻿// ============================================================
+// SubscriptionExpiryService.cs — Background service that runs
+// automatically every hour to manage subscription lifecycles.
+// It performs three tasks:
+//   1. Marks active subscriptions as "Expired" if their end date passed.
+//   2. Promotes "Queued" subscriptions to "Active" when their start date arrives.
+//   3. Deactivates members who have no remaining active subscriptions.
+// ============================================================
+
+using GymSystem.Api.Data;
 using GymSystem.Api.Models;
 using GymSystem.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
@@ -7,12 +16,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GymSystem.Api.Services;
 
+// BackgroundService is a built-in ASP.NET Core class for long-running tasks.
+// It starts when the app starts and runs until the app shuts down.
 public class SubscriptionExpiryService : BackgroundService
 {
-    private readonly IServiceScopeFactory _scopeFactory;
-    private readonly ILogger<SubscriptionExpiryService> _logger;
-    private readonly IOutputCacheStore _outputCache;
-    private readonly TimeSpan _checkInterval = TimeSpan.FromHours(1);
+    private readonly IServiceScopeFactory _scopeFactory;              // Creates DI scopes for database access
+    private readonly ILogger<SubscriptionExpiryService> _logger;     // Writes log messages
+    private readonly IOutputCacheStore _outputCache;                  // Clears cached API responses
+    private readonly TimeSpan _checkInterval = TimeSpan.FromHours(1); // How often to run
 
     public SubscriptionExpiryService(
         IServiceScopeFactory scopeFactory,
@@ -24,6 +35,7 @@ public class SubscriptionExpiryService : BackgroundService
         _outputCache = outputCache;
     }
 
+    // This method runs in a loop for the lifetime of the application.
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("SubscriptionExpiryService started.");
@@ -39,10 +51,12 @@ public class SubscriptionExpiryService : BackgroundService
                 _logger.LogError(ex, "Error processing subscriptions.");
             }
 
+            // Wait before checking again
             await Task.Delay(_checkInterval, stoppingToken);
         }
     }
 
+    // Core logic: expire old subs, promote queued subs, deactivate members.
     private async Task ProcessSubscriptionsAsync(CancellationToken ct)
     {
         using var scope = _scopeFactory.CreateScope();

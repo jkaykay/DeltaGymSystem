@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
+// Management controller for session bookings.
+// A booking reserves a spot for a member in a session.
+// Staff can view, create, and cancel bookings on behalf of members.
 [Area("Management")]
 [Authorize(Roles = "Admin,Staff")]
 public class BookingsController : Controller
@@ -45,9 +48,12 @@ public class BookingsController : Controller
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        ViewBag.Members = await _api.GetAllMembersAsync();
-        ViewBag.Sessions = await _api.GetAllSessionsAsync();
-        return View(new CreateBookingViewModel());
+        var model = new CreateBookingViewModel
+        {
+            Members = await _api.GetAllMembersAsync(),
+            Sessions = await _api.GetAllSessionsAsync()
+        };
+        return View(model);
     }
 
     [HttpPost]
@@ -56,8 +62,8 @@ public class BookingsController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.Members = await _api.GetAllMembersAsync();
-            ViewBag.Sessions = await _api.GetAllSessionsAsync();
+            model.Members = await _api.GetAllMembersAsync();
+            model.Sessions = await _api.GetAllSessionsAsync();
             return View(model);
         }
 
@@ -66,8 +72,8 @@ public class BookingsController : Controller
         if (!success)
         {
             ModelState.AddModelError(string.Empty, "Failed to create booking. The session may be full or the member may already be booked.");
-            ViewBag.Members = await _api.GetAllMembersAsync();
-            ViewBag.Sessions = await _api.GetAllSessionsAsync();
+            model.Members = await _api.GetAllMembersAsync();
+            model.Sessions = await _api.GetAllSessionsAsync();
             return View(model);
         }
 

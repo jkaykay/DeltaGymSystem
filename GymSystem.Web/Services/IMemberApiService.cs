@@ -2,6 +2,11 @@
 
 namespace GymSystem.Web.Services;
 
+// Interface for the Member API service.
+// Defines operations available to gym members: authentication (login/register),
+// profile management, QR code retrieval, dashboard data (bookings, attendances,
+// payments), session booking, subscription management, and an LLM chat feature.
+// Also includes public (anonymous) endpoints for tiers, trainers, classes, and sessions.
 public interface IMemberApiService
 {
     // Auth
@@ -32,6 +37,7 @@ public interface IMemberApiService
 
     // Public data (anonymous-safe)
     Task<List<TierDTO>> GetAllTiersAsync();
+    Task<List<UserDTO>> GetRandomTrainersAsync(int count = 3);
     Task<PagedResult<ClassDTO>> GetClassesAsync(int page = 1, int pageSize = 100);
     Task<PagedResult<SessionDTO>> GetSessionsAsync(int page = 1, int pageSize = 100);
 

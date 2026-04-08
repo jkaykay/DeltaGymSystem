@@ -3,17 +3,29 @@ using GymSystem.Shared.DTOs;
 
 namespace GymSystem.Web.Services
 {
+    // Implements IManagementApiService.
+    // This is the largest service in the web layer — it provides every CRUD operation
+    // that Management area controllers need (members, staff, trainers, branches, tiers,
+    // rooms, classes, sessions, subscriptions, payments, bookings, equipment, schedules,
+    // attendances, and QR code scanning).
+    // All methods call the backend REST API via a preconfigured HttpClient ("GymApi").
     public class ManagementApiService : IManagementApiService
     {
+        // The HttpClient pre-loaded with the API base URL and token handler.
         private readonly HttpClient _http;
 
+        // Constructor — DI injects the factory; we create the named client once.
         public ManagementApiService(IHttpClientFactory factory)
         {
             _http = factory.CreateClient("GymApi");
         }
 
-        // --- Members ---
+        // =================================================================
+        // MEMBERS — CRUD + toggle active + totals + recent sign-ups
+        // =================================================================
 
+        // Fetches a paged, searchable, filterable list of gym members from the API.
+        // Query parameters are built dynamically based on which filters the user applied.
         public async Task<PagedResult<UserDTO>> GetMembersAsync(int page = 1, int pageSize = 10,
             string? search = null, bool? active = null,
             DateTime? joinedFrom = null, DateTime? joinedTo = null,
@@ -45,6 +57,7 @@ namespace GymSystem.Web.Services
             return result ?? new PagedResult<UserDTO>();
         }
 
+        // Fetches a single member by their unique ID.
         public async Task<UserDTO?> GetMemberAsync(string id)
         {
             var response = await _http.GetAsync($"api/member/{id}");
@@ -54,6 +67,7 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<UserDTO>();
         }
 
+        // Creates a new gym member via POST api/member.
         public async Task<bool> CreateMemberAsync(CreateMemberViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/member", new
@@ -68,6 +82,7 @@ namespace GymSystem.Web.Services
             return response.IsSuccessStatusCode;
         }
 
+        // Updates an existing member's details via PUT api/member/{id}.
         public async Task<bool> UpdateMemberAsync(string id, EditMemberViewModel model)
         {
             var response = await _http.PutAsJsonAsync($"api/member/{id}", new
@@ -81,18 +96,21 @@ namespace GymSystem.Web.Services
             return response.IsSuccessStatusCode;
         }
 
+        // Toggles a member's active/inactive status via POST api/member/{id}/toggle-active.
         public async Task<bool> ToggleMemberActiveAsync(string id)
         {
             var response = await _http.PostAsync($"api/member/{id}/toggle-active", null);
             return response.IsSuccessStatusCode;
         }
 
+        // Permanently deletes a member from the system.
         public async Task<bool> DeleteMemberAsync(string id)
         {
             var response = await _http.DeleteAsync($"api/member/{id}");
             return response.IsSuccessStatusCode;
         }
 
+        // Fetches all members (for dropdowns) by requesting a large page size.
         public async Task<List<UserDTO>> GetAllMembersAsync()
         {
             var result = await _http.GetFromJsonAsync<PagedResult<UserDTO>>(
@@ -100,8 +118,11 @@ namespace GymSystem.Web.Services
             return result?.Items ?? new List<UserDTO>();
         }
 
-        // --- Staff ---
+        // =================================================================
+        // STAFF — CRUD + totals
+        // =================================================================
 
+        // Fetches a paged list of staff members with optional search and date filters.
         public async Task<PagedResult<UserDTO>> GetStaffAsync(int page = 1, int pageSize = 10,
             string? search = null,
             DateTime? hiredFrom = null, DateTime? hiredTo = null,
@@ -130,6 +151,7 @@ namespace GymSystem.Web.Services
             return result ?? new PagedResult<UserDTO>();
         }
 
+        // Fetches a single staff member by ID.
         public async Task<UserDTO?> GetStaffMemberAsync(string id)
         {
             var response = await _http.GetAsync($"api/staff/{id}");
@@ -139,6 +161,7 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<UserDTO>();
         }
 
+        // Creates a new staff member via POST api/staff.
         public async Task<bool> CreateStaffAsync(CreateStaffViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/staff", new
@@ -149,11 +172,13 @@ namespace GymSystem.Web.Services
                 model.Password,
                 model.EmployeeId,
                 model.Role,
+                model.BranchId,
                 model.PhoneNumber
             });
             return response.IsSuccessStatusCode;
         }
 
+        // Updates a staff member's details via PUT api/staff/{id}.
         public async Task<bool> UpdateStaffAsync(string id, EditStaffViewModel model)
         {
             var response = await _http.PutAsJsonAsync($"api/staff/{id}", new
@@ -168,12 +193,14 @@ namespace GymSystem.Web.Services
             return response.IsSuccessStatusCode;
         }
 
+        // Deletes a staff member by ID.
         public async Task<bool> DeleteStaffAsync(string id)
         {
             var response = await _http.DeleteAsync($"api/staff/{id}");
             return response.IsSuccessStatusCode;
         }
 
+        // Fetches all staff (for dropdowns).
         public async Task<List<UserDTO>> GetAllStaffAsync()
         {
             var result = await _http.GetFromJsonAsync<PagedResult<UserDTO>>(
@@ -181,6 +208,9 @@ namespace GymSystem.Web.Services
             return result?.Items ?? new List<UserDTO>();
         }
 
+        // Combines all staff and all trainers into a single "employees" list.
+        // Used for schedule dropdowns where any employee can be assigned.
+        // Duplicates (if someone is both staff and trainer) are removed by ID.
         public async Task<List<UserDTO>> GetAllEmployeesAsync()
         {
             var staff = await GetAllStaffAsync();
@@ -193,12 +223,14 @@ namespace GymSystem.Web.Services
             return combined.Values.ToList();
         }
 
+        // Filters the combined employees list to only those in a specific branch.
         public async Task<List<UserDTO>> GetEmployeesByBranchAsync(int branchId)
         {
             var all = await GetAllEmployeesAsync();
             return all.Where(e => e.BranchId == branchId).ToList();
         }
 
+        // Gets the total member count for the dashboard summary card.
         public async Task<CountResponse> GetTotalMembersAsync()
         {
             var response = await _http.GetAsync("api/member/total");
@@ -207,6 +239,7 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<CountResponse>() ?? new CountResponse();
         }
 
+        // Gets the total staff count for the dashboard summary card.
         public async Task<CountResponse> GetTotalStaffAsync()
         {
             var response = await _http.GetAsync("api/staff/total");
@@ -215,14 +248,18 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<CountResponse>() ?? new CountResponse();
         }
 
+        // Gets the most recent member sign-ups for the dashboard.
         public async Task<List<UserDTO>> GetRecentSignupsAsync()
         {
             var result = await _http.GetFromJsonAsync<List<UserDTO>>("api/member/recents");
             return result ?? new List<UserDTO>();
         }
 
-        // --- Branches ---
+        // =================================================================
+        // BRANCHES — CRUD
+        // =================================================================
 
+        // Fetches a paged list of gym branches.
         public async Task<PagedResult<BranchDTO>> GetBranchesAsync(int page = 1, int pageSize = 10,
             string? search = null,
             string? sortBy = null, string? sortDir = null)
@@ -235,6 +272,7 @@ namespace GymSystem.Web.Services
             return result ?? new PagedResult<BranchDTO>();
         }
 
+        // Fetches all branches (for dropdowns).
         public async Task<List<BranchDTO>> GetAllBranchesAsync()
         {
             var result = await _http.GetFromJsonAsync<PagedResult<BranchDTO>>(
@@ -242,6 +280,7 @@ namespace GymSystem.Web.Services
             return result?.Items ?? new List<BranchDTO>();
         }
 
+        // Fetches a single branch by ID.
         public async Task<BranchDTO?> GetBranchAsync(int id)
         {
             var response = await _http.GetAsync($"api/branch/{id}");
@@ -251,6 +290,7 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<BranchDTO>();
         }
 
+        // Creates a new branch.
         public async Task<bool> CreateBranchAsync(CreateBranchViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/branch", new
@@ -264,6 +304,7 @@ namespace GymSystem.Web.Services
             return response.IsSuccessStatusCode;
         }
 
+        // Updates an existing branch.
         public async Task<bool> UpdateBranchAsync(int id, EditBranchViewModel model)
         {
             var response = await _http.PutAsJsonAsync($"api/branch/{id}", new
@@ -276,14 +317,18 @@ namespace GymSystem.Web.Services
             return response.IsSuccessStatusCode;
         }
 
+        // Deletes a branch by ID.
         public async Task<bool> DeleteBranchAsync(int id)
         {
             var response = await _http.DeleteAsync($"api/branch/{id}");
             return response.IsSuccessStatusCode;
         }
 
-        // --- Tiers ---
+        // =================================================================
+        // TIERS — CRUD (membership pricing plans)
+        // =================================================================
 
+        // Fetches a paged list of membership tiers.
         public async Task<PagedResult<TierDTO>> GetTiersAsync(int page = 1, int pageSize = 10,
             string? search = null,
             string? sortBy = null, string? sortDir = null)
@@ -296,6 +341,7 @@ namespace GymSystem.Web.Services
             return result ?? new PagedResult<TierDTO>();
         }
 
+        // Fetches all tiers (for dropdowns).
         public async Task<List<TierDTO>> GetAllTiersAsync()
         {
             var result = await _http.GetFromJsonAsync<PagedResult<TierDTO>>(
@@ -303,6 +349,7 @@ namespace GymSystem.Web.Services
             return result?.Items ?? new List<TierDTO>();
         }
 
+        // Fetches a single tier by its name (tiers use name as the key).
         public async Task<TierDTO?> GetTierAsync(string tierName)
         {
             var response = await _http.GetAsync($"api/tier/{tierName}");
@@ -312,6 +359,7 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<TierDTO>();
         }
 
+        // Creates a new membership tier.
         public async Task<bool> CreateTierAsync(CreateTierViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/tier", new
@@ -322,6 +370,7 @@ namespace GymSystem.Web.Services
             return response.IsSuccessStatusCode;
         }
 
+        // Updates a tier's price.
         public async Task<bool> UpdateTierAsync(string tierName, EditTierViewModel model)
         {
             var response = await _http.PutAsJsonAsync($"api/tier/{tierName}", new
@@ -331,13 +380,18 @@ namespace GymSystem.Web.Services
             return response.IsSuccessStatusCode;
         }
 
+        // Deletes a tier by name.
         public async Task<bool> DeleteTierAsync(string tierName)
         {
             var response = await _http.DeleteAsync($"api/tier/{tierName}");
             return response.IsSuccessStatusCode;
         }
 
-        // --- Trainers ---
+        // =================================================================
+        // TRAINERS — CRUD + totals
+        // =================================================================
+
+        // Gets the total trainer count for the dashboard.
         public async Task<CountResponse> GetTotalTrainersAsync()
         {
             var response = await _http.GetAsync("api/trainer/total");
@@ -346,6 +400,7 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<CountResponse>() ?? new CountResponse();
         }
 
+        // Fetches a paged list of trainers with optional search and hire-date filters.
         public async Task<PagedResult<UserDTO>> GetTrainersAsync(int page = 1, int pageSize = 10,
     string? search = null,
     DateTime? hiredFrom = null, DateTime? hiredTo = null,
@@ -374,6 +429,7 @@ namespace GymSystem.Web.Services
             return result ?? new PagedResult<UserDTO>();
         }
 
+        // Fetches a single trainer by ID.
         public async Task<UserDTO?> GetTrainerAsync(string id)
         {
             var response = await _http.GetAsync($"api/trainer/{id}");
@@ -383,6 +439,7 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<UserDTO>();
         }
 
+        // Creates a new trainer.
         public async Task<bool> CreateTrainerAsync(CreateTrainerViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/trainer", new
@@ -398,6 +455,7 @@ namespace GymSystem.Web.Services
             return response.IsSuccessStatusCode;
         }
 
+        // Updates an existing trainer's details.
         public async Task<bool> UpdateTrainerAsync(string id, EditTrainerViewModel model)
         {
             var response = await _http.PutAsJsonAsync($"api/trainer/{id}", new
@@ -412,12 +470,14 @@ namespace GymSystem.Web.Services
             return response.IsSuccessStatusCode;
         }
 
+        // Deletes a trainer by ID.
         public async Task<bool> DeleteTrainerAsync(string id)
         {
             var response = await _http.DeleteAsync($"api/trainer/{id}");
             return response.IsSuccessStatusCode;
         }
 
+        // Fetches all trainers (for dropdowns).
         public async Task<List<UserDTO>> GetAllTrainersAsync()
         {
             var result = await _http.GetFromJsonAsync<PagedResult<UserDTO>>(
@@ -425,7 +485,11 @@ namespace GymSystem.Web.Services
             return result?.Items ?? new List<UserDTO>();
         }
 
-        // --- Rooms ---
+        // =================================================================
+        // ROOMS — CRUD
+        // =================================================================
+
+        // Fetches a paged list of rooms with optional branch/room-number filters.
         public async Task<PagedResult<RoomDTO>> GetRoomsAsync(int page = 1, int pageSize = 10,
             int? branchId = null, int? roomNumber = null,
             string? sortBy = null, string? sortDir = null)
@@ -439,6 +503,7 @@ namespace GymSystem.Web.Services
             return result ?? new PagedResult<RoomDTO>();
         }
 
+        // Fetches a single room by ID.
         public async Task<RoomDTO?> GetRoomAsync(int id)
         {
             var response = await _http.GetAsync($"api/room/{id}");
@@ -448,6 +513,7 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<RoomDTO>();
         }
 
+        // Creates a new room.
         public async Task<bool> CreateRoomAsync(CreateRoomViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/room", new
@@ -459,6 +525,7 @@ namespace GymSystem.Web.Services
             return response.IsSuccessStatusCode;
         }
 
+        // Updates an existing room.
         public async Task<bool> UpdateRoomAsync(int id, EditRoomViewModel model)
         {
             var response = await _http.PutAsJsonAsync($"api/room/{id}", new
@@ -470,12 +537,14 @@ namespace GymSystem.Web.Services
             return response.IsSuccessStatusCode;
         }
 
+        // Deletes a room by ID.
         public async Task<bool> DeleteRoomAsync(int id)
         {
             var response = await _http.DeleteAsync($"api/room/{id}");
             return response.IsSuccessStatusCode;
         }
 
+        // Fetches all rooms (for dropdowns).
         public async Task<List<RoomDTO>> GetAllRoomsAsync()
         {
             var result = await _http.GetFromJsonAsync<PagedResult<RoomDTO>>(
@@ -483,8 +552,11 @@ namespace GymSystem.Web.Services
             return result?.Items ?? new List<RoomDTO>();
         }
 
-        // --- Classes ---
+        // =================================================================
+        // CLASSES — CRUD (e.g. Yoga, Spin, Boxing)
+        // =================================================================
 
+        // Fetches a paged list of gym classes.
         public async Task<PagedResult<ClassDTO>> GetClassesAsync(int page = 1, int pageSize = 10,
             string? search = null,
             string? sortBy = null, string? sortDir = null)
@@ -539,8 +611,11 @@ namespace GymSystem.Web.Services
             return result?.Items ?? new List<ClassDTO>();
         }
 
-        // --- Sessions ---
+        // =================================================================
+        // SESSIONS — CRUD (a specific occurrence of a class in a room)
+        // =================================================================
 
+        // Fetches a paged list of sessions with optional date/room filters.
         public async Task<PagedResult<SessionDTO>> GetSessionsAsync(int page = 1, int pageSize = 10,
             string? search = null,
             DateTime? dateFrom = null, DateTime? dateTo = null,
@@ -605,8 +680,11 @@ namespace GymSystem.Web.Services
             return result?.Items ?? new List<SessionDTO>();
         }
 
-        // --- Subscriptions ---
+        // =================================================================
+        // SUBSCRIPTIONS — CRUD (member’s plan under a tier)
+        // =================================================================
 
+        // Fetches a paged list of subscriptions with optional state/tier/date filters.
         public async Task<PagedResult<SubscriptionDTO>> GetSubscriptionsAsync(int page = 1, int pageSize = 10,
             string? search = null, int? state = null, string? tierName = null,
             DateTime? startFrom = null, DateTime? startTo = null,
@@ -668,8 +746,11 @@ namespace GymSystem.Web.Services
             return result?.Items ?? new List<SubscriptionDTO>();
         }
 
-        // --- Payments ---
+        // =================================================================
+        // PAYMENTS — CRUD
+        // =================================================================
 
+        // Fetches a paged list of payments with optional date/amount filters.
         public async Task<PagedResult<PaymentDTO>> GetPaymentsAsync(int page = 1, int pageSize = 10,
             string? search = null,
             DateTime? dateFrom = null, DateTime? dateTo = null,
@@ -697,7 +778,7 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<PaymentDTO>();
         }
 
-        public async Task<bool> CreatePaymentAsync(CreatePaymentViewModel model)
+        public async Task<(bool Success, string? Error)> CreatePaymentAsync(CreatePaymentViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/payment", new
             {
@@ -705,7 +786,14 @@ namespace GymSystem.Web.Services
                 model.UserId,
                 model.SubId
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         public async Task<bool> DeletePaymentAsync(int id)
@@ -714,8 +802,11 @@ namespace GymSystem.Web.Services
             return response.IsSuccessStatusCode;
         }
 
-        // --- Bookings ---
+        // =================================================================
+        // BOOKINGS — CRUD (member reservations for sessions)
+        // =================================================================
 
+        // Fetches a paged list of bookings with optional date filters.
         public async Task<PagedResult<BookingDTO>> GetBookingsAsync(int page = 1, int pageSize = 10,
             string? search = null,
             DateTime? dateFrom = null, DateTime? dateTo = null,
@@ -756,8 +847,11 @@ namespace GymSystem.Web.Services
             return response.IsSuccessStatusCode;
         }
 
-        // --- Equipment ---
+        // =================================================================
+        // EQUIPMENT — CRUD (gym machines and gear)
+        // =================================================================
 
+        // Fetches a paged list of equipment with optional operational/room/date filters.
         public async Task<PagedResult<EquipmentDTO>> GetEquipmentAsync(int page = 1, int pageSize = 10,
             string? search = null, bool? operational = null, int? roomId = null,
             DateTime? dateFrom = null, DateTime? dateTo = null,
@@ -821,8 +915,11 @@ namespace GymSystem.Web.Services
             return result?.Items ?? new List<EquipmentDTO>();
         }
 
-        // --- Schedules ---
+        // =================================================================
+        // SCHEDULES — CRUD (employee work schedules)
+        // =================================================================
 
+        // Fetches a paged list of employee schedules.
         public async Task<PagedResult<ScheduleDTO>> GetSchedulesAsync(int page = 1, int pageSize = 10,
             string? search = null,
             DateTime? dateFrom = null, DateTime? dateTo = null,
@@ -881,8 +978,11 @@ namespace GymSystem.Web.Services
             return result?.Items ?? new List<ScheduleDTO>();
         }
 
-        // --- Attendances ---
+        // =================================================================
+        // ATTENDANCES — check-in / check-out records
+        // =================================================================
 
+        // Fetches a paged list of attendance records.
         public async Task<PagedResult<AttendanceDTO>> GetAttendancesAsync(int page = 1, int pageSize = 10,
             string? search = null, bool? inFlag = null,
             DateTime? dateFrom = null, DateTime? dateTo = null,
@@ -932,8 +1032,12 @@ namespace GymSystem.Web.Services
             return response.IsSuccessStatusCode;
         }
 
-        // --- QR Scanner ---
+        // =================================================================
+        // QR SCANNER — scan member QR codes at the front desk
+        // =================================================================
 
+        // Sends a scanned QR token to the API for validation.
+        // Returns a view model indicating success/failure and the check-in/out result.
         public async Task<ScanResultViewModel> ScanQRCodeAsync(string token)
         {
             var response = await _http.PostAsJsonAsync("api/qrcode/scan", new { Token = token });

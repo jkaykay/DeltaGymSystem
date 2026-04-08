@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using GymSystem.Shared.DTOs;
 
 namespace GymSystem.Web.Areas.Management.ViewModels
 {
@@ -7,5 +8,7 @@ namespace GymSystem.Web.Areas.Management.ViewModels
         [Required]
         [Display(Name = "Member")]
         public string UserId { get; set; } = string.Empty;
+
+        public List<UserDTO> Members { get; set; } = [];
     }
 }

@@ -1,9 +1,7 @@
 ﻿@model CreateTrainerViewModel
-@using GymSystem.Shared.DTOs
 
 @{
     ViewData["Title"] = "Create Trainer";
-    var branches = ViewBag.Branches as List<BranchDTO> ?? new List<BranchDTO>();
 }
 
 <div class="page-header">
@@ -40,7 +38,10 @@
 
             <div class="form-group">
                 <label asp-for="PhoneNumber"></label>
-                <input asp-for="PhoneNumber" class="form-control" type="tel" placeholder="e.g. +44 7911 123456" />
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <span style="font-weight:600;white-space:nowrap;">+44</span>
+                    <input asp-for="PhoneNumber" class="form-control" type="tel" placeholder="7911123456" />
+                </div>
                 <span asp-validation-for="PhoneNumber" class="field-validation-error"></span>
             </div>
 
@@ -66,7 +67,7 @@
                     <label asp-for="BranchId"></label>
                     <select asp-for="BranchId" class="form-control">
                         <option value="">— No Branch —</option>
-                        @foreach (var branch in branches)
+                        @foreach (var branch in Model.Branches)
                         {
                             <option value="@branch.BranchId">@branch.City — @branch.Address</option>
                         }

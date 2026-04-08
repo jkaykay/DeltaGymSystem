@@ -1,4 +1,11 @@
-﻿using GymSystem.Api.Data;
+﻿// ============================================================
+// TrainerController.cs — CRUD endpoints for trainers.
+// Admin can create, update, and delete trainers.
+// Trainers can view and update their own profile.
+// Staff can view trainer lists.
+// ============================================================
+
+using GymSystem.Api.Data;
 using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
@@ -27,6 +34,7 @@ public class TrainerController : ControllerBase
         _outputCache = outputCache;
     }
 
+    // Helper: builds a query that returns only users with the "Trainer" role.
     private IQueryable<ApplicationUser> TrainersQuery()
     {
         return _context.Users
@@ -38,12 +46,15 @@ public class TrainerController : ControllerBase
                 .Any(x => x.UserId == u.Id && x.Name == "Trainer"));
     }
 
+    // Checks if the current user is requesting their own data.
     private bool IsSelf(string id) =>
         User.FindFirstValue(ClaimTypes.NameIdentifier) == id;
 
+    // Checks if the current user is an Admin or Staff member.
     private bool IsAdminOrStaff() =>
         User.IsInRole("Admin") || User.IsInRole("Staff");
 
+    // GET api/trainer — List all trainers with search, sorting, and pagination.
     [HttpGet]
     [Authorize(Roles = "Admin,Staff")]
     [OutputCache(PolicyName = "trainers")]
@@ -100,6 +111,7 @@ public class TrainerController : ControllerBase
         return Ok(result);
     }
 
+    // GET api/trainer/total — Returns the total number of trainers.
     [HttpGet("total")]
     [Authorize(Roles = "Admin,Staff")]
     [OutputCache(PolicyName = "trainers")]
@@ -109,6 +121,7 @@ public class TrainerController : ControllerBase
         return Ok(new CountResponse { Count = count });
     }
 
+    // GET api/trainer/me — A trainer views their own profile.
     [HttpGet("me")]
     [Authorize(Roles = "Trainer")]
     public async Task<IActionResult> GetMe()
@@ -133,6 +146,7 @@ public class TrainerController : ControllerBase
         });
     }
 
+    // GET api/trainer/{id} — Get a single trainer's profile.
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(string id)
     {
@@ -162,6 +176,7 @@ public class TrainerController : ControllerBase
         });
     }
 
+    // PUT api/trainer/me — A trainer updates their own profile (email, name, phone).
     [HttpPut("me")]
     [Authorize(Roles = "Trainer")]
     public async Task<IActionResult> UpdateSelf([FromBody] UpdateTrainerProfileRequest request)
@@ -200,6 +215,7 @@ public class TrainerController : ControllerBase
         return NoContent();
     }
 
+    // POST api/trainer — Create a new trainer account (Admin only).
     [HttpPost]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] CreateTrainerRequest request)
@@ -267,6 +283,7 @@ public class TrainerController : ControllerBase
         });
     }
 
+    // PUT api/trainer/{id} — Admin updates a trainer's full profile.
     [HttpPut("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(string id, [FromBody] UpdateTrainerRequest request)
@@ -327,6 +344,29 @@ public class TrainerController : ControllerBase
         return NoContent();
     }
 
+    // GET api/trainer/random?count=3 — Returns random active trainers (public endpoint).
+    // Used on the website's landing page to showcase trainers.
+    [HttpGet("random")]
+    [AllowAnonymous]
+    [OutputCache(PolicyName = "trainers")]
+    public async Task<IActionResult> GetRandom([FromQuery] int count = 3)
+    {
+        var trainers = await TrainersQuery()
+            .Where(t => t.Active)
+            .OrderBy(_ => Guid.NewGuid())
+            .Take(count)
+            .Select(m => new UserDTO
+            {
+                Id = m.Id,
+                FirstName = m.FirstName,
+                LastName = m.LastName
+            })
+            .ToListAsync();
+
+        return Ok(trainers);
+    }
+
+    // DELETE api/trainer/{id} — Permanently delete a trainer (Admin only).
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(string id)
@@ -347,6 +387,7 @@ public class TrainerController : ControllerBase
 
         return NoContent();
     }
+    // Applies dynamic sorting to the trainer query.
     private static IQueryable<ApplicationUser> ApplySorting(
     IQueryable<ApplicationUser> query, string? sortBy, string? sortDir)
     {

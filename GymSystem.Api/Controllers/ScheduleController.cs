@@ -1,3 +1,9 @@
+// ============================================================
+// ScheduleController.cs — CRUD endpoints for staff/trainer work schedules.
+// Admin/Staff can view schedules; Admin can create, update, delete.
+// Conflict detection prevents overlapping schedules for the same user.
+// ============================================================
+
 using GymSystem.Api.Data;
 using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
@@ -23,6 +29,7 @@ namespace GymSystem.Api.Controllers
             _outputCache = outputCache;
         }
 
+        // GET api/schedule — List all schedules with search, date filters, and pagination.
         [HttpGet]
         [OutputCache(PolicyName = "schedules")]
         public async Task<IActionResult> GetAll([FromQuery] ScheduleSearchRequest request)
@@ -67,6 +74,7 @@ namespace GymSystem.Api.Controllers
             return Ok(result);
         }
 
+        // GET api/schedule/{id} — Get a single schedule entry.
         [HttpGet("{id}")]
         [OutputCache(PolicyName = "schedules")]
         public async Task<IActionResult> Get(int id)
@@ -88,6 +96,8 @@ namespace GymSystem.Api.Controllers
             return Ok(result);
         }
 
+        // POST api/schedule — Create a new schedule entry (Admin only).
+        // Checks for time conflicts with existing schedules for the same user.
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] AddScheduleRequest request)
@@ -131,6 +141,7 @@ namespace GymSystem.Api.Controllers
             });
         }
 
+        // PUT api/schedule/{id} — Update a schedule entry (Admin only).
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateScheduleRequest request)
@@ -187,6 +198,7 @@ namespace GymSystem.Api.Controllers
             });
         }
 
+        // DELETE api/schedule/{id} — Delete a schedule entry (Admin only).
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
@@ -203,6 +215,7 @@ namespace GymSystem.Api.Controllers
             return NoContent();
         }
 
+        // GET api/schedule/total — Returns the total number of schedule entries.
         [HttpGet("total")]
         [OutputCache(PolicyName = "schedules")]
         public async Task<IActionResult> GetTotal()

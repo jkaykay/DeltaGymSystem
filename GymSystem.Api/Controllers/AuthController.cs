@@ -1,4 +1,10 @@
-﻿using GymSystem.Api.Models;
+﻿// ============================================================
+// AuthController.cs — Handles authentication endpoints:
+// register, login, logout, get current user, change password.
+// These are the first endpoints a client interacts with.
+// ============================================================
+
+using GymSystem.Api.Models;
 using GymSystem.Api.Services;
 using GymSystem.Api.Data;
 
@@ -15,15 +21,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GymSystem.Api.Controllers
 {
+    // [Route] sets the base URL: all endpoints start with "api/auth".
+    // [ApiController] enables automatic model validation and JSON binding.
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ITokenService _tokenService;
-        private readonly ITokenRevocationService _revocationService;
-        private readonly GymDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;   // ASP.NET Identity: manages users
+        private readonly ITokenService _tokenService;                 // Generates JWT tokens
+        private readonly ITokenRevocationService _revocationService;  // Blacklists tokens on logout
+        private readonly GymDbContext _context;                       // Database context
 
+        // Constructor — dependencies are injected by the DI container.
         public AuthController(
             UserManager<ApplicationUser> userManager,
             ITokenService tokenService,
@@ -36,6 +45,9 @@ namespace GymSystem.Api.Controllers
             _context = context;
         }
 
+        // POST api/auth/register — Create a new member account.
+        // Rate-limited to prevent abuse. New members start as inactive
+        // until they purchase a subscription.
         [HttpPost("register")]
         [EnableRateLimiting("auth")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
@@ -67,11 +79,13 @@ namespace GymSystem.Api.Controllers
             return Ok(new { message = "Registration successful." });
         }
 
+        // POST api/auth/login — Authenticate a user and return a JWT token.
+        // The client can log in with either email or username.
         [HttpPost("login")]
         [EnableRateLimiting("auth")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            //
+            // Try to find the user by email first, then by username.
             var user = await _userManager.FindByEmailAsync(request.EmailOrUserName)
                        ?? await _userManager.FindByNameAsync(request.EmailOrUserName);
 
@@ -109,10 +123,13 @@ namespace GymSystem.Api.Controllers
             ));
         }
 
+        // GET api/auth/me — Return the currently logged-in user's profile.
+        // [Authorize] means only authenticated users can call this.
         [Authorize]
         [HttpGet("me")]
         public async Task<IActionResult> GetMe()
         {
+            // Extract the user's ID from the JWT token claims.
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId!);
             if (user is null)
@@ -132,10 +149,13 @@ namespace GymSystem.Api.Controllers
                 EmployeeId = user.EmployeeId,
                 BranchId = user.BranchId,
                 Active = user.Active,
+                PhoneNumber = user.PhoneNumber,
                 Roles = [.. roles]
             });
         }
 
+        // POST api/auth/change-password — Change the current user's password.
+        // Requires the old password for verification.
         [Authorize]
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
@@ -152,10 +172,14 @@ namespace GymSystem.Api.Controllers
             return NoContent();
         }
 
+        // POST api/auth/logout — Invalidate the current JWT token.
+        // Adds the token's unique ID (JTI) to the blacklist so it
+        // cannot be used again, even if it hasn't expired yet.
         [Authorize]
         [HttpPost("logout")]
         public IActionResult Logout()
         {
+            // Read the token's unique ID and expiry from the claims.
             var jti = User.FindFirstValue(JwtRegisteredClaimNames.Jti);
             var expClaim = User.FindFirstValue(JwtRegisteredClaimNames.Exp);
 

@@ -1,4 +1,10 @@
-﻿using GymSystem.Api.Data;
+﻿// ============================================================
+// StaffController.cs — CRUD endpoints for staff and admin users.
+// Only Admin and Staff roles can access these endpoints.
+// Staff accounts include employee IDs, hire dates, and branch assignments.
+// ============================================================
+
+using GymSystem.Api.Data;
 using GymSystem.Api.Extensions;
 using GymSystem.Api.Models;
 using GymSystem.Shared.DTOs;
@@ -12,7 +18,7 @@ namespace GymSystem.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Roles = "Admin,Staff")]
+[Authorize(Roles = "Admin,Staff")]  // All endpoints restricted to Admin/Staff
 public class StaffController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -26,6 +32,7 @@ public class StaffController : ControllerBase
         _outputCache = outputCache;
     }
 
+    // Helper: builds a query that returns only users with "Staff" or "Admin" role.
     private IQueryable<ApplicationUser> StaffQuery()
     {
         return _context.Users
@@ -37,6 +44,7 @@ public class StaffController : ControllerBase
                 .Any(x => x.UserId == u.Id && (x.Name == "Staff" || x.Name == "Admin")));
     }
 
+    // GET api/staff — List all staff with search, filtering, sorting, and pagination.
     [HttpGet]
     [Authorize(Roles = "Admin,Staff")]
     [OutputCache(PolicyName = "staff")]
@@ -114,6 +122,7 @@ public class StaffController : ControllerBase
         return Ok(result);
     }
 
+    // GET api/staff/total — Returns the total number of staff members.
     [HttpGet("total")]
     [Authorize(Roles = "Admin,Staff")]
     [OutputCache(PolicyName = "staff")]
@@ -123,6 +132,7 @@ public class StaffController : ControllerBase
         return Ok(new CountResponse { Count = count });
     }
 
+    // GET api/staff/{id} — Get a single staff member's profile.
     [HttpGet("{id}")]
     [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Get(string id)
@@ -151,6 +161,8 @@ public class StaffController : ControllerBase
         });
     }
 
+    // POST api/staff — Create a new staff or admin account (Admin only).
+    // The username is auto-derived from the employee ID or email.
     [HttpPost]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] CreateStaffRequest request)
@@ -223,6 +235,7 @@ public class StaffController : ControllerBase
         });
     }
 
+    // PUT api/staff/{id} — Update a staff member's details (Admin only).
     [HttpPut("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(string id, [FromBody] UpdateStaffRequest request)
@@ -287,6 +300,7 @@ public class StaffController : ControllerBase
         return NoContent();
     }
 
+    // PUT api/staff/{id}/role — Change a staff member's role between Admin and Staff.
     [HttpPut("{id}/role")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateRole(string id, [FromBody] UpdateStaffRoleRequest request)
@@ -314,6 +328,7 @@ public class StaffController : ControllerBase
         return NoContent();
     }
 
+    // DELETE api/staff/{id} — Permanently delete a staff member (Admin only).
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(string id)
@@ -335,6 +350,7 @@ public class StaffController : ControllerBase
         return NoContent();
     }
 
+    // Applies dynamic sorting to the staff query based on the requested column.
     private static IQueryable<ApplicationUser> ApplySorting(
     IQueryable<ApplicationUser> query, string? sortBy, string? sortDir)
     {
