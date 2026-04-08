@@ -49,8 +49,8 @@ namespace GymSystem.Web.Services
             DateTime? hiredFrom = null, DateTime? hiredTo = null,
             string? sortBy = null, string? sortDir = null);
         Task<UserDTO?> GetTrainerAsync(string id);
-        Task<bool> CreateTrainerAsync(CreateTrainerViewModel model);
-        Task<bool> UpdateTrainerAsync(string id, EditTrainerViewModel model);
+        Task<(bool Success, string? Error)> CreateTrainerAsync(CreateTrainerViewModel model);
+        Task<(bool Success, string? Error)> UpdateTrainerAsync(string id, EditTrainerViewModel model);
         Task<bool> DeleteTrainerAsync(string id);
         Task<CountResponse> GetTotalTrainersAsync();
         Task<List<UserDTO>> GetAllTrainersAsync(); // for dropdowns

@@ -84,11 +84,11 @@ public class TrainersController : Controller
 
         model.PhoneNumber = PrependUkPrefix(model.PhoneNumber);
 
-        var success = await _api.CreateTrainerAsync(model);
+        var (success, error) = await _api.CreateTrainerAsync(model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to create trainer. Check password requirements or duplicate email/employee ID.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to create trainer. Check password requirements or duplicate email/employee ID.");
             model.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
@@ -133,11 +133,11 @@ public class TrainersController : Controller
 
         model.PhoneNumber = PrependUkPrefix(model.PhoneNumber);
 
-        var success = await _api.UpdateTrainerAsync(model.Id, model);
+        var (success, error) = await _api.UpdateTrainerAsync(model.Id, model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to update trainer.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to update trainer.");
             model.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }

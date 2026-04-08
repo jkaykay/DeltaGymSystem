@@ -439,8 +439,7 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<UserDTO>();
         }
 
-        // Creates a new trainer.
-        public async Task<bool> CreateTrainerAsync(CreateTrainerViewModel model)
+        public async Task<(bool Success, string? Error)> CreateTrainerAsync(CreateTrainerViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/trainer", new
             {
@@ -452,11 +451,17 @@ namespace GymSystem.Web.Services
                 model.BranchId,
                 model.PhoneNumber
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
-        // Updates an existing trainer's details.
-        public async Task<bool> UpdateTrainerAsync(string id, EditTrainerViewModel model)
+        public async Task<(bool Success, string? Error)> UpdateTrainerAsync(string id, EditTrainerViewModel model)
         {
             var response = await _http.PutAsJsonAsync($"api/trainer/{id}", new
             {
@@ -467,7 +472,14 @@ namespace GymSystem.Web.Services
                 model.BranchId,
                 model.PhoneNumber
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         // Deletes a trainer by ID.
