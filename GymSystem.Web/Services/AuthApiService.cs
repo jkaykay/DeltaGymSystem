@@ -5,39 +5,56 @@ using GymSystem.Shared.DTOs;
 
 namespace GymSystem.Web.Services
 {
+    /// <summary>
+    /// Implements <see cref="IAuthApiService"/>.
+    /// This service talks to the backend REST API to handle authentication tasks:
+    /// logging in, logging out, and changing passwords.
+    /// It uses IHttpClientFactory to create HTTP clients that call the API.
+    /// </summary>
     public class AuthApiService : IAuthApiService
     {
-        //create httpclient
+        // IHttpClientFactory lets us create HttpClient instances on demand.
+        // We use a named client ("GymApi") so the base URL and token handler are preconfigured.
         private readonly IHttpClientFactory _httpClientFactory;
 
-        //constructor 
+        // Constructor — called by the DI container. The factory is injected automatically.
         public AuthApiService(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
 
-        //main method to send this login data to the API and return what came back
+        /// <summary>
+        /// Sends the user's email and password to POST api/auth/login.
+        /// If the credentials are valid the API returns a LoginResponse (JWT token + user info).
+        /// Returns null when the credentials are wrong (non-success status code).
+        /// </summary>
         public async Task<LoginResponse?> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
         {
-
+            // Create an HttpClient with the preconfigured base URL.
             var client = _httpClientFactory.CreateClient("GymApi");
 
-
+            // POST the login request as JSON to the API.
             var response = await client.PostAsJsonAsync("api/auth/login", request, cancellationToken);
 
-
+            // If the API returned an error status (e.g. 401 Unauthorized), return null.
             if (!response.IsSuccessStatusCode)
                 return null;
 
-
+            // Deserialise the JSON response body into a LoginResponse object.
             return await response.Content.ReadFromJsonAsync<LoginResponse>(cancellationToken: cancellationToken);
         }
 
 
+        /// <summary>
+        /// Tells the API to invalidate the user's JWT token (server-side sign-out).
+        /// The Bearer token is sent in the Authorization header so the API knows which session to end.
+        /// Returns true when the API accepted the request.
+        /// </summary>
         public async Task<bool> LogoutAsync(string token, CancellationToken cancellationToken = default)
         {
             var client = _httpClientFactory.CreateClient("GymApi");
 
+            // Attach the JWT token so the API can identify and invalidate it.
             client.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
 
@@ -46,6 +63,10 @@ namespace GymSystem.Web.Services
             return response.IsSuccessStatusCode;
         }
 
+        /// <summary>
+        /// Asks the API to change the authenticated user's password.
+        /// Returns (true, null) on success, or (false, errorMessage) on failure.
+        /// </summary>
         public async Task<(bool Success, string? Error)> ChangePasswordAsync(string currentPassword, string newPassword, CancellationToken cancellationToken = default)
         {
             var client = _httpClientFactory.CreateClient("GymApi");
@@ -56,10 +77,16 @@ namespace GymSystem.Web.Services
             if (response.IsSuccessStatusCode)
                 return (true, null);
 
+            // Read the error body and try to extract a user-friendly message.
             var error = await response.Content.ReadAsStringAsync(cancellationToken);
             return (false, ExtractChangePasswordError(error));
         }
 
+        /// <summary>
+        /// Helper: tries to parse the API error as an array of Identity error objects
+        /// and join their descriptions into a single readable string.
+        /// Falls back to the raw error text when parsing fails.
+        /// </summary>
         private static string ExtractChangePasswordError(string error)
         {
             if (string.IsNullOrWhiteSpace(error))
@@ -84,6 +111,10 @@ namespace GymSystem.Web.Services
             return error;
         }
 
+        /// <summary>
+        /// Small helper class that mirrors the shape of ASP.NET Identity error objects
+        /// returned by the API (e.g. { "description": "Password too short" }).
+        /// </summary>
         private sealed class IdentityErrorResponse
         {
             public string Description { get; set; } = string.Empty;

@@ -8,6 +8,11 @@ using GymSystem.Web.Services;
 
 namespace GymSystem.Web.Areas.Trainer.Controllers
 {
+    /// <summary>
+    /// The trainer’s home page.
+    /// Shows today’s sessions and upcoming sessions for the logged-in trainer.
+    /// Requires Trainer or Admin role.
+    /// </summary>
     [Authorize(Roles = "Trainer,Admin")]
     [Area("Trainer")]
     public class DashboardController : Controller
@@ -16,11 +21,14 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
 
         public DashboardController(ITrainerApiService trainerApiService)
         {
-
             _trainerApiService = trainerApiService;
         }
 
 
+        /// <summary>
+        /// GET /Trainer/Dashboard — Loads today’s sessions and upcoming sessions
+        /// for this trainer and passes them to the view.
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> Index()
         {

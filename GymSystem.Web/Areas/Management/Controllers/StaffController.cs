@@ -6,6 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
+/// <summary>
+/// Management controller for staff members.
+/// Provides list (with paging/filtering), details, create, edit, and delete.
+/// Create, Edit, and Delete require the Admin role specifically.
+/// </summary>
 [Area("Management")]
 [Authorize(Roles = "Admin,Staff")]
 public class StaffController : Controller

@@ -3,6 +3,11 @@ using GymSystem.Web.Services;
 
 namespace GymSystem.Web.Controllers;
 
+/// <summary>
+/// Public-facing controller for the Memberships page.
+/// Displays available membership tiers (pricing plans) and hosts
+/// the "Ask Delta" AI chat feature where visitors can ask questions.
+/// </summary>
 public class MembershipsController : Controller
 {
     private readonly IMemberApiService _api;
@@ -12,6 +17,9 @@ public class MembershipsController : Controller
         _api = api;
     }
 
+    /// <summary>
+    /// GET /Memberships — Fetches all tiers and displays them.
+    /// </summary>
     public async Task<IActionResult> Index()
     {
         var tiers = await _api.GetAllTiersAsync();
@@ -20,6 +28,11 @@ public class MembershipsController : Controller
         return View();
     }
 
+    /// <summary>
+    /// POST /Memberships/AskDelta — Sends the user's question to the AI chatbot
+    /// and displays the answer on the same Memberships page.
+    /// ValidateAntiForgeryToken prevents CSRF attacks.
+    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AskDelta(string prompt)

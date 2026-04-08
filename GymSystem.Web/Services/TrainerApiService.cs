@@ -5,23 +5,36 @@ using GymSystem.Web.Areas.Trainer.Models;
 
 namespace GymSystem.Web.Services
 {
+    /// <summary>
+    /// Implements <see cref="ITrainerApiService"/>.
+    /// This service handles all API calls for the Trainer area:
+    /// profile management, session listing/creation/deletion,
+    /// room and class lookups, and viewing session bookings.
+    /// Unlike other services, each method takes an explicit JWT token parameter
+    /// because the trainer's token is read from the cookie in the controller.
+    /// </summary>
     public class TrainerApiService : ITrainerApiService
     {
-        //create httpclient
+        // Factory used to create HttpClient instances with the preconfigured API base URL.
         private readonly IHttpClientFactory _httpClientFactory;
 
-        //constructor 
+        // Constructor — the DI container injects the factory.
         public TrainerApiService(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
 
 
+        /// <summary>
+        /// Fetches the currently authenticated trainer's profile from GET api/trainer/me.
+        /// The Bearer token identifies which trainer is making the request.
+        /// </summary>
         public async Task<UserDTO?> GetTrainerProfileAsync(string token, CancellationToken cancellationToken = default)
         {
 
             var client = _httpClientFactory.CreateClient("GymApi");
 
+            // Attach the JWT so the API knows which trainer is requesting their profile.
             client.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
 
@@ -35,7 +48,10 @@ namespace GymSystem.Web.Services
         }
 
 
-        //send request to the api and check if updateprofile worked or not
+        /// <summary>
+        /// Updates the trainer's own profile (email, phone) via PUT api/trainer/me.
+        /// Returns true if the API accepted the update.
+        /// </summary>
         public async Task<bool> UpdateTrainerProfileAsync(UpdateTrainerProfileRequest request, string token, CancellationToken cancellationToken = default)
         {
 
@@ -45,7 +61,7 @@ namespace GymSystem.Web.Services
             client.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
 
-            //send HTTP PUT request
+            // PUT sends the updated fields as JSON to the API.
             var response = await client.PutAsJsonAsync("api/trainer/me", request, cancellationToken);
 
 
@@ -53,7 +69,10 @@ namespace GymSystem.Web.Services
         }
 
 
-        //dashboard service
+        /// <summary>
+        /// Fetches a paged list of sessions for a specific trainer (by instructorId).
+        /// Supports optional search text to filter by class subject.
+        /// </summary>
         public async Task<TrainerPagedResult<SessionDTO>> GetSessionsAsync(string instructorId, int page, int pageSize, string token, string? search = null, CancellationToken cancellationToken = default)
         {
             var client = _httpClientFactory.CreateClient("GymApi");
@@ -61,6 +80,7 @@ namespace GymSystem.Web.Services
             client.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
 
+            // Build the query string with paging, instructor filter, and optional search.
             var url = $"api/session?instructorId={Uri.EscapeDataString(instructorId)}&page={page}&pageSize={pageSize}";
             if (!string.IsNullOrWhiteSpace(search))
                 url += $"&search={Uri.EscapeDataString(search)}";
@@ -76,6 +96,7 @@ namespace GymSystem.Web.Services
         }
 
 
+        /// <summary>Fetches a single session by its ID from GET api/session/{id}.</summary>
         public async Task<SessionDTO?> GetSessionByIdAsync(int sessionId, string token, CancellationToken cancellationToken = default)
         {
             var client = _httpClientFactory.CreateClient("GymApi");
@@ -92,6 +113,10 @@ namespace GymSystem.Web.Services
         }
 
 
+        /// <summary>
+        /// Fetches all bookings (members who signed up) for a specific session.
+        /// Used on the session detail page to show the attendee list.
+        /// </summary>
         public async Task<List<BookingDTO>> GetSessionBookingsAsync(int sessionId, string token, CancellationToken cancellationToken = default)
         {
             var client = _httpClientFactory.CreateClient("GymApi");
@@ -108,6 +133,7 @@ namespace GymSystem.Web.Services
         }
 
 
+        /// <summary>Deletes (cancels) a session by its ID via DELETE api/session/{id}.</summary>
         public async Task<bool> DeleteSessionAsync(int sessionId, string token, CancellationToken cancellationToken = default)
         {
             var client = _httpClientFactory.CreateClient("GymApi");
@@ -121,6 +147,10 @@ namespace GymSystem.Web.Services
         }
 
 
+        /// <summary>
+        /// Fetches all rooms that belong to a specific branch.
+        /// Used when the trainer creates a session and needs to pick a room.
+        /// </summary>
         public async Task<List<RoomDTO>> GetRoomsByBranchAsync(int branchId, string token, CancellationToken cancellationToken = default)
         {
             var client = _httpClientFactory.CreateClient("GymApi");
@@ -139,6 +169,10 @@ namespace GymSystem.Web.Services
         }
 
 
+        /// <summary>
+        /// Fetches the classes assigned to a specific trainer.
+        /// Used when the trainer creates a session and needs to pick which class to teach.
+        /// </summary>
         public async Task<List<ClassDTO>> GetTrainerClassesAsync(string trainerId, string token, CancellationToken cancellationToken = default)
         {
             var client = _httpClientFactory.CreateClient("GymApi");
@@ -157,6 +191,7 @@ namespace GymSystem.Web.Services
         }
 
 
+        /// <summary>Creates a new training session via POST api/session.</summary>
         public async Task<bool> CreateSessionAsync(AddSessionRequest request, string token, CancellationToken cancellationToken = default)
         {
             var client = _httpClientFactory.CreateClient("GymApi");
@@ -170,6 +205,10 @@ namespace GymSystem.Web.Services
         }
 
 
+        /// <summary>
+        /// Fetches a paged list of sessions for a trainer, filtered by optional date range.
+        /// Used on the trainer dashboard to show today's and upcoming sessions.
+        /// </summary>
         public async Task<TrainerPagedResult<SessionDTO>> GetSessionsByTrainerAsync(string instructorId, DateTime? dateFrom, DateTime? dateTo, int page, int pageSize, string token, CancellationToken cancellationToken = default)
         {
             var client = _httpClientFactory.CreateClient("GymApi");

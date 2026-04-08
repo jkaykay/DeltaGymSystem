@@ -4,6 +4,14 @@ using GymSystem.Shared.Enums;
 
 namespace GymSystem.Web.Services
 {
+    /// <summary>
+    /// Interface for the Management API service.
+    /// Defines every operation the Management area controllers can perform:
+    /// CRUD (Create, Read, Update, Delete) for members, staff, trainers, branches,
+    /// tiers, rooms, classes, sessions, subscriptions, payments, bookings,
+    /// equipment, schedules, attendances, and QR code scanning.
+    /// Each method calls the backend REST API and returns data or success/failure.
+    /// </summary>
     public interface IManagementApiService
     {
         // Members

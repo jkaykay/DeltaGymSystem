@@ -5,6 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
+/// <summary>
+/// Management controller for rooms within gym branches.
+/// Rooms can be filtered by branch and room number.
+/// Create, Edit, and Delete are restricted to Admin-only.
+/// </summary>
 [Area("Management")]
 [Authorize(Roles = "Admin,Staff")]
 public class RoomsController : Controller

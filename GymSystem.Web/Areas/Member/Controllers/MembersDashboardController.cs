@@ -7,6 +7,12 @@ using System.Security.Claims;
 
 namespace GymSystem.Web.Areas.Member.Controllers;
 
+/// <summary>
+/// The member’s personal dashboard.
+/// Shows a summary (upcoming bookings, recent attendance, payment history)
+/// and provides sub-pages for full attendance history, booking history, and payment history.
+/// Requires the Member role.
+/// </summary>
 [Authorize(Roles = "Member")]
 [Area("Member")]
 public class DashboardController : Controller

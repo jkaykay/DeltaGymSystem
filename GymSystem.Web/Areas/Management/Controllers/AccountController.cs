@@ -7,9 +7,17 @@ using System.Security.Claims;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
+/// <summary>
+/// Handles login, logout, and access-denied for the Management area.
+/// [Area("Management")] tells the routing system this controller lives
+/// under the /Management URL prefix.
+/// Unlike Member/Trainer login, this controller verifies the user has
+/// an Admin or Staff role before granting access.
+/// </summary>
 [Area("Management")]
 public class AccountController : Controller
 {
+    // Service used to call the backend auth API (login, logout, etc.).
     private readonly IAuthApiService _authApi;
 
     public AccountController(IAuthApiService authApi)
@@ -17,6 +25,10 @@ public class AccountController : Controller
         _authApi = authApi;
     }
 
+    /// <summary>
+    /// GET /Management/Account/Login — Shows the login form.
+    /// If the user is already authenticated, redirects straight to the dashboard.
+    /// </summary>
     [HttpGet]
     public IActionResult Login(string? returnUrl = null)
     {
@@ -29,6 +41,15 @@ public class AccountController : Controller
         return View();
     }
 
+    /// <summary>
+    /// POST /Management/Account/Login — Processes the submitted login form.
+    /// Steps:
+    ///   1. Validate the form fields.
+    ///   2. Call the auth API to verify credentials.
+    ///   3. Check the user has Admin or Staff role.
+    ///   4. Create claims (identity info) and store the JWT in the auth cookie.
+    ///   5. Sign the user in and redirect to the dashboard (or returnUrl).
+    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(ManagementLoginViewModel model, string? returnUrl = null)
@@ -54,6 +75,8 @@ public class AccountController : Controller
         }
 
         // Build claims from the API response
+        // Claims are key-value pairs that describe the user (ID, email, name, roles).
+        // They are stored inside the authentication cookie.
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, response.Id),
@@ -87,6 +110,10 @@ public class AccountController : Controller
         return RedirectToAction("Index", "Dashboard", new { area = "Management" });
     }
 
+    /// <summary>
+    /// POST /Management/Account/Logout — Signs the user out.
+    /// First tells the API to invalidate the JWT, then clears the local cookie.
+    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
@@ -102,6 +129,7 @@ public class AccountController : Controller
         return RedirectToAction("Login");
     }
 
+    /// <summary>Shows the "Access Denied" page when a user lacks the required role.</summary>
     public IActionResult AccessDenied()
     {
         return View();

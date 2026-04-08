@@ -9,6 +9,14 @@ using GymSystem.Shared.DTOs;
 
 namespace GymSystem.Web.Areas.Trainer.Controllers
 {
+    /// <summary>
+    /// Lets the trainer manage their own sessions.
+    /// Index lists their sessions (with paging and search).
+    /// Details shows a single session with its booked members.
+    /// Cancel deletes a session.
+    /// Create lets the trainer schedule a new session by choosing a class,
+    /// a room (from their branch), start/end times, and max capacity.
+    /// </summary>
     [Authorize(Roles = "Trainer,Admin")]
     [Area("Trainer")]
     public class SessionController : Controller

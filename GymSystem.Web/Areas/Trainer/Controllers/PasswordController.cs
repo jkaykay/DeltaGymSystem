@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Trainer.Controllers;
 
+/// <summary>
+/// Lets the logged-in trainer change their own password.
+/// GET shows the form; POST validates and calls the auth API.
+/// </summary>
 [Area("Trainer")]
 [Authorize(Roles = "Trainer,Admin")]
 public class PasswordController : Controller

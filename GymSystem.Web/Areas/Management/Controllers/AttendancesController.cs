@@ -5,6 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
+/// <summary>
+/// Management controller for attendance records (check-in / check-out).
+/// Staff can view all attendance records, see who is currently checked in (Active),
+/// manually check members in and out, and delete records.
+/// </summary>
 [Area("Management")]
 [Authorize(Roles = "Admin,Staff")]
 public class AttendancesController : Controller

@@ -7,6 +7,12 @@ using System.Security.Claims;
 
 namespace GymSystem.Web.Areas.Member.Controllers
 {
+    /// <summary>
+    /// Lets the logged-in member view and update their own profile.
+    /// GET loads the profile (including QR code if the member is active).
+    /// POST (Update) saves the changed fields (email, name, phone) via the API.
+    /// Phone numbers are stored with +44 prefix but shown without it in the form.
+    /// </summary>
     [Authorize(Roles = "Member")]
     [Area("Member")]
     public class MyProfileController : Controller

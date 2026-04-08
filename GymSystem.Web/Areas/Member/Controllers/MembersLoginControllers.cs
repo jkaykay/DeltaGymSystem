@@ -8,6 +8,14 @@ using System.Security.Claims;
 
 namespace GymSystem.Web.Areas.Member.Controllers;
 
+/// <summary>
+/// Handles login, logout, and access-denied for the Member area.
+/// [AllowAnonymous] means unauthenticated users can reach the login page.
+/// On successful login, claims (identity info) and the JWT token are stored
+/// in an authentication cookie so the user stays signed in across requests.
+/// If the user already has an Admin/Staff/Trainer role, they are told
+/// to use the correct portal instead.
+/// </summary>
 [Area("Member")]
 [AllowAnonymous]
 public class LoginController : Controller

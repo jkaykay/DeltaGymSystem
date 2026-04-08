@@ -2,6 +2,13 @@
 
 namespace GymSystem.Web.Services;
 
+/// <summary>
+/// Interface for the Member API service.
+/// Defines operations available to gym members: authentication (login/register),
+/// profile management, QR code retrieval, dashboard data (bookings, attendances,
+/// payments), session booking, subscription management, and an LLM chat feature.
+/// Also includes public (anonymous) endpoints for tiers, trainers, classes, and sessions.
+/// </summary>
 public interface IMemberApiService
 {
     // Auth

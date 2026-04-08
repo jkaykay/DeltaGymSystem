@@ -6,6 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
+/// <summary>
+/// Management controller for payments.
+/// Staff can view and create payments. Payments are linked to pending subscriptions —
+/// when a payment is recorded, the subscription becomes active.
+/// Delete is Admin-only.
+/// </summary>
 [Area("Management")]
 [Authorize(Roles = "Admin,Staff")]
 public class PaymentsController : Controller

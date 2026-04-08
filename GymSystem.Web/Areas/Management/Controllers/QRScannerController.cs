@@ -5,6 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
+/// <summary>
+/// Management controller for the QR code scanner page.
+/// The Index page opens the camera / QR scanner UI.
+/// When a QR code is scanned, the JavaScript on the page POSTs the token
+/// to the Scan action, which validates it against the API and returns
+/// the check-in/check-out result as JSON.
+/// </summary>
 [Area("Management")]
 [Authorize(Roles = "Admin,Staff")]
 public class QRScannerController : Controller

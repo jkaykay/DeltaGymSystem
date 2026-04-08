@@ -5,6 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymSystem.Web.Areas.Management.Controllers;
 
+/// <summary>
+/// Management controller for trainers.
+/// Provides list (with paging/filtering), details, create, edit, and delete.
+/// Uses the same +44 phone-number helpers as the Members controller.
+/// </summary>
 [Area("Management")]
 [Authorize(Roles = "Admin,Staff")]
 public class TrainersController : Controller

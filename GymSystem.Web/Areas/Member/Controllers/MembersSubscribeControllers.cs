@@ -6,6 +6,12 @@ using System.Security.Claims;
 
 namespace GymSystem.Web.Areas.Member.Controllers;
 
+/// <summary>
+/// Handles the self-service subscription and payment flow for members.
+/// GET Index shows the chosen tier with its price.
+/// POST ConfirmPayment creates a subscription under the selected tier,
+/// then immediately records a payment to activate it.
+/// </summary>
 [Authorize(Roles = "Member")]
 [Area("Member")]
 public class SubscribeController : Controller
