@@ -153,11 +153,11 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
                 model.MaxCapacity
             );
 
-            var success = await _trainerApiService.CreateSessionAsync(request, token);
+            var (success, error) = await _trainerApiService.CreateSessionAsync(request, token);
 
             if (!success)
             {
-                ModelState.AddModelError(string.Empty, "Failed to create session. There may be a scheduling conflict for the room or class.");
+                ModelState.AddModelError(string.Empty, error ?? "Failed to create session. There may be a scheduling conflict for the room or class.");
                 var profile = await _trainerApiService.GetTrainerProfileAsync(token);
                 model.Classes = await _trainerApiService.GetTrainerClassesAsync(trainerId, token);
                 model.Rooms = profile?.BranchId.HasValue == true

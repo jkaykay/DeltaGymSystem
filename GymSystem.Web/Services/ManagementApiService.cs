@@ -1173,16 +1173,30 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<AttendanceDTO>();
         }
 
-        public async Task<bool> CheckInMemberAsync(string memberId)
+        public async Task<(bool Success, string? Error)> CheckInMemberAsync(string memberId)
         {
             var response = await _http.PostAsync($"api/attendance/checkin/{memberId}", null);
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
-        public async Task<bool> CheckOutMemberAsync(string memberId)
+        public async Task<(bool Success, string? Error)> CheckOutMemberAsync(string memberId)
         {
             var response = await _http.PutAsync($"api/attendance/checkout/{memberId}", null);
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         public async Task<bool> DeleteAttendanceAsync(int id)

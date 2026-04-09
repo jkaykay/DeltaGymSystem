@@ -115,12 +115,12 @@ namespace GymSystem.Web.Areas.Trainer.Controllers
                 PhoneNumber: PrependUkPrefix(model.PhoneNumber)
                 );
 
-            var success = await _trainerApiService.UpdateTrainerProfileAsync(request, token);
+            var (success, error) = await _trainerApiService.UpdateTrainerProfileAsync(request, token);
 
             if (!success)
             {
                 await FillProfileDisplayDataAsync(model, token);
-                ModelState.AddModelError(string.Empty, "Could not save changes.");
+                ModelState.AddModelError(string.Empty, error ?? "Could not save changes.");
                 return View(model);
             }
 

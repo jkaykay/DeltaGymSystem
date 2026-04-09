@@ -166,8 +166,8 @@ namespace GymSystem.Web.Services
             string? sortBy = null, string? sortDir = null);
         Task<List<AttendanceDTO>> GetActiveAttendancesAsync();
         Task<AttendanceDTO?> GetAttendanceAsync(int id);
-        Task<bool> CheckInMemberAsync(string memberId);
-        Task<bool> CheckOutMemberAsync(string memberId);
+        Task<(bool Success, string? Error)> CheckInMemberAsync(string memberId);
+        Task<(bool Success, string? Error)> CheckOutMemberAsync(string memberId);
         Task<bool> DeleteAttendanceAsync(int id);
 
         // QR Scanner
