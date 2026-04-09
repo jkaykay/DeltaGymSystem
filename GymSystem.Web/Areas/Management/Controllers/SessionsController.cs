@@ -69,11 +69,11 @@ public class SessionsController : Controller
             return View(model);
         }
 
-        var success = await _api.CreateSessionAsync(model);
+        var (success, error) = await _api.CreateSessionAsync(model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to create session. There may be a scheduling conflict for the room or class.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to create session. There may be a scheduling conflict for the room or class.");
             ViewBag.Classes = await _api.GetAllClassesAsync();
             ViewBag.Rooms = await _api.GetAllRoomsAsync();
             return View(model);
@@ -118,11 +118,11 @@ public class SessionsController : Controller
             return View(model);
         }
 
-        var success = await _api.UpdateSessionAsync(model.SessionId, model);
+        var (success, error) = await _api.UpdateSessionAsync(model.SessionId, model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to update session. There may be a scheduling conflict for the room or class.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to update session. There may be a scheduling conflict for the room or class.");
             ViewBag.Rooms = await _api.GetAllRoomsAsync();
             return View(model);
         }

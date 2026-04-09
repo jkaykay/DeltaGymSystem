@@ -67,11 +67,11 @@ public class EquipmentController : Controller
             return View(model);
         }
 
-        var success = await _api.CreateEquipmentAsync(model);
+        var (success, error) = await _api.CreateEquipmentAsync(model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to create equipment.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to create equipment.");
             ViewBag.Rooms = await _api.GetAllRoomsAsync();
             return View(model);
         }
@@ -113,11 +113,11 @@ public class EquipmentController : Controller
             return View(model);
         }
 
-        var success = await _api.UpdateEquipmentAsync(model.EquipmentId, model);
+        var (success, error) = await _api.UpdateEquipmentAsync(model.EquipmentId, model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to update equipment.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to update equipment.");
             ViewBag.Rooms = await _api.GetAllRoomsAsync();
             return View(model);
         }

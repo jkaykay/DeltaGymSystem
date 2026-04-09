@@ -20,6 +20,21 @@ public class StaffController : Controller
         _api = api;
     }
 
+    private static string? StripUkPrefix(string? phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone)) return phone;
+        phone = phone.Replace(" ", "");
+        if (phone.StartsWith("+44")) phone = phone[3..];
+        return phone;
+    }
+
+    private static string? PrependUkPrefix(string? phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone)) return phone;
+        phone = phone.Replace(" ", "").TrimStart('0');
+        return "+44" + phone;
+    }
+
     public async Task<IActionResult> Index(int page = 1, int pageSize = 10,
     string? search = null,
     DateTime? hiredFrom = null, DateTime? hiredTo = null,
@@ -68,11 +83,13 @@ public class StaffController : Controller
             return View(model);
         }
 
-        var success = await _api.CreateStaffAsync(model);
+        model.PhoneNumber = PrependUkPrefix(model.PhoneNumber);
+
+        var (success, error) = await _api.CreateStaffAsync(model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to create staff member. Check password requirements.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to create staff member. Check password requirements.");
             model.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
@@ -97,7 +114,7 @@ public class StaffController : Controller
             LastName = staff.LastName,
             EmployeeId = staff.EmployeeId,
             BranchId = staff.BranchId,
-            PhoneNumber = staff.PhoneNumber,
+            PhoneNumber = StripUkPrefix(staff.PhoneNumber),
             Branches = await _api.GetAllBranchesAsync()
         };
 
@@ -115,11 +132,13 @@ public class StaffController : Controller
             return View(model);
         }
 
-        var success = await _api.UpdateStaffAsync(model.Id, model);
+        model.PhoneNumber = PrependUkPrefix(model.PhoneNumber);
+
+        var (success, error) = await _api.UpdateStaffAsync(model.Id, model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to update staff member.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to update staff member.");
             model.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }

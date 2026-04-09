@@ -65,11 +65,11 @@ public class SchedulesController : Controller
             return View(model);
         }
 
-        var success = await _api.CreateScheduleAsync(model);
+        var (success, error) = await _api.CreateScheduleAsync(model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to create schedule. There may be a time conflict.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to create schedule. There may be a time conflict.");
             ViewBag.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
@@ -118,11 +118,11 @@ public class SchedulesController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var success = await _api.UpdateScheduleAsync(model.ScheduleId, model);
+        var (success, error) = await _api.UpdateScheduleAsync(model.ScheduleId, model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to update schedule. There may be a time conflict.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to update schedule. There may be a time conflict.");
             return View(model);
         }
 

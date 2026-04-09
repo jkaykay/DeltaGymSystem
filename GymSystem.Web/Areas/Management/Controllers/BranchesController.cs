@@ -56,11 +56,11 @@ public class BranchesController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var success = await _api.CreateBranchAsync(model);
+        var (success, error) = await _api.CreateBranchAsync(model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to create branch.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to create branch.");
             return View(model);
         }
 
@@ -96,11 +96,11 @@ public class BranchesController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var success = await _api.UpdateBranchAsync(model.BranchId, model);
+        var (success, error) = await _api.UpdateBranchAsync(model.BranchId, model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to update branch.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to update branch.");
             return View(model);
         }
 

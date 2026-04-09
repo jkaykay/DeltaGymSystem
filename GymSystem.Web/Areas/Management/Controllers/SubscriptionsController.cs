@@ -69,11 +69,11 @@ public class SubscriptionsController : Controller
             return View(model);
         }
 
-        var success = await _api.CreateSubscriptionAsync(model);
+        var (success, error) = await _api.CreateSubscriptionAsync(model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to create subscription. An unpaid subscription for this tier may already exist for this member.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to create subscription. An unpaid subscription for this tier may already exist for this member.");
             ViewBag.Members = await _api.GetAllMembersAsync();
             ViewBag.Tiers = await _api.GetAllTiersAsync();
             return View(model);
@@ -115,11 +115,11 @@ public class SubscriptionsController : Controller
             return View(model);
         }
 
-        var success = await _api.UpdateSubscriptionAsync(model.SubId, model);
+        var (success, error) = await _api.UpdateSubscriptionAsync(model.SubId, model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to update subscription.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to update subscription.");
             ViewBag.Tiers = await _api.GetAllTiersAsync();
             return View(model);
         }
