@@ -54,11 +54,11 @@ public class TiersController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var success = await _api.CreateTierAsync(model);
+        var (success, error) = await _api.CreateTierAsync(model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to create tier. The name may already be in use.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to create tier. The name may already be in use.");
             return View(model);
         }
 
@@ -89,11 +89,11 @@ public class TiersController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var success = await _api.UpdateTierAsync(model.TierName, model);
+        var (success, error) = await _api.UpdateTierAsync(model.TierName, model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to update tier.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to update tier.");
             return View(model);
         }
 

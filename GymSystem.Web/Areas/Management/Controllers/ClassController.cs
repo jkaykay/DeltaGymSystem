@@ -59,11 +59,11 @@ public class ClassesController : Controller
             return View(model);
         }
 
-        var success = await _api.CreateClassAsync(model);
+        var (success, error) = await _api.CreateClassAsync(model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to create class. This subject may already exist for the selected trainer.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to create class. This subject may already exist for the selected trainer.");
             ViewBag.Trainers = await _api.GetAllTrainersAsync();
             return View(model);
         }
@@ -103,11 +103,11 @@ public class ClassesController : Controller
             return View(model);
         }
 
-        var success = await _api.UpdateClassAsync(model.ClassId, model);
+        var (success, error) = await _api.UpdateClassAsync(model.ClassId, model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to update class. This subject may already exist for the selected trainer.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to update class. This subject may already exist for the selected trainer.");
             ViewBag.Trainers = await _api.GetAllTrainersAsync();
             return View(model);
         }
