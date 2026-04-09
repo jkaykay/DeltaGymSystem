@@ -173,7 +173,7 @@ public class MemberApiService : IMemberApiService
 
         if (!response.IsSuccessStatusCode)
         {
-            var error = await response.Content.ReadAsStringAsync();
+            var error = await TryReadErrorMessageAsync(response);
             return (false, error);
         }
 
@@ -187,7 +187,7 @@ public class MemberApiService : IMemberApiService
 
         if (!response.IsSuccessStatusCode)
         {
-            var error = await response.Content.ReadAsStringAsync();
+            var error = await TryReadErrorMessageAsync(response);
             return (false, error);
         }
 
@@ -287,5 +287,20 @@ public class MemberApiService : IMemberApiService
     private sealed class LlmChatResponse
     {
         public string Response { get; set; } = string.Empty;
+    }
+
+    // Tries to extract the "message" field from a JSON error response body.
+    // Falls back to the raw response string if parsing fails.
+    private static async Task<string> TryReadErrorMessageAsync(HttpResponseMessage response)
+    {
+        try
+        {
+            var errorBody = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+            if (errorBody is not null && errorBody.TryGetValue("message", out var message))
+                return message;
+        }
+        catch { }
+
+        return await response.Content.ReadAsStringAsync();
     }
 }

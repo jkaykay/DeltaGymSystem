@@ -262,6 +262,14 @@ namespace GymSystem.Api.Controllers
             if (user is null)
                 return BadRequest("User not found.");
 
+            if (!user.Active)
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    new { message = $"{user.FirstName} {user.LastName} is not an active member." });
+
+            if (!await HasCurrentActiveSubscriptionAsync(userId))
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    new { message = $"{user.FirstName} {user.LastName} does not have an active subscription." });
+
             var session = await _context.Sessions
                 .Include(s => s.Class)
                 .Include(s => s.Room)
@@ -318,6 +326,17 @@ namespace GymSystem.Api.Controllers
                 UserId = user.Id,
                 UserName = $"{user.FirstName} {user.LastName}"
             });
+        }
+
+        private Task<bool> HasCurrentActiveSubscriptionAsync(string userId)
+        {
+            var now = DateTime.UtcNow;
+
+            return _context.Subscriptions.AnyAsync(s =>
+                s.UserId == userId &&
+                s.State == SubscriptionState.Active &&
+                s.StartDate <= now &&
+                s.EndDate >= now);
         }
     }
 }
