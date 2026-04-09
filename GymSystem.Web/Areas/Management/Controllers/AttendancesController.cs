@@ -72,11 +72,11 @@ public class AttendancesController : Controller
             return View(model);
         }
 
-        var success = await _api.CheckInMemberAsync(model.UserId);
+        var (success, error) = await _api.CheckInMemberAsync(model.UserId);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to check in member. They may already have an active session or their account is inactive.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to check in member. They may already have an active session or their account is inactive.");
             model.Members = await _api.GetAllMembersAsync();
             return View(model);
         }
@@ -89,12 +89,12 @@ public class AttendancesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CheckOut(string memberId)
     {
-        var success = await _api.CheckOutMemberAsync(memberId);
+        var (success, error) = await _api.CheckOutMemberAsync(memberId);
 
         if (success)
             TempData["Success"] = "Member checked out successfully.";
         else
-            TempData["Error"] = "Failed to check out member. They may not have an active session.";
+            TempData["Error"] = error ?? "Failed to check out member. They may not have an active session.";
 
         return RedirectToAction(nameof(Active));
     }

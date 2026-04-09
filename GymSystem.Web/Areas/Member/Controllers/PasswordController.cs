@@ -35,7 +35,7 @@ public class PasswordController : Controller
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Password change failed. Please check your current password and try again.");
+            ModelState.AddModelError(string.Empty, error ?? "Password change failed. Please check your current password and try again.");
             return View(model);
         }
 

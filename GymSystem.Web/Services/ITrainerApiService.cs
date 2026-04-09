@@ -15,7 +15,7 @@ namespace GymSystem.Web.Services
         Task<UserDTO?> GetTrainerProfileAsync(string token, CancellationToken cancellationToken = default);
 
         // Updates the trainer's own profile (email, phone, etc.).
-        Task<bool> UpdateTrainerProfileAsync(UpdateTrainerProfileRequest request, string token, CancellationToken cancellationToken = default);
+        Task<(bool Success, string? Error)> UpdateTrainerProfileAsync(UpdateTrainerProfileRequest request, string token, CancellationToken cancellationToken = default);
 
         // Gets a paged list of sessions for a specific trainer (instructor).
         Task<TrainerPagedResult<SessionDTO>> GetSessionsAsync(string instructorId, int page, int pageSize, string token, string? search = null, CancellationToken cancellationToken = default);
@@ -39,7 +39,7 @@ namespace GymSystem.Web.Services
         Task<TrainerPagedResult<SessionDTO>> GetSessionsByTrainerAsync(string instructorId, DateTime? dateFrom, DateTime? dateTo, int page, int pageSize, string token, CancellationToken cancellationToken = default);
 
         // Creates a new training session via the API.
-        Task<bool> CreateSessionAsync(AddSessionRequest request, string token, CancellationToken cancellationToken = default);
+        Task<(bool Success, string? Error)> CreateSessionAsync(AddSessionRequest request, string token, CancellationToken cancellationToken = default);
 
     }
 }

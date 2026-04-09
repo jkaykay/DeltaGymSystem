@@ -46,7 +46,7 @@ namespace GymSystem.Web.Services
 
         // Updates the trainer's own profile (email, phone) via PUT api/trainer/me.
         // Returns true if the API accepted the update.
-        public async Task<bool> UpdateTrainerProfileAsync(UpdateTrainerProfileRequest request, string token, CancellationToken cancellationToken = default)
+        public async Task<(bool Success, string? Error)> UpdateTrainerProfileAsync(UpdateTrainerProfileRequest request, string token, CancellationToken cancellationToken = default)
         {
 
             var client = _httpClientFactory.CreateClient("GymApi");
@@ -58,8 +58,13 @@ namespace GymSystem.Web.Services
             // PUT sends the updated fields as JSON to the API.
             var response = await client.PutAsJsonAsync("api/trainer/me", request, cancellationToken);
 
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync(cancellationToken);
+                return (false, error);
+            }
 
-            return response.IsSuccessStatusCode;
+            return (true, null);
         }
 
 
@@ -178,7 +183,7 @@ namespace GymSystem.Web.Services
 
 
         // Creates a new training session via POST api/session.
-        public async Task<bool> CreateSessionAsync(AddSessionRequest request, string token, CancellationToken cancellationToken = default)
+        public async Task<(bool Success, string? Error)> CreateSessionAsync(AddSessionRequest request, string token, CancellationToken cancellationToken = default)
         {
             var client = _httpClientFactory.CreateClient("GymApi");
 
@@ -187,7 +192,13 @@ namespace GymSystem.Web.Services
 
             var response = await client.PostAsJsonAsync("api/session", request, cancellationToken);
 
-            return response.IsSuccessStatusCode;
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync(cancellationToken);
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
 
