@@ -62,11 +62,11 @@ public class RoomsController : Controller
             return View(model);
         }
 
-        var success = await _api.CreateRoomAsync(model);
+        var (success, error) = await _api.CreateRoomAsync(model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to create room. The room number may already exist in this branch.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to create room. The room number may already exist in this branch.");
             ViewBag.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }
@@ -107,11 +107,11 @@ public class RoomsController : Controller
             return View(model);
         }
 
-        var success = await _api.UpdateRoomAsync(model.RoomId, model);
+        var (success, error) = await _api.UpdateRoomAsync(model.RoomId, model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to update room. The room number may already exist in this branch.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to update room. The room number may already exist in this branch.");
             ViewBag.Branches = await _api.GetAllBranchesAsync();
             return View(model);
         }

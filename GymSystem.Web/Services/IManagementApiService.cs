@@ -13,13 +13,13 @@ namespace GymSystem.Web.Services
     public interface IManagementApiService
     {
         // Members
-        Task<bool> CreateMemberAsync(CreateMemberViewModel model);
+        Task<(bool Success, string? Error)> CreateMemberAsync(CreateMemberViewModel model);
         Task<PagedResult<UserDTO>> GetMembersAsync(int page = 1, int pageSize = 10,
     string? search = null, bool? active = null,
     DateTime? joinedFrom = null, DateTime? joinedTo = null,
     string? sortBy = null, string? sortDir = null);
         Task<UserDTO?> GetMemberAsync(string id);
-        Task<bool> UpdateMemberAsync(string id, EditMemberViewModel model);
+        Task<(bool Success, string? Error)> UpdateMemberAsync(string id, EditMemberViewModel model);
         Task<bool> ToggleMemberActiveAsync(string id);
         Task<bool> DeleteMemberAsync(string id);
         Task<CountResponse> GetTotalMembersAsync();
@@ -33,8 +33,8 @@ namespace GymSystem.Web.Services
             DateTime? hiredFrom = null, DateTime? hiredTo = null,
             string? sortBy = null, string? sortDir = null);
         Task<UserDTO?> GetStaffMemberAsync(string id);
-        Task<bool> CreateStaffAsync(CreateStaffViewModel model);
-        Task<bool> UpdateStaffAsync(string id, EditStaffViewModel model);
+        Task<(bool Success, string? Error)> CreateStaffAsync(CreateStaffViewModel model);
+        Task<(bool Success, string? Error)> UpdateStaffAsync(string id, EditStaffViewModel model);
         Task<bool> DeleteStaffAsync(string id);
         Task<CountResponse> GetTotalStaffAsync();
         Task<List<UserDTO>> GetAllStaffAsync(); // for dropdowns
@@ -49,8 +49,8 @@ namespace GymSystem.Web.Services
             DateTime? hiredFrom = null, DateTime? hiredTo = null,
             string? sortBy = null, string? sortDir = null);
         Task<UserDTO?> GetTrainerAsync(string id);
-        Task<bool> CreateTrainerAsync(CreateTrainerViewModel model);
-        Task<bool> UpdateTrainerAsync(string id, EditTrainerViewModel model);
+        Task<(bool Success, string? Error)> CreateTrainerAsync(CreateTrainerViewModel model);
+        Task<(bool Success, string? Error)> UpdateTrainerAsync(string id, EditTrainerViewModel model);
         Task<bool> DeleteTrainerAsync(string id);
         Task<CountResponse> GetTotalTrainersAsync();
         Task<List<UserDTO>> GetAllTrainersAsync(); // for dropdowns
@@ -61,8 +61,8 @@ namespace GymSystem.Web.Services
             string? sortBy = null, string? sortDir = null);
         Task<List<BranchDTO>> GetAllBranchesAsync();  // for dropdowns
         Task<BranchDTO?> GetBranchAsync(int id);
-        Task<bool> CreateBranchAsync(CreateBranchViewModel model);
-        Task<bool> UpdateBranchAsync(int id, EditBranchViewModel model);
+        Task<(bool Success, string? Error)> CreateBranchAsync(CreateBranchViewModel model);
+        Task<(bool Success, string? Error)> UpdateBranchAsync(int id, EditBranchViewModel model);
         Task<bool> DeleteBranchAsync(int id);
 
         // Tiers
@@ -71,8 +71,8 @@ namespace GymSystem.Web.Services
             string? sortBy = null, string? sortDir = null);
         Task<List<TierDTO>> GetAllTiersAsync();  // for dropdowns
         Task<TierDTO?> GetTierAsync(string tierName);
-        Task<bool> CreateTierAsync(CreateTierViewModel model);
-        Task<bool> UpdateTierAsync(string tierName, EditTierViewModel model);
+        Task<(bool Success, string? Error)> CreateTierAsync(CreateTierViewModel model);
+        Task<(bool Success, string? Error)> UpdateTierAsync(string tierName, EditTierViewModel model);
         Task<bool> DeleteTierAsync(string tierName);
 
         // Rooms
@@ -80,8 +80,8 @@ namespace GymSystem.Web.Services
             int? branchId = null, int? roomNumber = null,
             string? sortBy = null, string? sortDir = null);
         Task<RoomDTO?> GetRoomAsync(int id);
-        Task<bool> CreateRoomAsync(CreateRoomViewModel model);
-        Task<bool> UpdateRoomAsync(int id, EditRoomViewModel model);
+        Task<(bool Success, string? Error)> CreateRoomAsync(CreateRoomViewModel model);
+        Task<(bool Success, string? Error)> UpdateRoomAsync(int id, EditRoomViewModel model);
         Task<bool> DeleteRoomAsync(int id);
         Task<List<RoomDTO>> GetAllRoomsAsync();    // for dropdowns
 
@@ -90,8 +90,8 @@ namespace GymSystem.Web.Services
             string? search = null,
             string? sortBy = null, string? sortDir = null);
         Task<ClassDTO?> GetClassAsync(int id);
-        Task<bool> CreateClassAsync(CreateClassViewModel model);
-        Task<bool> UpdateClassAsync(int id, EditClassViewModel model);
+        Task<(bool Success, string? Error)> CreateClassAsync(CreateClassViewModel model);
+        Task<(bool Success, string? Error)> UpdateClassAsync(int id, EditClassViewModel model);
         Task<bool> DeleteClassAsync(int id);
         Task<List<ClassDTO>> GetAllClassesAsync(); // for dropdowns
 
@@ -102,8 +102,8 @@ namespace GymSystem.Web.Services
             int? roomId = null,
             string? sortBy = null, string? sortDir = null);
         Task<SessionDTO?> GetSessionAsync(int id);
-        Task<bool> CreateSessionAsync(CreateSessionViewModel model);
-        Task<bool> UpdateSessionAsync(int id, EditSessionViewModel model);
+        Task<(bool Success, string? Error)> CreateSessionAsync(CreateSessionViewModel model);
+        Task<(bool Success, string? Error)> UpdateSessionAsync(int id, EditSessionViewModel model);
         Task<bool> DeleteSessionAsync(int id);
         Task<List<SessionDTO>> GetAllSessionsAsync();
 
@@ -113,8 +113,8 @@ namespace GymSystem.Web.Services
             DateTime? startFrom = null, DateTime? startTo = null,
             string? sortBy = null, string? sortDir = null);
         Task<SubscriptionDTO?> GetSubscriptionAsync(int id);
-        Task<bool> CreateSubscriptionAsync(CreateSubscriptionViewModel model);
-        Task<bool> UpdateSubscriptionAsync(int id, EditSubscriptionViewModel model);
+        Task<(bool Success, string? Error)> CreateSubscriptionAsync(CreateSubscriptionViewModel model);
+        Task<(bool Success, string? Error)> UpdateSubscriptionAsync(int id, EditSubscriptionViewModel model);
         Task<bool> DeleteSubscriptionAsync(int id);
         Task<List<SubscriptionDTO>> GetAllSubscriptionsAsync();
 
@@ -134,7 +134,7 @@ namespace GymSystem.Web.Services
             DateTime? dateFrom = null, DateTime? dateTo = null,
             string? sortBy = null, string? sortDir = null);
         Task<BookingDTO?> GetBookingAsync(int id);
-        Task<bool> CreateBookingAsync(CreateBookingViewModel model);
+        Task<(bool Success, string? Error)> CreateBookingAsync(CreateBookingViewModel model);
         Task<bool> DeleteBookingAsync(int id);
 
         // Equipment
@@ -143,8 +143,8 @@ namespace GymSystem.Web.Services
             DateTime? dateFrom = null, DateTime? dateTo = null,
             string? sortBy = null, string? sortDir = null);
         Task<EquipmentDTO?> GetEquipmentItemAsync(int id);
-        Task<bool> CreateEquipmentAsync(CreateEquipmentViewModel model);
-        Task<bool> UpdateEquipmentAsync(int id, EditEquipmentViewModel model);
+        Task<(bool Success, string? Error)> CreateEquipmentAsync(CreateEquipmentViewModel model);
+        Task<(bool Success, string? Error)> UpdateEquipmentAsync(int id, EditEquipmentViewModel model);
         Task<bool> DeleteEquipmentAsync(int id);
         Task<List<EquipmentDTO>> GetAllEquipmentAsync();
 
@@ -154,8 +154,8 @@ namespace GymSystem.Web.Services
             DateTime? dateFrom = null, DateTime? dateTo = null,
             string? sortBy = null, string? sortDir = null);
         Task<ScheduleDTO?> GetScheduleAsync(int id);
-        Task<bool> CreateScheduleAsync(CreateScheduleViewModel model);
-        Task<bool> UpdateScheduleAsync(int id, EditScheduleViewModel model);
+        Task<(bool Success, string? Error)> CreateScheduleAsync(CreateScheduleViewModel model);
+        Task<(bool Success, string? Error)> UpdateScheduleAsync(int id, EditScheduleViewModel model);
         Task<bool> DeleteScheduleAsync(int id);
         Task<List<ScheduleDTO>> GetAllSchedulesAsync();
 
@@ -166,8 +166,8 @@ namespace GymSystem.Web.Services
             string? sortBy = null, string? sortDir = null);
         Task<List<AttendanceDTO>> GetActiveAttendancesAsync();
         Task<AttendanceDTO?> GetAttendanceAsync(int id);
-        Task<bool> CheckInMemberAsync(string memberId);
-        Task<bool> CheckOutMemberAsync(string memberId);
+        Task<(bool Success, string? Error)> CheckInMemberAsync(string memberId);
+        Task<(bool Success, string? Error)> CheckOutMemberAsync(string memberId);
         Task<bool> DeleteAttendanceAsync(int id);
 
         // QR Scanner

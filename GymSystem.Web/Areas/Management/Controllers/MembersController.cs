@@ -98,11 +98,11 @@ public class MembersController : Controller
 
         model.PhoneNumber = PrependUkPrefix(model.PhoneNumber);
 
-        var success = await _api.UpdateMemberAsync(model.Id, model);
+        var (success, error) = await _api.UpdateMemberAsync(model.Id, model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to update member.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to update member.");
             return View(model);
         }
 
@@ -146,11 +146,11 @@ public class MembersController : Controller
 
         model.PhoneNumber = PrependUkPrefix(model.PhoneNumber);
 
-        var success = await _api.CreateMemberAsync(model);
+        var (success, error) = await _api.CreateMemberAsync(model);
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "Failed to create member. Check password requirements.");
+            ModelState.AddModelError(string.Empty, error ?? "Failed to create member. Check password requirements.");
             return View(model);
         }
 

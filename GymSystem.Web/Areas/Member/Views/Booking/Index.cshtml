@@ -167,6 +167,21 @@
     </div>
   </div>
 
+  <!-- ERROR OVERLAY -->
+  <div class="overlay" id="error-overlay">
+    <div class="confirm-modal">
+      <div class="error-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </div>
+      <h2>Booking Failed</h2>
+      <p id="error-message">@(TempData["ErrorMessage"] ?? "Something went wrong. Please try again.")</p>
+      <button type="button" class="modal-btn" onclick="document.getElementById('error-overlay').classList.remove('show');">Dismiss</button>
+    </div>
+  </div>
+
   <script>
     let selectedSessionId = null;
 
@@ -198,6 +213,15 @@
       <text>
       document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('overlay').classList.add('show');
+      });
+      </text>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+      <text>
+      document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('error-overlay').classList.add('show');
       });
       </text>
     }

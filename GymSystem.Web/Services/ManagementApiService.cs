@@ -68,7 +68,7 @@ namespace GymSystem.Web.Services
         }
 
         // Creates a new gym member via POST api/member.
-        public async Task<bool> CreateMemberAsync(CreateMemberViewModel model)
+        public async Task<(bool Success, string? Error)> CreateMemberAsync(CreateMemberViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/member", new
             {
@@ -79,11 +79,18 @@ namespace GymSystem.Web.Services
                 model.Password,
                 model.PhoneNumber
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         // Updates an existing member's details via PUT api/member/{id}.
-        public async Task<bool> UpdateMemberAsync(string id, EditMemberViewModel model)
+        public async Task<(bool Success, string? Error)> UpdateMemberAsync(string id, EditMemberViewModel model)
         {
             var response = await _http.PutAsJsonAsync($"api/member/{id}", new
             {
@@ -93,7 +100,14 @@ namespace GymSystem.Web.Services
                 model.Active,
                 model.PhoneNumber
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         // Toggles a member's active/inactive status via POST api/member/{id}/toggle-active.
@@ -162,7 +176,7 @@ namespace GymSystem.Web.Services
         }
 
         // Creates a new staff member via POST api/staff.
-        public async Task<bool> CreateStaffAsync(CreateStaffViewModel model)
+        public async Task<(bool Success, string? Error)> CreateStaffAsync(CreateStaffViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/staff", new
             {
@@ -175,11 +189,18 @@ namespace GymSystem.Web.Services
                 model.BranchId,
                 model.PhoneNumber
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         // Updates a staff member's details via PUT api/staff/{id}.
-        public async Task<bool> UpdateStaffAsync(string id, EditStaffViewModel model)
+        public async Task<(bool Success, string? Error)> UpdateStaffAsync(string id, EditStaffViewModel model)
         {
             var response = await _http.PutAsJsonAsync($"api/staff/{id}", new
             {
@@ -190,7 +211,14 @@ namespace GymSystem.Web.Services
                 model.BranchId,
                 model.PhoneNumber
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         // Deletes a staff member by ID.
@@ -291,7 +319,7 @@ namespace GymSystem.Web.Services
         }
 
         // Creates a new branch.
-        public async Task<bool> CreateBranchAsync(CreateBranchViewModel model)
+        public async Task<(bool Success, string? Error)> CreateBranchAsync(CreateBranchViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/branch", new
             {
@@ -301,11 +329,18 @@ namespace GymSystem.Web.Services
                 model.PostCode,
                 model.OpenDate
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         // Updates an existing branch.
-        public async Task<bool> UpdateBranchAsync(int id, EditBranchViewModel model)
+        public async Task<(bool Success, string? Error)> UpdateBranchAsync(int id, EditBranchViewModel model)
         {
             var response = await _http.PutAsJsonAsync($"api/branch/{id}", new
             {
@@ -314,7 +349,14 @@ namespace GymSystem.Web.Services
                 model.Province,
                 model.PostCode
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         // Deletes a branch by ID.
@@ -360,24 +402,38 @@ namespace GymSystem.Web.Services
         }
 
         // Creates a new membership tier.
-        public async Task<bool> CreateTierAsync(CreateTierViewModel model)
+        public async Task<(bool Success, string? Error)> CreateTierAsync(CreateTierViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/tier", new
             {
                 model.TierName,
                 model.Price
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         // Updates a tier's price.
-        public async Task<bool> UpdateTierAsync(string tierName, EditTierViewModel model)
+        public async Task<(bool Success, string? Error)> UpdateTierAsync(string tierName, EditTierViewModel model)
         {
             var response = await _http.PutAsJsonAsync($"api/tier/{tierName}", new
             {
                 model.Price
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         // Deletes a tier by name.
@@ -439,8 +495,7 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<UserDTO>();
         }
 
-        // Creates a new trainer.
-        public async Task<bool> CreateTrainerAsync(CreateTrainerViewModel model)
+        public async Task<(bool Success, string? Error)> CreateTrainerAsync(CreateTrainerViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/trainer", new
             {
@@ -452,11 +507,17 @@ namespace GymSystem.Web.Services
                 model.BranchId,
                 model.PhoneNumber
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
-        // Updates an existing trainer's details.
-        public async Task<bool> UpdateTrainerAsync(string id, EditTrainerViewModel model)
+        public async Task<(bool Success, string? Error)> UpdateTrainerAsync(string id, EditTrainerViewModel model)
         {
             var response = await _http.PutAsJsonAsync($"api/trainer/{id}", new
             {
@@ -467,7 +528,14 @@ namespace GymSystem.Web.Services
                 model.BranchId,
                 model.PhoneNumber
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         // Deletes a trainer by ID.
@@ -514,7 +582,7 @@ namespace GymSystem.Web.Services
         }
 
         // Creates a new room.
-        public async Task<bool> CreateRoomAsync(CreateRoomViewModel model)
+        public async Task<(bool Success, string? Error)> CreateRoomAsync(CreateRoomViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/room", new
             {
@@ -522,11 +590,18 @@ namespace GymSystem.Web.Services
                 model.BranchId,
                 model.MaxCapacity
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         // Updates an existing room.
-        public async Task<bool> UpdateRoomAsync(int id, EditRoomViewModel model)
+        public async Task<(bool Success, string? Error)> UpdateRoomAsync(int id, EditRoomViewModel model)
         {
             var response = await _http.PutAsJsonAsync($"api/room/{id}", new
             {
@@ -534,7 +609,14 @@ namespace GymSystem.Web.Services
                 model.BranchId,
                 model.MaxCapacity
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         // Deletes a room by ID.
@@ -578,24 +660,38 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<ClassDTO>();
         }
 
-        public async Task<bool> CreateClassAsync(CreateClassViewModel model)
+        public async Task<(bool Success, string? Error)> CreateClassAsync(CreateClassViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/class", new
             {
                 model.Subject,
                 model.UserId
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
-        public async Task<bool> UpdateClassAsync(int id, EditClassViewModel model)
+        public async Task<(bool Success, string? Error)> UpdateClassAsync(int id, EditClassViewModel model)
         {
             var response = await _http.PutAsJsonAsync($"api/class/{id}", new
             {
                 model.Subject,
                 model.UserId
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         public async Task<bool> DeleteClassAsync(int id)
@@ -642,7 +738,7 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<SessionDTO>();
         }
 
-        public async Task<bool> CreateSessionAsync(CreateSessionViewModel model)
+        public async Task<(bool Success, string? Error)> CreateSessionAsync(CreateSessionViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/session", new
             {
@@ -652,10 +748,17 @@ namespace GymSystem.Web.Services
                 model.ClassId,
                 model.MaxCapacity
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
-        public async Task<bool> UpdateSessionAsync(int id, EditSessionViewModel model)
+        public async Task<(bool Success, string? Error)> UpdateSessionAsync(int id, EditSessionViewModel model)
         {
             var response = await _http.PutAsJsonAsync($"api/session/{id}", new
             {
@@ -664,7 +767,14 @@ namespace GymSystem.Web.Services
                 model.RoomId,
                 model.MaxCapacity
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         public async Task<bool> DeleteSessionAsync(int id)
@@ -711,17 +821,24 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<SubscriptionDTO>();
         }
 
-        public async Task<bool> CreateSubscriptionAsync(CreateSubscriptionViewModel model)
+        public async Task<(bool Success, string? Error)> CreateSubscriptionAsync(CreateSubscriptionViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/subscription", new
             {
                 model.TierName,
                 model.UserId
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
-        public async Task<bool> UpdateSubscriptionAsync(int id, EditSubscriptionViewModel model)
+        public async Task<(bool Success, string? Error)> UpdateSubscriptionAsync(int id, EditSubscriptionViewModel model)
         {
             var response = await _http.PutAsJsonAsync($"api/subscription/{id}", new
             {
@@ -730,7 +847,14 @@ namespace GymSystem.Web.Services
                 model.StartDate,
                 model.EndDate
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         public async Task<bool> DeleteSubscriptionAsync(int id)
@@ -831,14 +955,21 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<BookingDTO>();
         }
 
-        public async Task<bool> CreateBookingAsync(CreateBookingViewModel model)
+        public async Task<(bool Success, string? Error)> CreateBookingAsync(CreateBookingViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/booking", new
             {
                 model.SessionId,
                 model.UserId
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         public async Task<bool> DeleteBookingAsync(int id)
@@ -878,7 +1009,7 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<EquipmentDTO>();
         }
 
-        public async Task<bool> CreateEquipmentAsync(CreateEquipmentViewModel model)
+        public async Task<(bool Success, string? Error)> CreateEquipmentAsync(CreateEquipmentViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/equipment", new
             {
@@ -887,10 +1018,17 @@ namespace GymSystem.Web.Services
                 model.Operational,
                 model.RoomId
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
-        public async Task<bool> UpdateEquipmentAsync(int id, EditEquipmentViewModel model)
+        public async Task<(bool Success, string? Error)> UpdateEquipmentAsync(int id, EditEquipmentViewModel model)
         {
             var response = await _http.PutAsJsonAsync($"api/equipment/{id}", new
             {
@@ -899,7 +1037,14 @@ namespace GymSystem.Web.Services
                 model.Operational,
                 model.RoomId
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         public async Task<bool> DeleteEquipmentAsync(int id)
@@ -944,7 +1089,7 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<ScheduleDTO>();
         }
 
-        public async Task<bool> CreateScheduleAsync(CreateScheduleViewModel model)
+        public async Task<(bool Success, string? Error)> CreateScheduleAsync(CreateScheduleViewModel model)
         {
             var response = await _http.PostAsJsonAsync("api/schedule", new
             {
@@ -952,17 +1097,31 @@ namespace GymSystem.Web.Services
                 model.End,
                 model.UserId
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
-        public async Task<bool> UpdateScheduleAsync(int id, EditScheduleViewModel model)
+        public async Task<(bool Success, string? Error)> UpdateScheduleAsync(int id, EditScheduleViewModel model)
         {
             var response = await _http.PutAsJsonAsync($"api/schedule/{id}", new
             {
                 model.Start,
                 model.End
             });
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         public async Task<bool> DeleteScheduleAsync(int id)
@@ -1014,16 +1173,30 @@ namespace GymSystem.Web.Services
             return await response.Content.ReadFromJsonAsync<AttendanceDTO>();
         }
 
-        public async Task<bool> CheckInMemberAsync(string memberId)
+        public async Task<(bool Success, string? Error)> CheckInMemberAsync(string memberId)
         {
             var response = await _http.PostAsync($"api/attendance/checkin/{memberId}", null);
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
-        public async Task<bool> CheckOutMemberAsync(string memberId)
+        public async Task<(bool Success, string? Error)> CheckOutMemberAsync(string memberId)
         {
             var response = await _http.PutAsync($"api/attendance/checkout/{memberId}", null);
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
         public async Task<bool> DeleteAttendanceAsync(int id)
