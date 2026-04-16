@@ -10,5 +10,6 @@
   </Folder>
   <Project Path="GymSystem.Api/GymSystem.Api.csproj" />
   <Project Path="GymSystem.Shared/GymSystem.Shared.csproj" />
+  <Project Path="GymSystem.Tests/GymSystem.Tests.csproj" />
   <Project Path="GymSystem.Web/GymSystem.Web.csproj" />
 </Solution>
