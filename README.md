@@ -1,4 +1,6 @@
-# Delta Gym System [View Here](https://deltagymsystem.azurewebsites.net)
+# Delta Gym System 
+
+[View Website Here](https://deltagymsystem.azurewebsites.net) : Note - Service startup may be slow.
 
 A gym management system built with ASP.NET Core (.NET 10). The solution consists of three projects:
 
