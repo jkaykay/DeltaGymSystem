@@ -1,6 +1,7 @@
 # Delta Gym System 
 
-[View Website Here](https://deltagymsystem.azurewebsites.net) : Note - Service startup may be slow.
+The Live Website is no longer available to view, as student credits have run out. So, feel free to checkout the website locally on your machine
+by following the steps below.
 
 A gym management system built with ASP.NET Core (.NET 10). The solution consists of three projects:
 
